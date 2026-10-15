@@ -1,0 +1,11 @@
+# Steel OS core application preferences
+wezterm
+neovim
+zed
+docker
+obs-studio
+kdenlive
+steam
+nautilus
+btop
+gnome-disk-utility

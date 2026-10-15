@@ -1,0 +1,14 @@
+# Local machine inventory
+inventory/
+
+# Editor files
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+.venv/
+
+# Local configuration
+.env

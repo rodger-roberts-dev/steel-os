@@ -1,0 +1,4 @@
+# Not included in the default Steel OS installation
+foot
+libreoffice-fresh
+libreoffice-still
