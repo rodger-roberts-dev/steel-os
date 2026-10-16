@@ -1,0 +1,139 @@
+# Steel OS default keyboard shortcuts for KDE Plasma (STEEL-29).
+# Translated from Omarchy's default Hyprland bindings plus rodger-roberts-dev's
+# own override (ALT+Return opens WezTerm). Meta is the Super / Windows key.
+#
+# Format: action=shortcut,default shortcut,friendly name
+# Several keys for one action are separated by a tab character.
+# Any user can change any key in System Settings > Shortcuts; their change is
+# stored in ~/.config/kglobalshortcutsrc and overrides this file.
+#
+# See docs/keyboard-shortcuts.md for the full mapping, including Omarchy
+# bindings that have no Plasma equivalent.
+
+[kwin]
+_k_friendly_name=KWin
+# Closing and quitting
+Window Close=Meta+W	Meta+Q	Alt+F4,Meta+W	Meta+Q	Alt+F4,Close Window
+# Window state
+Window Fullscreen=Meta+F,Meta+F,Make Window Fullscreen
+Window Maximize=Meta+Alt+F,Meta+Alt+F,Maximize Window
+Window Minimize=Meta+M,Meta+M,Minimize Window
+Window Keep Above Others=Meta+O,Meta+O,Keep Window Above Others
+Toggle Tiles Editor=Meta+T,Meta+T,Toggle Tiles Editor
+# Focus by direction
+Switch Window Left=Meta+Left,Meta+Left,Switch to Window to the Left
+Switch Window Right=Meta+Right,Meta+Right,Switch to Window to the Right
+Switch Window Up=Meta+Up,Meta+Up,Switch to Window Above
+Switch Window Down=Meta+Down,Meta+Down,Switch to Window Below
+# Move window by direction (Omarchy "swap" becomes quick-tile)
+Window Quick Tile Left=Meta+Shift+Left,Meta+Shift+Left,Quick Tile Window to the Left
+Window Quick Tile Right=Meta+Shift+Right,Meta+Shift+Right,Quick Tile Window to the Right
+Window Quick Tile Top=Meta+Shift+Up,Meta+Shift+Up,Quick Tile Window to the Top
+Window Quick Tile Bottom=Meta+Shift+Down,Meta+Shift+Down,Quick Tile Window to the Bottom
+# Cycling windows
+Walk Through Windows=Alt+Tab,Alt+Tab,Walk Through Windows
+Walk Through Windows (Reverse)=Alt+Shift+Backtab,Alt+Shift+Backtab,Walk Through Windows (Reverse)
+# Workspaces (Plasma calls them virtual desktops)
+Switch to Desktop 1=Meta+1,Meta+1,Switch to Desktop 1
+Switch to Desktop 2=Meta+2,Meta+2,Switch to Desktop 2
+Switch to Desktop 3=Meta+3,Meta+3,Switch to Desktop 3
+Switch to Desktop 4=Meta+4,Meta+4,Switch to Desktop 4
+Switch to Desktop 5=Meta+5,Meta+5,Switch to Desktop 5
+Switch to Desktop 6=Meta+6,Meta+6,Switch to Desktop 6
+Switch to Desktop 7=Meta+7,Meta+7,Switch to Desktop 7
+Switch to Desktop 8=Meta+8,Meta+8,Switch to Desktop 8
+Switch to Desktop 9=Meta+9,Meta+9,Switch to Desktop 9
+Switch to Desktop 10=Meta+0,Meta+0,Switch to Desktop 10
+Window to Desktop 1=Meta+Shift+1,Meta+Shift+1,Window to Desktop 1
+Window to Desktop 2=Meta+Shift+2,Meta+Shift+2,Window to Desktop 2
+Window to Desktop 3=Meta+Shift+3,Meta+Shift+3,Window to Desktop 3
+Window to Desktop 4=Meta+Shift+4,Meta+Shift+4,Window to Desktop 4
+Window to Desktop 5=Meta+Shift+5,Meta+Shift+5,Window to Desktop 5
+Window to Desktop 6=Meta+Shift+6,Meta+Shift+6,Window to Desktop 6
+Window to Desktop 7=Meta+Shift+7,Meta+Shift+7,Window to Desktop 7
+Window to Desktop 8=Meta+Shift+8,Meta+Shift+8,Window to Desktop 8
+Window to Desktop 9=Meta+Shift+9,Meta+Shift+9,Window to Desktop 9
+Window to Desktop 10=Meta+Shift+0,Meta+Shift+0,Window to Desktop 10
+Switch to Next Desktop=Meta+Tab,Meta+Tab,Switch to Next Desktop
+Switch to Previous Desktop=Meta+Shift+Tab,Meta+Shift+Tab,Switch to Previous Desktop
+Walk Through Desktops=Meta+Ctrl+Tab,Meta+Ctrl+Tab,Walk Through Desktops
+# Overview (Omarchy "Apps" grid on Meta+Alt+Space)
+Overview=Meta+Alt+Space,Meta+Alt+Space,Toggle Overview
+# Screen zoom (Omarchy Meta+Ctrl+Z / Meta+Ctrl+Alt+Z)
+view_zoom_in=Meta+Ctrl+Z,Meta+Ctrl+Z,Zoom In
+view_zoom_out=Meta+Ctrl+Shift+Z,Meta+Ctrl+Shift+Z,Zoom Out
+view_actual_size=Meta+Ctrl+Alt+Z,Meta+Ctrl+Alt+Z,Actual Size
+# Night light (Omarchy Meta+Ctrl+N)
+Toggle Night Light=Meta+Ctrl+N,Meta+Ctrl+N,Toggle Night Light
+# Multi-monitor focus (Omarchy Ctrl+Alt+Tab)
+Switch to Next Screen=Ctrl+Alt+Tab,Ctrl+Alt+Tab,Switch to Next Screen
+Switch to Previous Screen=Ctrl+Alt+Shift+Backtab,Ctrl+Alt+Shift+Backtab,Switch to Previous Screen
+
+[ksmserver]
+_k_friendly_name=Session Management
+Lock Session=Meta+Ctrl+L	Meta+L	Screensaver,Meta+Ctrl+L	Meta+L	Screensaver,Lock Session
+Log Out=Meta+Esc	Ctrl+Alt+Del,Meta+Esc	Ctrl+Alt+Del,Show Logout Prompt
+
+[plasmashell]
+_k_friendly_name=plasmashell
+# Clipboard history (Omarchy Meta+Ctrl+V)
+clipboard_action=Meta+Ctrl+V,Meta+Ctrl+V,Show Clipboard Items at Mouse Position
+# Do not disturb (Omarchy "silence notifications" on Meta+Ctrl+comma)
+toggle do not disturb=Meta+Ctrl+Comma,Meta+Ctrl+Comma,Toggle do not disturb
+
+# Launcher: Omarchy menu on Meta+Space becomes KRunner
+[services][org.kde.krunner.desktop]
+_launch=Meta+Space	Alt+Space	Alt+F2,Meta+Space	Alt+Space	Alt+F2,KRunner
+
+# Terminal: WezTerm on Meta+Return and ALT+Return (rodger-roberts-dev's override)
+[services][org.wezfurlong.wezterm.desktop]
+_launch=Meta+Return	Alt+Return,Meta+Return	Alt+Return,WezTerm
+
+# Browser: Chrome on Meta+Shift+Return and Meta+Shift+B
+[services][com.google.Chrome.desktop]
+_launch=Meta+Shift+Return	Meta+Shift+B,Meta+Shift+Return	Meta+Shift+B,Google Chrome
+
+# File manager: Dolphin on Meta+Shift+F
+[services][org.kde.dolphin.desktop]
+_launch=Meta+Shift+F,Meta+Shift+F,Dolphin
+
+# Editor: Kate on Meta+Shift+N
+[services][org.kde.kate.desktop]
+_launch=Meta+Shift+N,Meta+Shift+N,Kate
+
+# Obsidian on Meta+Shift+O (installed by default as a Flatpak)
+[services][md.obsidian.Obsidian.desktop]
+_launch=Meta+Shift+O,Meta+Shift+O,Obsidian
+
+# Calculator on Meta+Ctrl+Q and the calculator key
+[services][org.kde.kcalc.desktop]
+_launch=Meta+Ctrl+Q	Calculator,Meta+Ctrl+Q	Calculator,KCalc
+
+# System monitor (Omarchy "Activity" / btop) on Meta+Ctrl+T
+[services][org.kde.plasma-systemmonitor.desktop]
+_launch=Meta+Ctrl+T,Meta+Ctrl+T,System Monitor
+
+# Emoji picker on Meta+Ctrl+E
+[services][org.kde.plasma.emojier.desktop]
+_launch=Meta+Ctrl+E,Meta+Ctrl+E,Emoji Selector
+
+# Screenshots and recording (Omarchy Print, Meta+Shift+S, Alt+Print)
+[services][org.kde.spectacle.desktop]
+_launch=Print,Print,Spectacle
+RectangularRegionScreenShot=Meta+Shift+S,Meta+Shift+S,Capture Rectangular Region
+RecordScreen=Alt+Print,Alt+Print,Record Screen
+
+# Settings panels (Omarchy's bar panels on Meta+Ctrl+letter)
+[services][kcm_pulseaudio.desktop]
+_launch=Meta+Ctrl+A,Meta+Ctrl+A,Audio Settings
+[services][kcm_bluetooth.desktop]
+_launch=Meta+Ctrl+B,Meta+Ctrl+B,Bluetooth Settings
+[services][kcm_kscreen.desktop]
+_launch=Meta+Ctrl+D,Meta+Ctrl+D,Display Settings
+[services][kcm_networkmanagement.desktop]
+_launch=Meta+Ctrl+W,Meta+Ctrl+W,Network Settings
+[services][kcm_powerdevilprofilesconfig.desktop]
+_launch=Meta+Ctrl+P,Meta+Ctrl+P,Power Settings
+# "Keybindings" help on Meta+K opens the Shortcuts settings page
+[services][kcm_keys.desktop]
+_launch=Meta+K,Meta+K,Shortcuts Settings
