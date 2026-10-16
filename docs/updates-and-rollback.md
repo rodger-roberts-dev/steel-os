@@ -160,6 +160,12 @@ Ordered by how much they matter to goal 1 and goal 2.
    default Steel OS set.
 8. **Channel switching is one menu click away** (Update, then Channel). A
    curious user can move themselves to edge and lose the curation.
+9. **KDE Plasma was chosen as the default desktop after this research**
+   (ARCHITECTURE.md, decision 5.1). Omarchy's update restarts its own desktop
+   shell and pauses and resumes Hyprland config reloads. On a Plasma session
+   those steps must be confirmed to fail harmlessly, and the "update available"
+   icon in Omarchy's top bar will not exist, so Steel OS needs its own way to
+   tell a Plasma user an update is ready.
 
 ---
 
@@ -228,5 +234,8 @@ For T on the test machine, or rodger-roberts-dev.
 4. Pick the newest snapshot, boot it, click the notification, restore. Confirm
    the machine comes back and personal files in the home folder are intact.
 5. In a terminal, run `sudo pacman -Syu`. Expect the "Woah partner" refusal.
-6. Write down anything that confused you. That list becomes the wording for
+6. Once STEEL-7 (KDE Plasma) exists: log in to the Plasma session and run
+   `omarchy update` from a terminal. Note any errors about the shell or
+   Hyprland. The update must still finish and the snapshot must still exist.
+7. Write down anything that confused you. That list becomes the wording for
    ticket 4 above.
