@@ -10,6 +10,9 @@ Jira: STEEL-1
 
 ## 1. What Steel OS is
 
+Steel OS is a **Steel & Code** (steelandcode.com) project, made in partnership
+with **Blackbox Entertainment**. Say it that way on anything public.
+
 Steel OS is a Linux operating system for everyday people. It is built on top of
 **Arch Linux** using **Omarchy**, an opinionated Arch setup made by 37signals
 (the Basecamp company). Omarchy gives us a working desktop, an installer, an
@@ -18,6 +21,12 @@ make it suitable for a non-technical person.
 
 Steel OS is **not** a fork of Arch or of Omarchy. It is a layer that sits on top
 of an Omarchy install and changes what is installed and how it behaves.
+
+In the product director's words: "Steel OS is an Arch/Omarchy-based
+distribution. We maintain package manifests for core applications, development
+tools, optional software, and excluded packages. The bootstrap script currently
+performs a read-only package audit. The project is in early alpha development,
+not yet a standalone installer."
 
 ### Product goals, in priority order
 
@@ -58,6 +67,11 @@ fresh Omarchy install without any Steel OS code.
 The honest summary: **today Steel OS is a set of preferences written down, plus
 one audit script.** Nothing in this repo installs, updates, or configures a
 machine yet. That is expected for version 0.1.
+
+Decision on 2026-10-15 (section 5.1): the default desktop will be **KDE
+Plasma**, not Hyprland, with Hyprland kept as a second choice on the login
+screen. The "Omarchy provides" column above still applies to the base system,
+but the Hyprland desktop row becomes optional once that is built.
 
 ---
 
@@ -182,49 +196,116 @@ boot menu.
 
 ---
 
-## 5. Open decisions for rodger-roberts-dev and T
+## 5. Decisions
 
-These are not bugs. They are choices nobody has made yet. Each one changes what
-gets built, so they should be decided before the related work starts.
+These four questions were open when this document was first written. T
+answered all four on 2026-10-15. Each answer is a product decision;
+rodger-roberts-dev reviews the technical consequences before anything is built.
 
-### 5.1 Keyboard-first or easy like Windows?
+### 5.1 Keyboard-first or easy like Windows? Decided: both, on KDE Plasma
 
-`README.md` says the guiding principle is *"If it takes three clicks, make it
-one keystroke"* and describes a minimal, keyboard-first environment. Product
-goal 2 says a non-technical user must never need a terminal and should find it
-as easy as Windows. Hyprland, Omarchy's desktop, is built for keyboard users.
+`README.md` says *"If it takes three clicks, make it one keystroke."* Product
+goal 2 says a non-technical user should find it as easy as Windows. T's answer
+is **both**:
 
-These pull in different directions. Possible answers:
+- The default desktop is **KDE Plasma**: windows overlap and cascade like
+  Windows, with a start menu, a taskbar, and a System Settings app.
+- The terminal is **Konsole**, and the browser **Firefox**; Chrome and WezTerm are one-click installs. (Changed 2026-10-16 by rodger-roberts-dev and T from the README's WezTerm and Chrome; both use Firefox and Konsole.)
+- **Hyprland stays installed as a second choice on the login screen** for
+  people who prefer tiling and keyboard-only work. Plasma itself supports every
+  keyboard shortcut a power user wants.
 
-- Keep Hyprland and the keyboard-first philosophy, and accept that "easy like
-  Windows" means "easy once you learn the shortcuts".
-- Keep Hyprland but add mouse-friendly pieces (a visible app menu, a settings
-  app, a dock).
-- Offer a Windows-like desktop (KDE Plasma is the usual choice) as the default,
-  and keep Hyprland as an option.
+This is tracked in STEEL-7 and needs rodger-roberts-dev's technical review
+before it is built. **Until STEEL-7 is merged, the default desktop stays
+Hyprland.**
 
-**Rule until decided:** do not change the default desktop. (`CLAUDE.md` says the
-same.)
+What the switch changes, for rodger-roberts-dev to confirm:
 
-### 5.2 What does "Forge-powered development" mean?
+| Keeps working on Plasma | Lost on the Plasma session | Must be tested |
+|---|---|---|
+| Omarchy's installer, updater, snapshots and rollback, stable mirror, package repo, firewall, full-disk encryption | Omarchy's top bar, Super + Space menu, theme system, web-app launchers, and its Install menu | Omarchy's update restarts its own desktop shell and pauses Hyprland config reloads. On Plasma those steps must fail harmlessly. |
+| The SDDM login screen (it is KDE's own, so Plasma slots straight in) | `config/hypr/bindings.lua` only applies when Hyprland is chosen at login | Whether Omarchy migrations assume a Hyprland session |
 
-`README.md` lists it as a design point. Nothing in the repo defines it. It
-should either be explained in the README or removed.
+Why Plasma helps the other goals: System Settings has a Printers page, the
+Dolphin file manager can find Windows PCs on the network, and KDE's Discover is
+a store screen Windows users recognise. The app install path is revisited in
+`docs/app-install-plan.md`.
 
-### 5.3 Where does the repo live?
+### 5.2 What does "Forge-powered development" mean? Answered
 
-Today it is under rodger-roberts-dev's personal GitHub account. T is an admin of
-the `blackbox-entertainment` GitHub organization. The current plan is to keep
-working here on branches and transfer the repo to the organization later, which
-rodger-roberts-dev has to do from the repo's settings.
+**Steel & Code Forge** is rodger-roberts-dev's own AI-powered software
+development platform, a separate project of about 55,000 lines of Python. It
+runs several AI agents with distinct jobs (Byte for software engineering,
+Neighbor, Hermes, Ember, Fin), routes tasks to different AI models, and has a
+terminal interface and an "order board" for tracking agent work. The developer
+stays in control: Forge does the repetitive implementation, the human decides
+what to build and approves changes.
 
-### 5.4 What are the real package names?
+"Forge-powered development" in the README means Forge is intended to become a
+built-in development capability of Steel OS, so a programmer can go from idea
+to working software with AI help. Neither project requires the other. Forge is
+not in this repository.
 
-`optional.txt` and `review.txt` contain product names, not package names, and
-some entries (HEY, Basecamp, Google web-app shortcuts) are web apps rather than
-installable packages. Covered by STEEL-4.
+The README's status line "Development on Byte" refers to the Byte agent, not to
+a machine.
+
+T's decision (2026-10-15): Forge is **a one-click optional install, not part
+of the default Steel OS**. A non-developer never sees it; a developer picks it
+from the Steel Apps list. Packaging it is rodger-roberts-dev's story
+(STEEL-25), since Forge is his code. See `docs/app-install-plan.md`.
+
+### 5.3 Where does the repo live? Decided: here, for now
+
+The repo stays at `github.com/rodger-roberts-dev/steel-os`. Work happens on
+branches there. T is an admin of the `blackbox-entertainment` GitHub
+organisation, and because no fork was made, the repo can be transferred there
+later with no cleanup. Only rodger-roberts-dev can do the transfer.
+
+### 5.4 What are the real package names? Confirmed
+
+T's list, checked against the Arch and Omarchy package databases on 2026-10-15:
+
+| Software | Package | Source |
+|---|---|---|
+| WezTerm | `wezterm` | Arch extra |
+| Neovim | `neovim` | Arch extra |
+| Zed | `zed` | Arch extra |
+| Docker | `docker` | Arch extra |
+| OBS Studio | `obs-studio` | Arch extra |
+| Kdenlive | `kdenlive` | Arch extra |
+| Steam | `steam` | Arch multilib |
+| Nautilus | `nautilus` | Arch extra |
+| btop | `btop` | Arch extra |
+| Firefox | `firefox` | Arch extra |
+| Google Chrome | `google-chrome` | AUR, and also Omarchy's own package repository, so no AUR is needed |
+
+The full lists, including the optional and review entries, were corrected in
+STEEL-4.
 
 ---
+
+### 5.5 Which base? Decided: Fedora Atomic via Bazzite (Option C)
+
+Proposed by rodger-roberts-dev and agreed by T on 2026-10-15, with T adding
+Bazzite as the starting image. rodger-roberts-dev's one condition: he keeps his
+keyboard shortcuts (STEEL-29). Tracked in STEEL-28.
+
+Steel OS becomes a custom bootable image built with the Universal Blue
+template: a `Containerfile` that starts from `ghcr.io/ublue-os/bazzite:stable`,
+a `build.sh` that adds our packages, and a `system_files/` folder of settings
+and branding. GitHub Actions builds the image and the ISO. Two images: standard
+and NVIDIA.
+
+Why, once Plasma was chosen: Omarchy's value is its Hyprland desktop, which
+Plasma sets aside. What remains of Omarchy (installer, updater, snapshots,
+mirror) Bazzite provides already, built for Plasma, with whole-image updates
+and rollback, gaming preinstalled, a Flatpak store, automatic background
+updates, Secure Boot support, and security fixes days rather than a month
+behind. The cost is that Bazzite does not ship a Hyprland session.
+
+**Sections 2 and 3 of this document describe the Omarchy-era repo.** They stay
+until STEEL-16 lands the image recipe, then get rewritten. `docs/roadmap.md`
+already reflects the new base.
 
 ## 6. Glossary
 
@@ -232,7 +313,15 @@ installable packages. Covered by STEEL-4.
 |---|---|
 | Arch Linux | A do-it-yourself Linux distribution. Fast-moving, always up to date, and unforgiving if updated carelessly. That is why goal 1 exists. |
 | Omarchy | 37signals' ready-made Arch setup with the Hyprland desktop. Our foundation. |
-| Hyprland | The desktop environment Omarchy uses. Windows are arranged automatically and most things are done with the keyboard. |
+| Hyprland | The desktop environment Omarchy uses. Windows are arranged automatically and most things are done with the keyboard. Steel OS will keep it as a second login option. |
+| KDE Plasma | A full desktop environment with a start menu, taskbar, overlapping windows and a System Settings app. The most Windows-like Linux desktop. Steel OS's chosen default (decision 5.1). |
+| SDDM | The login screen. Omarchy already uses it, and it is made by the KDE project. |
+| Forge | Steel & Code Forge, rodger-roberts-dev's AI-assisted development platform. Separate project; see decision 5.2. |
+| Fedora Atomic | A version of Fedora Linux where the whole system is one read-only image that updates as a unit and can be rolled back. |
+| Bazzite | A Fedora Atomic image made for gaming and desktops, with Plasma, Steam, drivers and automatic updates built in. Steel OS's starting image (decision 5.5). |
+| Universal Blue | The community project that publishes Bazzite and the template Steel OS is built from. |
+| Flatpak, Flathub | The one app format and the one app store on Steel OS. |
+| Containerfile | The recipe file that defines the Steel OS image. |
 | Package | An installable program, as Arch sees it. `pacman` installs packages from the official Arch repos. |
 | AUR | Arch User Repository. Community-maintained packages, not official. Many popular apps (Google Chrome, Discord) live here. |
 | Flatpak | A separate, cross-distribution way to install desktop apps in a sandbox. One of the "five formats" goal 4 wants to avoid. |
