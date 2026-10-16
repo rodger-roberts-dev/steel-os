@@ -281,6 +281,29 @@ STEEL-4.
 
 ---
 
+### 5.5 Which base? Decided: Fedora Atomic via Bazzite (Option C)
+
+Proposed by rodger-roberts-dev and agreed by T on 2026-10-15, with T adding
+Bazzite as the starting image. rodger-roberts-dev's one condition: he keeps his
+keyboard shortcuts (STEEL-29). Tracked in STEEL-28.
+
+Steel OS becomes a custom bootable image built with the Universal Blue
+template: a `Containerfile` that starts from `ghcr.io/ublue-os/bazzite:stable`,
+a `build.sh` that adds our packages, and a `system_files/` folder of settings
+and branding. GitHub Actions builds the image and the ISO. Two images: standard
+and NVIDIA.
+
+Why, once Plasma was chosen: Omarchy's value is its Hyprland desktop, which
+Plasma sets aside. What remains of Omarchy (installer, updater, snapshots,
+mirror) Bazzite provides already, built for Plasma, with whole-image updates
+and rollback, gaming preinstalled, a Flatpak store, automatic background
+updates, Secure Boot support, and security fixes days rather than a month
+behind. The cost is that Bazzite does not ship a Hyprland session.
+
+**Sections 2 and 3 of this document describe the Omarchy-era repo.** They stay
+until STEEL-16 lands the image recipe, then get rewritten. `docs/roadmap.md`
+already reflects the new base.
+
 ## 6. Glossary
 
 | Term | Meaning |
@@ -291,6 +314,11 @@ STEEL-4.
 | KDE Plasma | A full desktop environment with a start menu, taskbar, overlapping windows and a System Settings app. The most Windows-like Linux desktop. Steel OS's chosen default (decision 5.1). |
 | SDDM | The login screen. Omarchy already uses it, and it is made by the KDE project. |
 | Forge | Steel & Code Forge, rodger-roberts-dev's AI-assisted development platform. Separate project; see decision 5.2. |
+| Fedora Atomic | A version of Fedora Linux where the whole system is one read-only image that updates as a unit and can be rolled back. |
+| Bazzite | A Fedora Atomic image made for gaming and desktops, with Plasma, Steam, drivers and automatic updates built in. Steel OS's starting image (decision 5.5). |
+| Universal Blue | The community project that publishes Bazzite and the template Steel OS is built from. |
+| Flatpak, Flathub | The one app format and the one app store on Steel OS. |
+| Containerfile | The recipe file that defines the Steel OS image. |
 | Package | An installable program, as Arch sees it. `pacman` installs packages from the official Arch repos. |
 | AUR | Arch User Repository. Community-maintained packages, not official. Many popular apps (Google Chrome, Discord) live here. |
 | Flatpak | A separate, cross-distribution way to install desktop apps in a sandbox. One of the "five formats" goal 4 wants to avoid. |
