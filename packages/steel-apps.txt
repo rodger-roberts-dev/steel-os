@@ -34,3 +34,6 @@ io.github.hmlendea.geforcenow-electron | GeForce NOW | Cloud gaming
 #   CoolerControl         fan and thermal profiles
 #   asusctl / ROG Control Center   ASUS laptop and board utilities
 #   Media web apps: Amazon Prime Video, Apple TV, Disney Plus, HBO Max
+
+# Not on Flathub yet. Installed by a Steel Apps script from Google's tar.gz (see Jira for the story):
+#   Google Antigravity | Antigravity | Google's agent-first coding app and IDE (https://antigravity.google/download)
