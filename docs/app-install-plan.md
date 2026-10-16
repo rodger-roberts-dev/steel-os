@@ -105,12 +105,13 @@ are already in the Omarchy base install.
 
 | Office suite ("Open Office") | `libreoffice-fresh` | Arch extra | Already installed by Omarchy on every machine: zero clicks. See the note below. |
 
-**T's must-haves (2026-10-15):** Slack, Zoom, Dropbox, and an office suite must
-each be a one-click install, or at least an easy one. All four are covered:
-Slack and Dropbox come from Omarchy's own repository with existing installers,
-Zoom works as a web app out of the box, and the office suite is already
-installed. Slack, Zoom and Dropbox are the first three rows of the Steel Apps
-list.
+**T's must-haves (2026-10-15):** Slack, Zoom, Dropbox, Firefox, and an office
+suite must each be a one-click install, or at least an easy one. All five are
+covered: Slack and Dropbox come from Omarchy's own repository with existing
+installers, Firefox is in Arch extra with Omarchy's browser installer
+(`omarchy install browser firefox`), Zoom works as a web app out of the box,
+and the office suite is already installed. Slack, Zoom, Dropbox and Firefox
+are the first four rows of the Steel Apps list.
 
 **About "Open Office".** Apache OpenOffice has had no meaningful development
 for years and is not in the Arch repositories (only an old `openoffice-bin` in

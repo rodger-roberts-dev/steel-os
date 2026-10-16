@@ -11,7 +11,8 @@
 # Steel OS default browser. Install with: omarchy install browser chrome
 google-chrome
 
-# Arch extra. Installed for rodger-roberts-dev. Install with: omarchy install browser firefox
+# Arch extra. One-click install required (T, 2026-10-15); also rodger-roberts-dev's
+# browser. Install with: omarchy install browser firefox
 firefox
 
 # Arch extra. Already part of the Omarchy base install.
