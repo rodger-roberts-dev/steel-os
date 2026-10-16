@@ -57,3 +57,11 @@ rm -f /usr/share/backgrounds/default.xml
 
 # Logo for System Settings > About (see system_files/etc/xdg/kcm-about-distrorc)
 install -D -m 0644 /ctx/branding/icon/png/steel-os-icon-dark-256.png /usr/share/pixmaps/steel-os.png
+
+### 6. Default apps at first boot (STEEL-17)
+# The Flatpak list ships inside the image; a small service installs it from
+# Flathub after the first boot with a network. See
+# system_files/usr/libexec/steel-os-flatpak-install.
+install -D -m 0644 /ctx/packages/flatpaks-default.txt /usr/share/steel-os/flatpaks-default.txt
+chmod 0755 /usr/libexec/steel-os-flatpak-install
+systemctl enable steel-os-flatpak-install.service

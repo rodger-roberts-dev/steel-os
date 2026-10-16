@@ -1,0 +1,17 @@
+# Steel OS (STEEL-17): install the default apps (Flatpaks) once per image.
+# Runs after the network is up and after Bazzite's own Flatpak setup. If the
+# download fails (no network yet, Flathub busy) it retries every two minutes.
+[Unit]
+Description=Steel OS default apps (Flatpak) install
+Wants=network-online.target
+After=network-online.target bazzite-flatpak-manager.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/steel-os-flatpak-install
+Restart=on-failure
+RestartSec=120
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,45 @@
+#!/usr/bin/bash
+# Steel OS (STEEL-17): install the default apps (Flatpaks from Flathub) once.
+#
+# Runs as a system service after every boot. It reads the list the image
+# ships in /usr/share/steel-os/flatpaks-default.txt, installs anything
+# missing, and records a fingerprint of the list. On later boots it exits at
+# once unless the list changed in a new image. Safe to run as often as you
+# like; it never removes anything a user installed.
+#
+# Bazzite's own bazzite-flatpak-manager runs first and sets up Flathub and
+# the Firefox and LibreOffice permissions; this script only adds our apps.
+
+set -euo pipefail
+
+LIST="/usr/share/steel-os/flatpaks-default.txt"
+STAMP_DIR="/etc/steel-os"
+STAMP="$STAMP_DIR/flatpaks-default.done"
+
+if [[ ! -r "$LIST" ]]; then
+    echo "Steel OS: no default app list at $LIST, nothing to do."
+    exit 0
+fi
+
+# Drop comments and blank lines; one Flatpak ID per line.
+mapfile -t WANTED < <(grep -Ev '^[[:space:]]*(#|$)' "$LIST" | tr -d '[:space:]' | sort -u)
+if [[ ${#WANTED[@]} -eq 0 ]]; then
+    echo "Steel OS: default app list is empty, nothing to do."
+    exit 0
+fi
+
+FINGERPRINT=$(printf '%s\n' "${WANTED[@]}" | sha256sum | cut -d ' ' -f 1)
+if [[ -f "$STAMP" && "$(cat "$STAMP")" == "$FINGERPRINT" ]]; then
+    echo "Steel OS: default apps already installed for this list."
+    exit 0
+fi
+
+# Make sure Flathub exists even if Bazzite's manager has not run yet.
+flatpak remote-add --if-not-exists --system flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+
+echo "Steel OS: installing ${#WANTED[@]} default apps from Flathub."
+flatpak install --system --noninteractive --or-update flathub "${WANTED[@]}"
+
+mkdir -p "$STAMP_DIR"
+printf '%s\n' "$FINGERPRINT" > "$STAMP"
+echo "Steel OS: default apps done."
