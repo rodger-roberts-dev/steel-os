@@ -105,11 +105,19 @@ install -D -m 0644 /ctx/branding/icon/steel-os-icon-dark.svg /usr/share/icons/hi
 # signing key file that is not in the image, which stops the ISO build with
 # "Failed to retrieve GPG key". Repos are not used on installed machines
 # (updates come as whole images), so disabling a broken one changes nothing
-# for users. Any repo whose key file is missing is switched off here.
+# for users. Any repo whose key file is really missing is switched off here.
+# Fedora writes its key paths with $releasever and $basearch, so those are
+# expanded first; otherwise every Fedora repo would be switched off too.
+releasever="$(rpm -E %fedora)"
+basearch="$(rpm -E %_arch)"
 for repo in /etc/yum.repos.d/*.repo; do
     [[ -f "$repo" ]] || continue
     while IFS= read -r keyline; do
         keyfile="${keyline#gpgkey=file://}"
+        keyfile="${keyfile//\$releasever/$releasever}"
+        keyfile="${keyfile//\$\{releasever\}/$releasever}"
+        keyfile="${keyfile//\$basearch/$basearch}"
+        keyfile="${keyfile//\$\{basearch\}/$basearch}"
         if [[ ! -e "$keyfile" ]]; then
             echo "Disabling $repo: signing key $keyfile is missing"
             sed -i -e 's/^enabled=1/enabled=0/' -e 's/^enabled=true/enabled=false/' "$repo"
