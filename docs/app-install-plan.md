@@ -71,6 +71,7 @@ Three tiers. All Flatpak IDs below were confirmed on Flathub on 2026-10-15.
 | Zoom | `us.zoom.Zoom` | T's must-have. The full desktop client, no web-app workaround needed. |
 | Dropbox | `com.dropbox.Client` | T's must-have. Tray icon works on Plasma. |
 | Discord | `com.discordapp.Discord` | T's must-have |
+| Thunderbird (email, the Outlook equivalent) | `org.mozilla.Thunderbird` | T's request (2026-10-16). Email, calendar, contacts in one app; connects to Outlook.com, Microsoft 365 and Gmail accounts. Outlook itself has no Linux version; its web version can also be added as a Chrome app. |
 | GIMP (Photoshop equivalent) | `org.gimp.GIMP` | |
 | Krita (painting; the Artweaver equivalent) | `org.kde.krita` | |
 | Inkscape (vector drawing) | `org.inkscape.Inkscape` | |
@@ -98,6 +99,7 @@ Three tiers. All Flatpak IDs below were confirmed on Flathub on 2026-10-15.
 
 | Asked for | Stand-in |
 |---|---|
+| Outlook | Thunderbird (one click), or Outlook on the web as a Chrome app |
 | Notepad++ | NotepadNext (one click) or Kate (built in) |
 | Artweaver | Krita |
 | CapCut | Web editor, or Kdenlive |
@@ -105,6 +107,27 @@ Three tiers. All Flatpak IDs below were confirmed on Flathub on 2026-10-15.
 | Local Xbox Game Pass | Cloud streaming only |
 
 ---
+
+### Blackbox Entertainment's own apps: Crew and Voxlore
+
+T plans to ship Crew and Voxlore as Electron apps with a local AI stack, sold
+on Steam. They will run on Steel OS if two things are true, and both are in
+Blackbox's hands, not Steel OS's:
+
+1. **Ship a Linux build on Steam.** Electron builds for Linux the same way it
+   builds for Windows. Steam delivers it natively, and it also runs on Steam
+   Deck, whose users are the largest Linux gaming audience. Without a Linux
+   build, Steam will try the Windows build through Proton, which works for
+   many Electron apps but is not something to rely on for a local AI stack.
+2. **Make the AI stack GPU-portable.** On Linux, NVIDIA cards can use CUDA
+   (Steel OS's NVIDIA image carries the driver), but AMD and Intel cannot. A
+   stack built on Vulkan (for example llama.cpp's Vulkan backend) runs on all
+   three. A CUDA-only stack would work only on NVIDIA machines.
+
+Steel OS adds nothing special for them; they are Steam games as far as the OS
+is concerned. The VM T is setting up is a good first test bed for the Linux
+builds, and the physical test machine for GPU acceleration. Tracked in
+STEEL-34.
 
 ## 3. Developer tools
 

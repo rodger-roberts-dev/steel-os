@@ -6,6 +6,7 @@ com.slack.Slack | Slack | Team chat
 us.zoom.Zoom | Zoom | Video meetings
 com.dropbox.Client | Dropbox | Cloud file sync
 com.discordapp.Discord | Discord | Voice and text chat
+org.mozilla.Thunderbird | Thunderbird | Email, calendar and contacts (the Outlook equivalent)
 org.mozilla.firefox | Firefox | Web browser
 org.gimp.GIMP | GIMP | Photo editing (Photoshop-style)
 org.kde.krita | Krita | Digital painting and drawing
