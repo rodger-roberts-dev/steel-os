@@ -112,7 +112,7 @@ jobs:
             esac
             mv "$f" "$OUT/steel-os/$name"
             ( cd "$OUT/steel-os" && sha256sum "$name" > "$name.sha256" )
-          done < <(find "$OUT" -type f ( -name '*.iso' -o -name '*.qcow2' ) -not -path "$OUT/steel-os/*")
+          done < <(find "$OUT" -type f \( -name '*.iso' -o -name '*.qcow2' \) -not -path "$OUT/steel-os/*")
           ls -la "$OUT/steel-os"
           cat "$OUT/steel-os"/*.sha256
           echo "STEEL_DIR=$OUT/steel-os" >> "$GITHUB_ENV"
