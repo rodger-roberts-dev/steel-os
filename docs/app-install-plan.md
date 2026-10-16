@@ -34,9 +34,30 @@ defined in a text file and can be extended without changing Omarchy's code.
 
 | Option | Verdict |
 |---|---|
-| **Omarchy Install menu, curated by Steel OS** | **Recommended.** Zero new software to build. Uses installers Omarchy already tests. Theme-aware, keyboard and mouse friendly. |
-| A graphical store (GNOME Software or KDE Discover with Flatpak) | Rejected for now. Adds a second package format, which is what goal 4 forbids. Flatpak apps also ignore Omarchy's theming. Could be revisited if the desktop decision (STEEL-1, section 5.1) goes to KDE. |
-| A Steel OS store app built from scratch | Rejected for now. Two people cannot build and maintain a store. The curated menu gives the same user outcome. |
+| **Omarchy Install menu, curated by Steel OS** | **Recommended for the Hyprland session.** Zero new software to build. Uses installers Omarchy already tests. Theme-aware, keyboard and mouse friendly. |
+| A graphical store (GNOME Software or KDE Discover with Flatpak) | Not as the main path. Adds a second package format, which is what goal 4 forbids. Flatpak apps also ignore Omarchy's theming. Fallback option on Plasma, see below. |
+| A Steel OS store app built from scratch | Not a full store. But a small Plasma-native list of approved apps is cheap, see below. |
+
+### Update after the desktop decision (2026-10-15)
+
+T decided the default desktop is **KDE Plasma**, with Hyprland as a second
+login option (ARCHITECTURE.md, decision 5.1). Omarchy's Install menu is part of
+its Hyprland desktop shell, so **it does not exist on the Plasma session**. The
+recommendation above still holds for Hyprland users. For Plasma, the default,
+the single install path becomes:
+
+| Option on Plasma | What it is | Verdict |
+|---|---|---|
+| **A. Steel Apps list** | A small Steel OS app with one row per approved app and an Install button. Each button runs the same Omarchy installer command listed in section 2. The list of apps is a text file shipped inside the steel-os package. | **Recommended.** Small to build, one format (pacman), uses Omarchy's tested installers, and the catalogue updates with every Steel OS update. |
+| B. KDE Discover with Flatpak | KDE's own store app, showing Flatpak apps from Flathub. | Fallback if A is too much work. Familiar to Windows users, but it is a second package format, installs bypass Omarchy, and apps do not follow the system theme. |
+| C. KDE Discover driving pacman directly | Discover with the PackageKit backend. | Rejected. The Arch wiki warns it is unreliable on Arch, and it would bypass Omarchy's update guard and installers. |
+
+**Does the app store need a server?** No. Apps come from the Arch mirrors and
+Omarchy's package repository, which Arch and Omarchy already host. Steel OS
+only ships the list of approved apps and a button for each. There is nothing to
+run on fly.io or anywhere else. The only hosting Steel OS will ever need is a
+place to publish the steel-os package itself (roadmap phase 7), and that is a
+static file on GitHub Releases, not a server.
 
 ---
 
@@ -78,7 +99,15 @@ are already in the Omarchy base install.
 | Firefox (for rodger-roberts-dev) | `firefox` | Arch extra | `omarchy install browser firefox` |
 | Obsidian | `obsidian` | Arch extra | Already in Omarchy base |
 | Discord | `discord` | Arch extra | `omarchy install app Discord discord` |
-| Zoom | web app, or `zoom` | AUR only | **Recommend the web app**: Omarchy has a built-in Zoom web-app handler. The AUR package is the fallback. |
+| Zoom | web app, or `zoom` | AUR only | **Recommend the web app**: Omarchy has a built-in handler that opens Zoom meeting links in a web app. The AUR package is the fallback for people who need the full desktop client. |
+| Slack | `slack-desktop` | **OPR** (also AUR) | `omarchy install app Slack slack-desktop`. Omarchy's own menu already offers this. |
+| Dropbox | `dropbox` (plus `dropbox-cli`, `nautilus-dropbox`) | **OPR** (also AUR) | `omarchy install service dropbox`. Note: its Omarchy top-bar plugin does not exist on Plasma; the Dropbox tray icon works there. |
+
+**T's must-haves (2026-10-15):** Slack, Zoom, and Dropbox must each be a
+one-click install, or at least an easy one. All three are covered: Slack and
+Dropbox come from Omarchy's own repository with existing installers, and Zoom
+works as a web app out of the box. They are the first three rows of the Steel
+Apps list.
 | Moonlight (game streaming) | `moonlight-qt` | Arch extra | Already in Omarchy base |
 | Battle.net | not a package | Blizzard installer via `umu-launcher` (OPR) | `omarchy install gaming battlenet` |
 | Google web apps (Gmail, Calendar, Drive, Docs) | not packages | web apps | `omarchy webapp install` with each URL. Omarchy fetches the icon. |

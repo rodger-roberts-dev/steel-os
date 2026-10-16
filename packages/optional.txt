@@ -24,5 +24,15 @@ discord
 # Keep this as the fallback for people who need the desktop client.
 zoom
 
+# Omarchy Package Repository. One-click install required (T, 2026-10-15).
+# Install with: omarchy install app Slack slack-desktop
+slack-desktop
+
+# Omarchy Package Repository. One-click install required (T, 2026-10-15).
+# Install with: omarchy install service dropbox (also pulls dropbox-cli and
+# nautilus-dropbox). Its Omarchy top-bar plugin does not apply on Plasma; the
+# Dropbox tray icon works there instead.
+dropbox
+
 # Arch extra. Already part of the Omarchy base install. PC game streaming client.
 moonlight-qt
