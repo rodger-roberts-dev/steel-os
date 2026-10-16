@@ -210,7 +210,7 @@ is **both**:
 
 - The default desktop is **KDE Plasma**: windows overlap and cascade like
   Windows, with a start menu, a taskbar, and a System Settings app.
-- The terminal stays **WezTerm**.
+- The terminal is **Konsole**, and the browser **Firefox**; Chrome and WezTerm are one-click installs. (Changed 2026-10-16 by rodger-roberts-dev and T from the README's WezTerm and Chrome; both use Firefox and Konsole.)
 - **Hyprland stays installed as a second choice on the login screen** for
   people who prefer tiling and keyboard-only work. Plasma itself supports every
   keyboard shortcut a power user wants.
