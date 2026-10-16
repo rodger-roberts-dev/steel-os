@@ -104,6 +104,11 @@ are already in the Omarchy base install.
 | Dropbox | `dropbox` (plus `dropbox-cli`, `nautilus-dropbox`) | **OPR** (also AUR) | `omarchy install service dropbox`. Note: its Omarchy top-bar plugin does not exist on Plasma; the Dropbox tray icon works there. |
 
 | Office suite ("Open Office") | `libreoffice-fresh` | Arch extra | Already installed by Omarchy on every machine: zero clicks. See the note below. |
+| NAPS2 (scanner software) | `naps2-bin` | AUR (current, maintained) | `omarchy pkg aur add naps2-bin`. Built-in alternative with zero clicks: Skanpage (`skanpage`, Arch extra, KDE's scanner app), added to core. |
+| Zip and other archives | `ark`, `7zip` | Arch extra | **Built in**: added to core. Right-click a file in the file manager to compress or extract. Handles zip, 7z, rar, tar. |
+| Notepad++ | `kate` built in; `notepadnext-bin` one click | Arch extra; AUR | Notepad++ itself is Windows-only. Kate is Plasma's own editor and the closest built-in match, added to core. NotepadNext is a faithful Linux remake of Notepad++: `omarchy pkg aur add notepadnext-bin`. |
+| Lutris (EA app, Ubisoft Connect, other Windows stores) | `lutris` plus Wine | Arch extra | `omarchy install gaming lutris`. This is how the EA app (formerly Origin) is installed on Linux; see the gaming note below. |
+| Xbox Cloud Gaming | web app | n/a | `omarchy install gaming xbox-cloud`. See the gaming note below. |
 
 **T's must-haves (2026-10-15):** Slack, Zoom, Dropbox, Firefox, and an office
 suite must each be a one-click install, or at least an easy one. All five are
@@ -112,6 +117,25 @@ installers, Firefox is in Arch extra with Omarchy's browser installer
 (`omarchy install browser firefox`), Zoom works as a web app out of the box,
 and the office suite is already installed. Slack, Zoom, Dropbox and Firefox
 are the first four rows of the Steel Apps list.
+
+**T's additions (2026-10-15, second round):** NAPS2 one click (done, AUR);
+zip built in (Ark and 7zip added to core); Notepad++ built in or one click
+(Kate built in, NotepadNext one click); Discord one click (already covered);
+Steam working with the EA app and Xbox Game Pass (see the gaming note).
+
+**Gaming stores: what works and what cannot.**
+- **Steam**: native. `omarchy install gaming steam`. Most Windows games run
+  through Proton; the exception is games whose anti-cheat blocks Linux.
+- **EA app (formerly Origin)**: installed through Lutris, which Omarchy sets up
+  with Wine in one command. Omarchy's own manual says Lutris is the way to play
+  EA and Ubisoft Connect games. Expect some fiddliness; EA games with
+  anti-cheat may refuse to run.
+- **Xbox Game Pass**: **cloud streaming only.** Omarchy installs Xbox Cloud
+  Gaming as a web app in one click, and it plays well at 1080p. Downloading PC
+  Game Pass games to the machine is not possible on any Linux, because the
+  Windows Xbox app does not exist for Linux. This must be said plainly to
+  users so nobody buys Game Pass expecting local installs.
+- **Battle.net**: one click, as before.
 
 **About "Open Office".** Apache OpenOffice has had no meaningful development
 for years and is not in the Arch repositories (only an old `openoffice-bin` in
@@ -134,9 +158,12 @@ on every machine that uses web apps.
 
 ## 3. Changes made to the package lists in this PR
 
-`packages/core.txt` and `packages/development.txt`: **no changes**. Every name
-is a real package in the official repositories, so the audit script should
-print only `[OK]` or `[MISSING]` for them, never `[VERIFY]`.
+`packages/core.txt`: four packages added for T's "built in" requests, all in
+Arch extra: `ark` and `7zip` (zip and archive support in the file manager),
+`kate` (Notepad++-style editor), `skanpage` (scanning). `packages/development.txt`:
+no changes. Every name in both files is a real package in the official
+repositories, so the audit script should print only `[OK]` or `[MISSING]` for
+them, never `[VERIFY]`.
 
 `packages/optional.txt`: rewritten. Display names replaced with real package
 names, a comment above each entry giving its source, and a comment pointing

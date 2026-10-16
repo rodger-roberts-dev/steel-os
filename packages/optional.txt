@@ -37,3 +37,15 @@ dropbox
 
 # Arch extra. Already part of the Omarchy base install. PC game streaming client.
 moonlight-qt
+
+# AUR. One-click install required (T, 2026-10-15). Scanner software.
+# Install with: omarchy pkg aur add naps2-bin   (Skanpage in core is the built-in alternative)
+naps2-bin
+
+# AUR. One-click install (T, 2026-10-15). A Linux remake of Notepad++.
+# Install with: omarchy pkg aur add notepadnext-bin   (Kate in core is the built-in editor)
+notepadnext-bin
+
+# Arch extra. Runs the EA app (formerly Origin), Ubisoft Connect and other
+# Windows game stores through Wine. Install with: omarchy install gaming lutris
+lutris
