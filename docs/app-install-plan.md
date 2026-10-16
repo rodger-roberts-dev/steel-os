@@ -1,240 +1,181 @@
 # Application Installation Plan
 
 Jira: STEEL-4
-Date: 2026-10-15
+Date: 2026-10-15 (rewritten the same day for the Bazzite decision, STEEL-28)
 Owners: T (which apps, what the user sees) and rodger-roberts-dev (how each is installed)
 
-**How this was researched.** Every name in `packages/*.txt` was checked against
-the official Arch package database, the Arch User Repository (AUR), and
-Omarchy's own package repository on 2026-10-15. Omarchy's installer scripts
-and menu definition were read to see what install paths already exist.
+**How this was researched.** Every app on T's list was checked against Flathub,
+the Flatpak app store, on 2026-10-15. The earlier Omarchy-era version of this
+plan checked the same apps against the Arch repositories; that work confirmed
+the apps exist for Linux and is superseded by this version.
 
 ---
 
-## 1. The one way to install apps (recommendation)
+## 1. The one way to install apps
 
-Product goal 4 says one install path, not five formats. Omarchy already has a
-single front door: press **Super + Space**, choose **Install**, and pick from
-Browser, Gaming, Service, Editor, Web App, Package, and so on. Each entry runs
-a small installer script and shows progress in a floating window. The menu is
-defined in a text file and can be extended without changing Omarchy's code.
+Product goal 4 says one install path, not five formats. On Bazzite this is
+already true:
 
-**Recommendation: make the Omarchy Install menu the Steel OS app store.**
+- **One format: Flatpak.** Apps come from Flathub, update on their own in the
+  background, and run sandboxed. The system image never changes when an app is
+  installed, which is why updates cannot break it.
+- **One store: Discover.** Bazzite ships KDE's Discover app. It has a search
+  box and an Install button. It is the Microsoft Store equivalent.
 
-- Add a **Steel Apps** submenu listing the approved optional apps, one click
-  each. Each entry runs Omarchy's own installer for that app.
-- Keep Omarchy's Gaming, Browser, and Service entries as they are. They already
-  cover Steam, Battle.net, Chrome, Firefox, Xbox controllers, Spotify, and more.
-- Move the raw **Package** and **AUR** entries under an **Advanced** submenu so a
-  non-technical user is not offered ten thousand package names.
-- Do not add Flatpak, Snap, or AppImage. Every app on our lists is available
-  without them.
+**What Steel OS adds: the Steel Apps list.** Discover shows thousands of apps.
+A Windows user wants the dozen they know. Steel OS ships a short curated list
+(`packages/steel-apps.txt`) and a screen, shown at first boot and reachable
+from Settings, with one row per approved app and one Install button each.
+Installing is a Flatpak install from Flathub; nothing is hosted by us.
 
-### Why this and not the alternatives
+No server is needed anywhere in this. Flathub hosts the apps. The list is a
+text file inside the image.
+
+### Why not the alternatives
 
 | Option | Verdict |
 |---|---|
-| **Omarchy Install menu, curated by Steel OS** | **Recommended for the Hyprland session.** Zero new software to build. Uses installers Omarchy already tests. Theme-aware, keyboard and mouse friendly. |
-| A graphical store (GNOME Software or KDE Discover with Flatpak) | Not as the main path. Adds a second package format, which is what goal 4 forbids. Flatpak apps also ignore Omarchy's theming. Fallback option on Plasma, see below. |
-| A Steel OS store app built from scratch | Not a full store. But a small Plasma-native list of approved apps is cheap, see below. |
-
-### Update after the desktop decision (2026-10-15)
-
-T decided the default desktop is **KDE Plasma**, with Hyprland as a second
-login option (ARCHITECTURE.md, decision 5.1). Omarchy's Install menu is part of
-its Hyprland desktop shell, so **it does not exist on the Plasma session**. The
-recommendation above still holds for Hyprland users. For Plasma, the default,
-the single install path becomes:
-
-| Option on Plasma | What it is | Verdict |
-|---|---|---|
-| **A. Steel Apps list** | A small Steel OS app with one row per approved app and an Install button. Each button runs the same Omarchy installer command listed in section 2. The list of apps is a text file shipped inside the steel-os package. | **Recommended.** Small to build, one format (pacman), uses Omarchy's tested installers, and the catalogue updates with every Steel OS update. |
-| B. KDE Discover with Flatpak | KDE's own store app, showing Flatpak apps from Flathub. | Fallback if A is too much work. Familiar to Windows users, but it is a second package format, installs bypass Omarchy, and apps do not follow the system theme. |
-| C. KDE Discover driving pacman directly | Discover with the PackageKit backend. | Rejected. The Arch wiki warns it is unreliable on Arch, and it would bypass Omarchy's update guard and installers. |
-
-**Does the app store need a server?** No. Apps come from the Arch mirrors and
-Omarchy's package repository, which Arch and Omarchy already host. Steel OS
-only ships the list of approved apps and a button for each. There is nothing to
-run on fly.io or anywhere else. The only hosting Steel OS will ever need is a
-place to publish the steel-os package and the ISO (roadmap phase 7), and that
-is static files in T's existing Cloudflare R2 storage, linked from a download
-page on blackbox-entertainment.com. Not a server.
+| **Discover plus Flatpak plus a Steel Apps list** | **Chosen.** Already built, one format, sandboxed, auto-updating. |
+| Install rpm packages into the image for every app | Rejected for apps. Bloats the image, every app update means a full image rebuild, and users cannot add their own. Used only for system pieces (WezTerm, printer drivers, wsdd). |
+| A Steel OS store app built from scratch | Rejected. Discover does the job; the Steel Apps list is the only custom piece. |
+| Omarchy's Install menu (the previous plan) | Gone with the base change. |
 
 ---
 
 ## 2. Where every app comes from
 
-Sources, in order of trust:
-- **Arch official** (`core`, `extra`, `multilib`): maintained by Arch. Safest.
-- **Omarchy Package Repository** (OPR, `pkgs.omarchy.org`): built and signed by
-  Omarchy. Also safe. Installed with the same commands as Arch packages.
-- **AUR**: community-uploaded build scripts. Not vetted. Avoid in defaults.
-- **Not a package**: installed by an Omarchy script or added as a web app.
+Three tiers. All Flatpak IDs below were confirmed on Flathub on 2026-10-15.
 
-### Core (installed on every Steel OS machine)
+### Built into the image, or preinstalled on first boot (every machine)
 
-| App | Package | Source | Note |
+| App | How | ID or package | Note |
 |---|---|---|---|
-| WezTerm (terminal) | `wezterm` | Arch extra | Steel OS default terminal. Not in Omarchy base; Omarchy ships `foot`. |
-| Neovim | `neovim` | Arch extra | Omarchy base ships it as `nvim` plus `omarchy-nvim` config. |
-| Zed (editor) | `zed` | Arch extra | Omarchy has `omarchy install editor zed`. |
-| Docker | `docker` | Arch extra | In Omarchy base. |
-| OBS Studio | `obs-studio` | Arch extra | |
-| Kdenlive (video editor) | `kdenlive` | Arch extra | Pulls in KDE libraries. Large. |
-| Steam | `steam` | Arch multilib | **Install with `omarchy install gaming steam`**, not plain pacman: it picks the right 32-bit graphics drivers first, otherwise NVIDIA drivers land on non-NVIDIA machines. |
-| Files (Nautilus) | `nautilus` | Arch extra | In Omarchy base. |
-| btop (system monitor) | `btop` | Arch extra | In Omarchy base. |
-| Disks | `gnome-disk-utility` | Arch extra | In Omarchy base. |
+| WezTerm (terminal) | rpm in the image | `wezterm` from WezTerm's Fedora repository | Steel OS default terminal. Must be in the image so it is the terminal before any app installs. |
+| LibreOffice (office) | Flatpak, first boot | `org.libreoffice.LibreOffice` | T's "Open Office". Opens Word, Excel, PowerPoint. |
+| Google Chrome (default browser) | Flatpak, first boot | `com.google.Chrome` | Set as default browser on first boot. |
+| Firefox | Flatpak, first boot | `org.mozilla.firefox` | Bazzite already ships it; rodger-roberts-dev's browser. |
+| Files (Dolphin), Ark (zip), Kate (editor), Okular (PDF, EPUB), Skanpage (scanner), Spectacle (screenshots), Gwenview (images) | Part of Plasma on Bazzite | rpm, already present | Confirm on first boot which are present; add missing ones to `packages/image.txt`. |
+| Steam | Already in Bazzite | native | Bazzite's reason to exist. |
+| OBS Studio | Flatpak, first boot | `com.obsproject.Studio` | Screen capture works on Plasma Wayland. |
+| Kdenlive (video editor) | Flatpak, first boot | `org.kde.kdenlive` | The offline video editor. |
+| Obsidian | Flatpak, first boot | `md.obsidian.Obsidian` | |
+| Moonlight (game streaming) | Flatpak, first boot | `com.moonlight_stream.Moonlight` | |
+| Zed (editor) | Flatpak, first boot | `dev.zed.Zed` | |
+| Discover (store) | Part of Plasma on Bazzite | rpm | The store. |
 
-### Development
+### One click from the Steel Apps list
 
-All 14 entries in `packages/development.txt` are in Arch `core` or `extra`.
-`git`, `jq`, `ripgrep`, `fd`, `lazygit`, `docker-compose`, and `base-devel`
-are already in the Omarchy base install.
-
-### Optional (offered in the Steel Apps menu, not installed by default)
-
-| App | Package or method | Source | How to install |
-|---|---|---|---|
-| Google Chrome (default browser) | `google-chrome` | **OPR** (also AUR) | `omarchy install browser chrome`, then `omarchy default browser chrome` |
-| Firefox (for rodger-roberts-dev) | `firefox` | Arch extra | `omarchy install browser firefox` |
-| Obsidian | `obsidian` | Arch extra | Already in Omarchy base |
-| Discord | `discord` | Arch extra | `omarchy install app Discord discord` |
-| Zoom | web app, or `zoom` | AUR only | **Recommend the web app**: Omarchy has a built-in handler that opens Zoom meeting links in a web app. The AUR package is the fallback for people who need the full desktop client. |
-| Slack | `slack-desktop` | **OPR** (also AUR) | `omarchy install app Slack slack-desktop`. Omarchy's own menu already offers this. |
-| Dropbox | `dropbox` (plus `dropbox-cli`, `nautilus-dropbox`) | **OPR** (also AUR) | `omarchy install service dropbox`. Note: its Omarchy top-bar plugin does not exist on Plasma; the Dropbox tray icon works there. |
-
-| Office suite ("Open Office") | `libreoffice-fresh` | Arch extra | Already installed by Omarchy on every machine: zero clicks. See the note below. |
-| NAPS2 (scanner software) | `naps2-bin` | AUR (current, maintained) | `omarchy pkg aur add naps2-bin`. Built-in alternative with zero clicks: Skanpage (`skanpage`, Arch extra, KDE's scanner app), added to core. |
-| Zip and other archives | `ark`, `7zip` | Arch extra | **Built in**: added to core. Right-click a file in the file manager to compress or extract. Handles zip, 7z, rar, tar. |
-| Notepad++ | `kate` built in; `notepadnext-bin` one click | Arch extra; AUR | Notepad++ itself is Windows-only. Kate is Plasma's own editor and the closest built-in match, added to core. NotepadNext is a faithful Linux remake of Notepad++: `omarchy pkg aur add notepadnext-bin`. |
-| Lutris (EA app, Ubisoft Connect, other Windows stores) | `lutris` plus Wine | Arch extra | `omarchy install gaming lutris`. This is how the EA app (formerly Origin) is installed on Linux; see the gaming note below. |
-| Xbox Cloud Gaming | web app | n/a | `omarchy install gaming xbox-cloud`. See the gaming note below. |
-| Audacity (audio editing) | `audacity` | Arch extra | One click. Tenacity (`tenacity`, Arch extra) is the fork without online features, if preferred. |
-| GIMP (Photoshop equivalent) | `gimp` | Arch extra | One click. Version 3.x. |
-| Krita (digital painting; the Artweaver equivalent) | `krita` | Arch extra | One click. Artweaver itself is Windows-only. |
-| Inkscape (vector drawing) | `inkscape` | Arch extra | One click. |
-| KolourPaint (MS Paint equivalent) | `kolourpaint` | Arch extra | One click. Pinta is already built in; KolourPaint fits Plasma better and could replace it. |
-| VS Code | `visual-studio-code-bin` | AUR, via Omarchy's installer | `omarchy install editor vscode`. Omarchy's installer also sets the theme, the password store, and turns off VS Code's own auto-update so Omarchy's updater stays in charge. |
-| CapCut (video editing) | web app, or `shotcut` | n/a; Arch extra | CapCut has no Linux version. Its web editor works in a browser: `omarchy webapp install CapCut https://www.capcut.com/editor`. Offline alternatives: Kdenlive (already in core, full editor) or Shotcut (simpler). |
-| OBS Studio | `obs-studio` | Arch extra | Already in core. Wayland screen capture works because Omarchy ships the screen-sharing portal. |
-| Ebook reader | `foliate` for reading; `calibre` for a library | Arch extra | Both one click. Foliate is a clean reader. Calibre manages a library, converts formats, and syncs to Kindle and Kobo. Okular, part of the Plasma set, opens EPUB and PDF with nothing extra. |
-| Steel & Code Forge (rodger-roberts-dev's AI development platform) | not packaged yet | Steel OS's own package, once rodger-roberts-dev builds it | **One click, never installed by default** (T, 2026-10-15). Forge is a separate Python project. It needs its own package with its runtimes, a WezTerm launcher, and a first-run screen for AI keys. Tracked as its own story under the App Store epic. |
-
-**T's must-haves (2026-10-15):** Slack, Zoom, Dropbox, Firefox, and an office
-suite must each be a one-click install, or at least an easy one. All five are
-covered: Slack and Dropbox come from Omarchy's own repository with existing
-installers, Firefox is in Arch extra with Omarchy's browser installer
-(`omarchy install browser firefox`), Zoom works as a web app out of the box,
-and the office suite is already installed. Slack, Zoom, Dropbox and Firefox
-are the first four rows of the Steel Apps list.
-
-**T's additions (2026-10-15, second round):** NAPS2 one click (done, AUR);
-zip built in (Ark and 7zip added to core); Notepad++ built in or one click
-(Kate built in, NotepadNext one click); Discord one click (already covered);
-Steam working with the EA app and Xbox Game Pass (see the gaming note).
-
-**T's additions (2026-10-15, third round):** Audacity, GIMP, Krita, Inkscape,
-KolourPaint, VS Code, and CapCut. All one click except CapCut, which is a web
-app because no Linux version exists. OBS was already in core.
-
-**Gaming stores: what works and what cannot.**
-- **Steam**: native. `omarchy install gaming steam`. Most Windows games run
-  through Proton; the exception is games whose anti-cheat blocks Linux.
-- **EA app (formerly Origin)**: installed through Lutris, which Omarchy sets up
-  with Wine in one command. Omarchy's own manual says Lutris is the way to play
-  EA and Ubisoft Connect games. Expect some fiddliness; EA games with
-  anti-cheat may refuse to run.
-- **Xbox Game Pass**: **cloud streaming only.** Omarchy installs Xbox Cloud
-  Gaming as a web app in one click, and it plays well at 1080p. Downloading PC
-  Game Pass games to the machine is not possible on any Linux, because the
-  Windows Xbox app does not exist for Linux. This must be said plainly to
-  users so nobody buys Game Pass expecting local installs.
-- **Battle.net**: one click, as before.
-
-**About "Open Office".** Apache OpenOffice has had no meaningful development
-for years and is not in the Arch repositories (only an old `openoffice-bin` in
-the AUR). LibreOffice is its direct successor, made by the same community that
-left OpenOffice, and it opens and saves Word, Excel and PowerPoint files.
-Omarchy installs `libreoffice-fresh` by default, so every Steel OS machine
-already has it. This settles the keep-or-remove question in section 4: **keep
-LibreOffice**, and it is removed from `packages/excluded.txt` in this PR.
-| Moonlight (game streaming) | `moonlight-qt` | Arch extra | Already in Omarchy base |
-| Battle.net | not a package | Blizzard installer via `umu-launcher` (OPR) | `omarchy install gaming battlenet` |
-| Google web apps (Gmail, Calendar, Drive, Docs) | not packages | web apps | `omarchy webapp install` with each URL. Omarchy fetches the icon. |
-| Xbox controllers | `xpadneo-dkms` | OPR | `omarchy install gaming xbox-controllers` (goal 3) |
-
-**Browser rule, from the README:** Chrome is the Steel OS default; Firefox is
-installed for rodger-roberts-dev. Both can coexist. Note that Omarchy's web
-apps open in a Chromium-family browser, so Chrome, not Firefox, must be present
-on every machine that uses web apps.
-
----
-
-## 3. Changes made to the package lists in this PR
-
-`packages/core.txt`: four packages added for T's "built in" requests, all in
-Arch extra: `ark` and `7zip` (zip and archive support in the file manager),
-`kate` (Notepad++-style editor), `skanpage` (scanning). `packages/development.txt`:
-no changes. Every name in both files is a real package in the official
-repositories, so the audit script should print only `[OK]` or `[MISSING]` for
-them, never `[VERIFY]`.
-
-`packages/optional.txt`: rewritten. Display names replaced with real package
-names, a comment above each entry giving its source, and a comment pointing
-here for the two items that are not packages (Battle.net, web apps).
-
-`packages/review.txt`: each entry now has a comment with the recommended
-decision. HEY and Basecamp, which are not packages, are explained in a comment.
-
-`packages/excluded.txt`: comments added. `libreoffice-fresh` appeared in both
-`excluded.txt` and `review.txt`, which contradicted each other. T decided on
-2026-10-15 to keep an office suite, so it is removed from `excluded.txt`.
-
----
-
-## 4. Decisions needed from T and rodger-roberts-dev
-
-These are the "Part 1" decisions the ticket assigns to people, not to Claude.
-
-| Item | Recommendation | Why |
+| App | ID | Note |
 |---|---|---|
-| `chromium` (review) | Remove **after** Chrome is installed and set as default | Omarchy ships it as the default browser; web apps need a Chromium-family browser, which Chrome satisfies. |
-| `xournalpp` (review) | Remove | Handwriting and PDF annotation. Niche. |
-| `pinta` (review) | **Keep** | A Windows user expects a Paint. |
-| `libreoffice-fresh` (review and excluded) | **Keep. Decided by T on 2026-10-15** (asked for a one-click office suite) | "Easy like Windows" users open Word and Excel files. Removed from `excluded.txt`; marked keep in `review.txt`. |
-| HEY, Basecamp (review) | Remove the web-app launchers | 37signals products most users will not have. `omarchy webapp remove HEY` and `omarchy webapp remove Basecamp`. |
-| `foot` (excluded) | Remove only after WezTerm is the default terminal | Omarchy's terminal launcher must point at WezTerm first. |
-| Zoom | Web app, not the AUR package | Keeps the AUR out of the default set. |
+| Slack | `com.slack.Slack` | T's must-have |
+| Zoom | `us.zoom.Zoom` | T's must-have. The full desktop client, no web-app workaround needed. |
+| Dropbox | `com.dropbox.Client` | T's must-have. Tray icon works on Plasma. |
+| Discord | `com.discordapp.Discord` | T's must-have |
+| GIMP (Photoshop equivalent) | `org.gimp.GIMP` | |
+| Krita (painting; the Artweaver equivalent) | `org.kde.krita` | |
+| Inkscape (vector drawing) | `org.inkscape.Inkscape` | |
+| KolourPaint (MS Paint equivalent) | `org.kde.kolourpaint` | |
+| Audacity (audio) | `org.audacityteam.Audacity` | |
+| VS Code | `com.visualstudio.code` | The Flatpak works for most people. Developers who hit sandbox limits can use rodger-roberts-dev's Distrobox route instead; note in the dev guide. |
+| NotepadNext (Notepad++ remake) | `com.github.dail8859.NotepadNext` | Notepad++ itself is Windows-only. Kate is built in. |
+| Shotcut (simple video editor) | `org.shotcut.Shotcut` | |
+| Calibre (ebook library) | `com.calibre_ebook.calibre` | |
+| Foliate (ebook reader) | `com.github.johnfactotum.Foliate` | Okular, built in, also opens EPUB. |
+| Lutris (EA app, Ubisoft, other Windows stores) | `net.lutris.Lutris` | How the EA app and Battle.net are installed. Bazzite documents this path. |
+| Heroic (Epic, GOG, Amazon) | `com.heroicgameslauncher.hgl` | |
+| GeForce NOW (cloud gaming) | `io.github.hmlendea.geforcenow-electron` | |
+| Steel & Code Forge | not packaged yet | rodger-roberts-dev's AI development platform. His story, STEEL-25. Ships with Python runtimes inside; wants a container runtime (Bazzite has Podman) and NVIDIA support (the NVIDIA image). |
+| Ollama (local AI models) | to decide: Flatpak, Homebrew, or container | Optional, like Forge. |
+
+### Web apps (no Linux program exists)
+
+| App | How |
+|---|---|
+| CapCut | Chrome "install as app" of capcut.com/editor. Kdenlive is the offline editor. |
+| Xbox Cloud Gaming | Chrome "install as app" of xbox.com/play. **Cloud streaming only**: PC Game Pass downloads are impossible on Linux. Say so plainly. |
+
+### Things with no Linux version, and their stand-ins
+
+| Asked for | Stand-in |
+|---|---|
+| Notepad++ | NotepadNext (one click) or Kate (built in) |
+| Artweaver | Krita |
+| CapCut | Web editor, or Kdenlive |
+| NAPS2 | No Flatpak exists. Skanpage is built in and covers scanning. NAPS2 publishes an rpm that could be layered into the image if T insists; not recommended. |
+| Local Xbox Game Pass | Cloud streaming only |
 
 ---
 
-## 5. Verification
+## 3. Developer tools
 
-- Arch official repository check: done 2026-10-15 for all 46 entries using the
-  Arch package search API. Results are in section 2.
-- Omarchy Package Repository check: done 2026-10-15 by downloading the stable
-  repository index (237 packages). `google-chrome`, `xpadneo-dkms`,
-  `umu-launcher` confirmed present.
-- AUR check: `zoom`, `google-chrome` confirmed present.
-- **Not done:** running `scripts/bootstrap.sh` in an Omarchy VM. That is the
-  acceptance test for T on the test machine. Expected result: only `[OK]` and
-  `[MISSING]` lines, no `[VERIFY]`.
+Bazzite's system image is read-only, so developer tools do not go in the
+image either. Bazzite ships Homebrew and Distrobox for this, which is how
+rodger-roberts-dev would work:
+
+- `packages/brew.txt`: tools installed through Homebrew on request (git, jq,
+  ripgrep, fd, lazygit, lazydocker, github-cli, mise for Python and Node
+  versions, docker-compose).
+- Docker: Bazzite ships Podman, which runs Docker-style containers and can
+  provide a `docker` command. Docker Engine itself can be added to the image
+  if Forge needs it (STEEL-25 will say).
+- A "developer setup" entry in the Steel Apps list runs the Homebrew installs
+  in one go.
 
 ---
 
-## 6. Follow-up tickets
+## 4. The package list files
 
-1. **Steel Apps install menu.** Add a menu extension file
-   (`~/.config/omarchy/extensions/omarchy-menu.jsonc`) shipped by Steel OS with
-   the Steel Apps submenu and the Advanced submenu. Each entry calls the
-   Omarchy installer command from section 2.
-2. **Browser setup step.** A Steel OS setup script that installs Chrome and
-   sets it as default, and installs Firefox when asked for. Idempotent.
-3. **Extend the audit script** to read `optional.txt` and to recognise OPR
-   packages, so `[VERIFY]` means "really unknown".
-4. **Apply the review.txt decisions** once T and rodger-roberts-dev confirm
-   them: a script that removes the agreed packages and web apps on a Steel OS
-   machine, safe to run twice.
-5. **Google web apps pack.** One command that adds Gmail, Calendar, Drive and
-   Docs web apps with icons.
+The Omarchy-era lists (`core.txt`, `development.txt`, `optional.txt`,
+`excluded.txt`, `review.txt`) are replaced by lists that match how a Bazzite
+image is built:
+
+| File | Read by | Contents |
+|---|---|---|
+| `packages/image.txt` | `build.sh` at image build | rpm packages added to the system image: WezTerm, printer drivers, wsdd, anything Plasma lacks |
+| `packages/flatpaks-default.txt` | first-boot script | Flatpaks installed on every machine |
+| `packages/steel-apps.txt` | the Steel Apps screen | One-click catalogue: Flatpak ID, display name, one-line description |
+| `packages/brew.txt` | the developer setup entry | Homebrew tools |
+| `packages/remove.txt` | `build.sh` | Things Bazzite ships that Steel OS removes; filled in after the first boot |
+
+Every line is a real, verified identifier, with a `#` comment above anything
+unusual.
+
+---
+
+## 5. Decisions carried over from the Omarchy plan
+
+- Chrome default, Firefox one click, LibreOffice kept: unchanged.
+- The old chromium, xournalpp, foot, HEY, Basecamp removals no longer apply;
+  those were Omarchy packages. `remove.txt` starts empty and is filled after T
+  boots the first image and lists what Bazzite preinstalls that we do not want.
+- Zoom: the desktop client is a proper Flatpak now, so no web-app workaround.
+- Slack, Dropbox, Firefox, office suite, NAPS2 (as Skanpage), zip, Notepad++
+  (as Kate and NotepadNext), Discord, Steam with EA and Xbox cloud, Audacity,
+  GIMP, Krita, Inkscape, KolourPaint, VS Code, CapCut, ebook readers: all
+  covered above.
+
+---
+
+## 6. Verification
+
+- Flathub check: done 2026-10-15 for every ID in section 2 (HTTP 200 from
+  Flathub's app database). NAPS2 and the first guess at NotepadNext's ID came
+  back missing; NotepadNext was found under `com.github.dail8859.NotepadNext`,
+  NAPS2 has no Flatpak.
+- **Not done:** booting a Steel OS image. That is STEEL-16.
+- **Not done:** confirming which KDE apps Bazzite already includes. First-boot
+  task in STEEL-16.
+
+---
+
+## 7. Follow-up tickets
+
+1. **First-boot Flatpak install and default browser** (STEEL-19, reworded):
+   install `flatpaks-default.txt` on first login, set Chrome default,
+   idempotent.
+2. **Steel Apps screen** (new, phase 4): first-boot and Settings screen
+   reading `steel-apps.txt`, one Install button each.
+3. **Developer setup entry** (new, phase 4): Homebrew installs from `brew.txt`.
+4. **remove.txt after first boot** (STEEL-20, reworded): list and remove what
+   we do not want.
+5. **Forge packaging** (STEEL-25, rodger-roberts-dev).
