@@ -1,0 +1,14 @@
+# Steel OS window manager defaults for KDE Plasma (STEEL-29, decision 5.1).
+# Windows cascade like Windows instead of tiling. Users can change this in
+# System Settings > Window Management > Window Behavior > Advanced.
+
+[Windows]
+Placement=Cascade
+# Focus follows a click, like Windows.
+FocusPolicy=ClickToFocus
+
+[Plugins]
+# Show the Overview on Meta+Alt+Space (see kglobalshortcutsrc).
+overviewEnabled=true
+# Screen zoom for Meta+Ctrl+Z.
+zoomEnabled=true

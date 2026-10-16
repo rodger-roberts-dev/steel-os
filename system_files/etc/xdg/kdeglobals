@@ -1,0 +1,7 @@
+# Steel OS application defaults for KDE Plasma (STEEL-18, STEEL-29).
+# WezTerm is the terminal everywhere Plasma offers "open a terminal":
+# Dolphin's Open Terminal, KRunner, and the Meta+Return shortcut.
+
+[General]
+TerminalApplication=wezterm
+TerminalService=org.wezfurlong.wezterm.desktop
