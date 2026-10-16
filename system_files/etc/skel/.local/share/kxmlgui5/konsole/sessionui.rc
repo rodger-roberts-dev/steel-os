@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE gui SYSTEM "kpartgui.dtd">
+<!--
+Steel OS (STEEL-18): Konsole copy and paste on Alt+C and Alt+V, the way
+Windows users expect from Ctrl+C and Ctrl+V. Ctrl+Shift+C and Ctrl+Shift+V
+keep working too. Ctrl+C still sends the interrupt signal to the running
+program, as every terminal does.
+
+This file is copied into each new user's home folder (from /etc/skel) and
+becomes that user's Konsole shortcut settings. A user can change any key in
+Konsole: Settings, Configure Keyboard Shortcuts.
+-->
+<gui name="session" version="1">
+<ActionProperties scheme="Default">
+  <Action name="edit_copy" shortcut="Alt+C; Ctrl+Shift+C"/>
+  <Action name="edit_paste" shortcut="Alt+V; Ctrl+Shift+V"/>
+</ActionProperties>
+</gui>
