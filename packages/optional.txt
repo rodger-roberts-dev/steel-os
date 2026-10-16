@@ -49,3 +49,27 @@ notepadnext-bin
 # Arch extra. Runs the EA app (formerly Origin), Ubisoft Connect and other
 # Windows game stores through Wine. Install with: omarchy install gaming lutris
 lutris
+
+# T's apps (2026-10-15, third round). All one click.
+# Arch extra. Audio recording and editing.
+audacity
+# Arch extra. Photoshop-style image editor.
+gimp
+# Arch extra. Digital painting (the Artweaver / Painter equivalent).
+krita
+# Arch extra. Vector drawing (logos, diagrams).
+inkscape
+# Arch extra. KDE's MS Paint equivalent; simpler than Pinta.
+kolourpaint
+# AUR, via Omarchy's own installer which also sets theme and password store.
+# Install with: omarchy install editor vscode
+visual-studio-code-bin
+# Arch extra. Simple video editor. Kdenlive (core) is the full one.
+# CapCut has no Linux version; its web editor is added as a web app instead:
+#   omarchy webapp install CapCut https://www.capcut.com/editor
+shotcut
+# Arch extra. Ebook library, converter and reader; talks to Kindle and Kobo devices.
+calibre
+# Arch extra. Simple, clean ebook reader for just reading. Okular (Plasma, see
+# STEEL-7 package set) also opens EPUB and PDF with nothing extra installed.
+foliate

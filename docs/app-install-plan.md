@@ -109,6 +109,15 @@ are already in the Omarchy base install.
 | Notepad++ | `kate` built in; `notepadnext-bin` one click | Arch extra; AUR | Notepad++ itself is Windows-only. Kate is Plasma's own editor and the closest built-in match, added to core. NotepadNext is a faithful Linux remake of Notepad++: `omarchy pkg aur add notepadnext-bin`. |
 | Lutris (EA app, Ubisoft Connect, other Windows stores) | `lutris` plus Wine | Arch extra | `omarchy install gaming lutris`. This is how the EA app (formerly Origin) is installed on Linux; see the gaming note below. |
 | Xbox Cloud Gaming | web app | n/a | `omarchy install gaming xbox-cloud`. See the gaming note below. |
+| Audacity (audio editing) | `audacity` | Arch extra | One click. Tenacity (`tenacity`, Arch extra) is the fork without online features, if preferred. |
+| GIMP (Photoshop equivalent) | `gimp` | Arch extra | One click. Version 3.x. |
+| Krita (digital painting; the Artweaver equivalent) | `krita` | Arch extra | One click. Artweaver itself is Windows-only. |
+| Inkscape (vector drawing) | `inkscape` | Arch extra | One click. |
+| KolourPaint (MS Paint equivalent) | `kolourpaint` | Arch extra | One click. Pinta is already built in; KolourPaint fits Plasma better and could replace it. |
+| VS Code | `visual-studio-code-bin` | AUR, via Omarchy's installer | `omarchy install editor vscode`. Omarchy's installer also sets the theme, the password store, and turns off VS Code's own auto-update so Omarchy's updater stays in charge. |
+| CapCut (video editing) | web app, or `shotcut` | n/a; Arch extra | CapCut has no Linux version. Its web editor works in a browser: `omarchy webapp install CapCut https://www.capcut.com/editor`. Offline alternatives: Kdenlive (already in core, full editor) or Shotcut (simpler). |
+| OBS Studio | `obs-studio` | Arch extra | Already in core. Wayland screen capture works because Omarchy ships the screen-sharing portal. |
+| Ebook reader | `foliate` for reading; `calibre` for a library | Arch extra | Both one click. Foliate is a clean reader. Calibre manages a library, converts formats, and syncs to Kindle and Kobo. Okular, part of the Plasma set, opens EPUB and PDF with nothing extra. |
 
 **T's must-haves (2026-10-15):** Slack, Zoom, Dropbox, Firefox, and an office
 suite must each be a one-click install, or at least an easy one. All five are
@@ -122,6 +131,10 @@ are the first four rows of the Steel Apps list.
 zip built in (Ark and 7zip added to core); Notepad++ built in or one click
 (Kate built in, NotepadNext one click); Discord one click (already covered);
 Steam working with the EA app and Xbox Game Pass (see the gaming note).
+
+**T's additions (2026-10-15, third round):** Audacity, GIMP, Krita, Inkscape,
+KolourPaint, VS Code, and CapCut. All one click except CapCut, which is a web
+app because no Linux version exists. OBS was already in core.
 
 **Gaming stores: what works and what cannot.**
 - **Steam**: native. `omarchy install gaming steam`. Most Windows games run
