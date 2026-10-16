@@ -128,6 +128,11 @@ Deliverables (from STEEL-2 section 7):
 - Friendly update window around `omarchy update`.
 - A post-update health check that offers rollback in plain words when the
   desktop fails to start.
+- **Automatic updates every Tuesday, Windows-style** (T, 2026-10-15): background
+  download, apply at next restart, "Restart now / Later" notification, a
+  setting to change the day or turn it off, mains power only on laptops. On
+  Omarchy this is real work on top of its user-started updater; on Bazzite it
+  is built in and only the schedule and notification are ours.
 - A one-page "Something went wrong after an update?" guide.
 
 Test: T updates, then deliberately rolls back from the boot menu using only the
