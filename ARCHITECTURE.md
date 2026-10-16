@@ -10,6 +10,9 @@ Jira: STEEL-1
 
 ## 1. What Steel OS is
 
+Steel OS is a **Steel & Code** (steelandcode.com) project, made in partnership
+with **Blackbox Entertainment**. Say it that way on anything public.
+
 Steel OS is a Linux operating system for everyday people. It is built on top of
 **Arch Linux** using **Omarchy**, an opinionated Arch setup made by 37signals
 (the Basecamp company). Omarchy gives us a working desktop, an installer, an
