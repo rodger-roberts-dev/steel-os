@@ -56,8 +56,9 @@ the single install path becomes:
 Omarchy's package repository, which Arch and Omarchy already host. Steel OS
 only ships the list of approved apps and a button for each. There is nothing to
 run on fly.io or anywhere else. The only hosting Steel OS will ever need is a
-place to publish the steel-os package itself (roadmap phase 7), and that is a
-static file on GitHub Releases, not a server.
+place to publish the steel-os package and the ISO (roadmap phase 7), and that
+is static files in T's existing Cloudflare R2 storage, linked from a download
+page on blackbox-entertainment.com. Not a server.
 
 ---
 
