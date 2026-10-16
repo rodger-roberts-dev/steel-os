@@ -13,9 +13,10 @@ project, the team, and the rules Claude must follow when working in this repo.
 - Product director: **T** (GitHub: `blackboxentertainment01-sys`). Not a coder —
   writes Jira stories, tests builds, and reviews behavior, not code.
 - Repo: `github.com/rodger-roberts-dev/steel-os` (private). Default branch: **`master`**.
-- Jira site: `blackboxentertainment.atlassian.net`. Project key: **STEEL** —
-  **the STEEL project has not been created yet** (checked 2026-10-15). Until it
-  exists there are no story keys to branch from; ask T before starting work.
+- Jira site: `blackboxentertainment.atlassian.net`. Project key: **STEEL**
+  (created 2026-10-15; issue types Epic, Story, Task, Bug, Subtask). First
+  stories are STEEL-1 to STEEL-5. rodger-roberts-dev does not yet have a Jira
+  account on this site, so his tickets are unassigned with "Owner:" in the text.
 
 ### Product goals (in priority order)
 1. **Safe updates.** Users never get raw Arch updates. Every update is curated,
