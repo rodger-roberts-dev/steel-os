@@ -1,0 +1,19 @@
+# Steel OS: Flatpaks installed on every machine at first boot (from Flathub)
+# All IDs verified on Flathub 2026-10-15.
+
+# Office suite (T's "Open Office"). Opens Word, Excel, PowerPoint.
+org.libreoffice.LibreOffice
+# Default browser. The first-boot script also sets it as default.
+com.google.Chrome
+# rodger-roberts-dev's browser. Bazzite may already install it; harmless if so.
+org.mozilla.firefox
+# Screen recording and streaming.
+com.obsproject.Studio
+# Full video editor (CapCut's offline stand-in).
+org.kde.kdenlive
+# Notes.
+md.obsidian.Obsidian
+# PC game streaming client.
+com.moonlight_stream.Moonlight
+# Code editor.
+dev.zed.Zed
