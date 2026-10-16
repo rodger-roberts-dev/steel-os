@@ -37,11 +37,13 @@ project, the team, and the rules Claude must follow when working in this repo.
 ### Decisions already made (see `ARCHITECTURE.md` section 5)
 - Desktop: **KDE Plasma** with cascading windows. Terminal: **WezTerm**.
   rodger-roberts-dev's keyboard shortcuts ship as the defaults (STEEL-29).
-- Base: **Bazzite** (`ghcr.io/ublue-os/bazzite:stable`), two Steel OS images,
-  standard and NVIDIA.
+- Base: **Bazzite** (`ghcr.io/ublue-os/bazzite:stable`). Three image variants
+  for GPUs (standard, NVIDIA newer, NVIDIA older), one ISO, GPU detected at
+  first boot (STEEL-30).
 - Browser: Chrome default, Firefox one click. Office suite: LibreOffice.
-- Hosting: download page on `blackbox-entertainment.com`, files in T's
-  Cloudflare R2 (STEEL-26).
+- Hosting: T owns `steel-os.org` and `steelos.org`. Download page on
+  `steel-os.org`, files in T's Cloudflare R2 at `downloads.steel-os.org`
+  (STEEL-26). One ISO; GPU detected at first boot (STEEL-30). Plasma only.
 
 ---
 
