@@ -65,3 +65,36 @@ install -D -m 0644 /ctx/branding/icon/png/steel-os-icon-dark-256.png /usr/share/
 install -D -m 0644 /ctx/packages/flatpaks-default.txt /usr/share/steel-os/flatpaks-default.txt
 chmod 0755 /usr/libexec/steel-os-flatpak-install
 systemctl enable steel-os-flatpak-install.service
+
+### 7. The OS calls itself Steel OS (STEEL-48)
+# Bazzite rewrites Fedora's /usr/lib/os-release in its build (see Bazzite's
+# build_files/image-info). We do the same on top, changing only the fields
+# that name the OS. ID stays "bazzite" and image-info.json stays untouched,
+# because Bazzite's own tools read those; checked 2026-10-16, nothing in
+# Bazzite reads VARIANT_ID or NAME at run time.
+# Fedora's anonymous Count Me statistic reports NAME and VARIANT_ID, which is
+# how Steel OS machines are counted (STEEL-33).
+OS_RELEASE="/usr/lib/os-release"
+sed -i 's/^NAME=.*/NAME="Steel OS"/' "$OS_RELEASE"
+sed -i 's/^PRETTY_NAME=.*/PRETTY_NAME="Steel OS"/' "$OS_RELEASE"
+sed -i 's/^VARIANT_ID=.*/VARIANT_ID=steel-os/' "$OS_RELEASE"
+sed -i 's|^HOME_URL=.*|HOME_URL="https://steel-os.org"|' "$OS_RELEASE"
+sed -i 's|^DOCUMENTATION_URL=.*|DOCUMENTATION_URL="https://steel-os.org"|' "$OS_RELEASE"
+sed -i 's|^SUPPORT_URL=.*|SUPPORT_URL="https://steel-os.org"|' "$OS_RELEASE"
+sed -i 's|^BUG_REPORT_URL=.*|BUG_REPORT_URL="https://steel-os.org"|' "$OS_RELEASE"
+sed -i 's/^LOGO=.*/LOGO=steel-os/' "$OS_RELEASE"
+sed -i 's/^DEFAULT_HOSTNAME=.*/DEFAULT_HOSTNAME="steel-os"/' "$OS_RELEASE"
+# Orange, the brand colour, for the terminal banner that reads ANSI_COLOR
+sed -i 's/^ANSI_COLOR=.*/ANSI_COLOR="0;38;2;242;100;30"/' "$OS_RELEASE"
+# The boot menu entry name
+sed -i 's/^BOOTLOADER_NAME=.*/BOOTLOADER_NAME="Steel OS"/' "$OS_RELEASE"
+# Bazzite writes this for GRUB; keep the pattern, change the name
+echo "Steel OS release $(rpm -E %fedora) (Kinoite)" > /etc/system-release
+grep -E '^(NAME|PRETTY_NAME|ID|VARIANT_ID|LOGO|HOME_URL)=' "$OS_RELEASE"
+
+# The icon that LOGO=steel-os points at, in every standard size
+for size in 16 32 48 64 128 256 512; do
+    install -D -m 0644 "/ctx/branding/icon/png/steel-os-icon-dark-${size}.png" \
+        "/usr/share/icons/hicolor/${size}x${size}/apps/steel-os.png"
+done
+install -D -m 0644 /ctx/branding/icon/steel-os-icon-dark.svg /usr/share/icons/hicolor/scalable/apps/steel-os.svg
