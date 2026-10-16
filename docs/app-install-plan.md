@@ -118,6 +118,7 @@ are already in the Omarchy base install.
 | CapCut (video editing) | web app, or `shotcut` | n/a; Arch extra | CapCut has no Linux version. Its web editor works in a browser: `omarchy webapp install CapCut https://www.capcut.com/editor`. Offline alternatives: Kdenlive (already in core, full editor) or Shotcut (simpler). |
 | OBS Studio | `obs-studio` | Arch extra | Already in core. Wayland screen capture works because Omarchy ships the screen-sharing portal. |
 | Ebook reader | `foliate` for reading; `calibre` for a library | Arch extra | Both one click. Foliate is a clean reader. Calibre manages a library, converts formats, and syncs to Kindle and Kobo. Okular, part of the Plasma set, opens EPUB and PDF with nothing extra. |
+| Steel & Code Forge (rodger-roberts-dev's AI development platform) | not packaged yet | Steel OS's own package, once rodger-roberts-dev builds it | **One click, never installed by default** (T, 2026-10-15). Forge is a separate Python project. It needs its own package with its runtimes, a WezTerm launcher, and a first-run screen for AI keys. Tracked as its own story under the App Store epic. |
 
 **T's must-haves (2026-10-15):** Slack, Zoom, Dropbox, Firefox, and an office
 suite must each be a one-click install, or at least an easy one. All five are
