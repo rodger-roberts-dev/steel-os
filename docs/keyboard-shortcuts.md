@@ -50,11 +50,11 @@ rodger-roberts-dev picks a replacement.
 | Super+F | Full screen | Full screen | Same |
 | Super+Alt+F | Full width (maximized) | Maximize | Same |
 | Super+Ctrl+F | Tiled full screen | Not bound | None |
-| Super+T | Toggle floating / tiling | Open Plasma's tile editor | Changed: windows float by default on Steel OS; Super+T is where tiling lives |
+| Super+T | Toggle floating / tiling | Not bound | Steel OS uses floating windows by default |
 | Super+O | Pop window out (float and pin) | Keep window above others | Changed |
 | Super+M | Minimize to dock | Minimize to taskbar | Same |
 | Super+Left/Right/Up/Down | Focus window in that direction | Same | Same |
-| Super+Shift+Left/Right/Up/Down | Swap window in that direction | Snap window to that half of the screen | Changed |
+| Super+Shift+Left/Right/Up/Down | Swap window in that direction | Not bound | Quick-tiling disabled; floating windows |
 | Alt+Tab, Alt+Shift+Tab | Next / previous window | Same | Same |
 | Super+P | Pseudo window | Not bound | None (tiling concept) |
 | Super+J | Toggle split direction | Not bound | None (tiling concept) |
@@ -119,8 +119,8 @@ rodger-roberts-dev picks a replacement.
   (launcher, terminal, browser, files, close, maximize, minimize, desktops,
   Alt+Tab, lock, screenshots, clipboard history, zoom, night light) and your
   ALT+Return for the terminal, now Konsole.
-- **Changed:** Super+T opens Plasma's tiling instead of toggling float, since
-  Steel OS windows float by default. Super+Shift+arrows snap instead of swap.
+- **Changed:** Steel OS uses floating windows by default. Super+T and
+  Super+Shift+arrow quick-tiling shortcuts are unbound.
   Settings keys open a settings page instead of a bar popup.
 - **No equivalent:** the tiling-specific keys (splits, groups, scratchpad,
   gaps, layouts), the universal Super+C/V copy and paste, and the Omarchy

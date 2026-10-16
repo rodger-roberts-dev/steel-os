@@ -1,6 +1,6 @@
 # Steel OS default keyboard shortcuts for KDE Plasma (STEEL-29).
 # Translated from Omarchy's default Hyprland bindings plus rodger-roberts-dev's
-# own override (ALT+Return opens WezTerm). Meta is the Super / Windows key.
+# own override (ALT+Return opens Konsole). Meta is the Super / Windows key.
 #
 # Format: action=shortcut,default shortcut,friendly name
 # Several keys for one action are separated by a tab character.
@@ -19,17 +19,17 @@ Window Fullscreen=Meta+F,Meta+F,Make Window Fullscreen
 Window Maximize=Meta+Alt+F,Meta+Alt+F,Maximize Window
 Window Minimize=Meta+M,Meta+M,Minimize Window
 Window Keep Above Others=Meta+O,Meta+O,Keep Window Above Others
-Toggle Tiles Editor=Meta+T,Meta+T,Toggle Tiles Editor
+Toggle Tiles Editor=none,none,Toggle Tiles Editor
 # Focus by direction
 Switch Window Left=Meta+Left,Meta+Left,Switch to Window to the Left
 Switch Window Right=Meta+Right,Meta+Right,Switch to Window to the Right
 Switch Window Up=Meta+Up,Meta+Up,Switch to Window Above
 Switch Window Down=Meta+Down,Meta+Down,Switch to Window Below
-# Move window by direction (Omarchy "swap" becomes quick-tile)
-Window Quick Tile Left=Meta+Shift+Left,Meta+Shift+Left,Quick Tile Window to the Left
-Window Quick Tile Right=Meta+Shift+Right,Meta+Shift+Right,Quick Tile Window to the Right
-Window Quick Tile Top=Meta+Shift+Up,Meta+Shift+Up,Quick Tile Window to the Top
-Window Quick Tile Bottom=Meta+Shift+Down,Meta+Shift+Down,Quick Tile Window to the Bottom
+# Quick-tiling shortcuts disabled: Steel OS uses floating windows
+Window Quick Tile Left=none,none,Quick Tile Window to the Left
+Window Quick Tile Right=none,none,Quick Tile Window to the Right
+Window Quick Tile Top=none,none,Quick Tile Window to the Top
+Window Quick Tile Bottom=none,none,Quick Tile Window to the Bottom
 # Cycling windows
 Walk Through Windows=Alt+Tab,Alt+Tab,Walk Through Windows
 Walk Through Windows (Reverse)=Alt+Shift+Backtab,Alt+Shift+Backtab,Walk Through Windows (Reverse)
