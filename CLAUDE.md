@@ -14,6 +14,8 @@ project, the team, and the rules Claude must follow when working in this repo.
   research from that period (`docs/updates-and-rollback.md`,
   `docs/printers-and-network.md`) is kept as background. Some files in the repo
   still date from the Omarchy era until STEEL-16 lands the image recipe.
+- Steel OS is a **Steel & Code** (steelandcode.com) project, in partnership
+  with **Blackbox Entertainment**. Say it that way on anything public.
 - Owner / lead developer: **rodger-roberts-dev** (has final say on all merges).
   Also the author of Steel & Code Forge, an AI development platform that is an
   optional one-click install on Steel OS (STEEL-25).
