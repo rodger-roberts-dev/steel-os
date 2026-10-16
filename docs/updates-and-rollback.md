@@ -217,6 +217,11 @@ Each is sized to be finished in about a week.
    security updates. Record the decision in `ARCHITECTURE.md`.
 7. **VM test of a full update and rollback cycle.** The acceptance test this
    research could not do (see below). Produce screenshots for the manual.
+8. **Automatic updates every Tuesday, Windows-style** (added by T on
+   2026-10-15). Omarchy's updater has an unattended mode (`omarchy update -y`)
+   but expects a logged-in user with sudo and a terminal, so a background
+   timer needs its own authorisation path and a "restart now or later"
+   notification. Depends on tickets 4 and 5.
 
 ---
 
