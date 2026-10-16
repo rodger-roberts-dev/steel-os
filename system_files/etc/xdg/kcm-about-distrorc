@@ -1,0 +1,8 @@
+# Steel OS (STEEL-31): what System Settings > About this System shows.
+# Replaces Bazzite's file of the same name. The OS name in /etc/os-release is
+# changed separately (STEEL-48).
+[General]
+LogoPath=/usr/share/pixmaps/steel-os.png
+Name=Steel OS
+Website=https://steel-os.org
+Variant=Built on Bazzite
