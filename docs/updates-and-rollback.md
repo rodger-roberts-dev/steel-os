@@ -2,6 +2,15 @@
 
 Jira: STEEL-2
 Date: 2026-10-15
+
+> **Status: background.** Later the same day the team chose a Fedora Atomic
+> base via Bazzite (STEEL-28). This document describes Omarchy's update system
+> and is kept because it shaped the requirements: a snapshot before every
+> update, rollback from the boot menu, a visible boot menu, and automatic
+> Tuesday updates. On Bazzite those come from `uupd` and `rpm-ostree`: the
+> whole image updates at once, the previous image stays in the boot menu, and
+> the updater runs daily at 4 am by default (Steel OS sets it to Tuesday). See
+> `docs/roadmap.md` phase 3.
 Owner: rodger-roberts-dev (research done by Claude Code from source; VM test still open)
 
 **How this was researched.** By reading the Omarchy source code at commit
