@@ -24,9 +24,21 @@ already true:
 
 **What Steel OS adds: the Steel Apps list.** Discover shows thousands of apps.
 A Windows user wants the dozen they know. Steel OS ships a short curated list
-(`packages/steel-apps.txt`) and a screen, shown at first boot and reachable
-from Settings, with one row per approved app and one Install button each.
-Installing is a Flatpak install from Flathub; nothing is hosted by us.
+(`packages/steel-apps.txt`) with one row per approved app and one Install
+button each. Installing is a Flatpak install from Flathub; nothing is hosted
+by us.
+
+**Found on first boot (T, 2026-10-16): Bazzite Portal already is that
+screen.** Bazzite ships a "Bazzite Portal" window at first login with tabs for
+Install Applications, Get Media Apps, Manage Bazzite, Tweak Systems and
+Troubleshoot, each row with a one-line description and an install action, plus
+its own store called Bazaar. So Steel OS does not build a Steel Apps screen.
+It keeps Bazzite Portal, renames it, and adds a **Steel Apps** section at the
+top with the must-haves from `steel-apps.txt`. Bazzite's own catalogue (DaVinci
+Resolve, Antigravity, CoolerControl, ASUS tools, and the media web apps such as
+Prime Video, Apple TV, Disney Plus and HBO Max, which T asked to keep) stays
+below it. How the Portal's list is defined in the image, and whether a section
+can be added without patching Bazzite, is a check for STEEL-16.
 
 No server is needed anywhere in this. Flathub hosts the apps. The list is a
 text file inside the image.
@@ -196,8 +208,9 @@ unusual.
 1. **First-boot Flatpak install and default browser** (STEEL-19, reworded):
    install `flatpaks-default.txt` on first login, set Chrome default,
    idempotent.
-2. **Steel Apps screen** (new, phase 4): first-boot and Settings screen
-   reading `steel-apps.txt`, one Install button each.
+2. **Steel Apps section in Bazzite Portal** (new, phase 4): add the
+   `steel-apps.txt` entries as a section at the top of Bazzite Portal's
+   Install Applications tab, rename the window to Steel OS, keep the rest.
 3. **Developer setup entry** (new, phase 4): Homebrew installs from `brew.txt`.
 4. **remove.txt after first boot** (STEEL-20, reworded): list and remove what
    we do not want.

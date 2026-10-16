@@ -24,3 +24,12 @@ io.github.hmlendea.geforcenow-electron | GeForce NOW | Cloud gaming
 
 # Not yet packaged; added when STEEL-25 lands:
 # steel-forge | Steel & Code Forge | AI development platform (optional)
+
+# Also offered, below the Steel Apps section (T, 2026-10-16). These are already
+# in Bazzite Portal's own catalogue, so they stay as Bazzite provides them
+# (some install through Brew or Distrobox rather than Flatpak):
+#   DaVinci Resolve       video editor, installed by Bazzite's davincibox
+#   Antigravity           Google's AI IDE, installed through Brew
+#   CoolerControl         fan and thermal profiles
+#   asusctl / ROG Control Center   ASUS laptop and board utilities
+#   Media web apps: Amazon Prime Video, Apple TV, Disney Plus, HBO Max
