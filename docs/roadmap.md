@@ -313,9 +313,10 @@ Super+Enter and gets Konsole, and `sudo bootc status` names the Steel OS image.
 |---|---|---|---|---|
 | 1 | STEEL-35 | Full-screen "Install Steel OS" on the ISO; first-login wizard with Skip on every page | Claude | STEEL-16 |
 | 2 | STEEL-40 | Steel Apps screen inside the wizard and in the start menu, built from `packages/steel-apps.txt` | Claude | STEEL-35 |
-| 3 | STEEL-36 | Forgotten password: three security questions, hint on the login screen, recovery guide | Claude | STEEL-35 |
-| 4 | STEEL-30 | One ISO: detect the graphics card at first boot, switch to the NVIDIA image | Claude | STEEL-16; T tests on Command with its real GPU |
-| 5 | STEEL-21 | `docs/install.md`, plain English, screenshots from the VM | Claude writes, T follows it cold | STEEL-35 |
+| 3 | STEEL-44 | Google Antigravity as a one-click install from a script; Google ships only a tar.gz, no Flatpak | Claude | STEEL-40 |
+| 4 | STEEL-36 | Forgotten password: three security questions, hint on the login screen, recovery guide | Claude | STEEL-35 |
+| 5 | STEEL-30 | One ISO: detect the graphics card at first boot, switch to the NVIDIA image | Claude | STEEL-16; T tests on Command with its real GPU |
+| 6 | STEEL-21 | `docs/install.md`, plain English, screenshots from the VM | Claude writes, T follows it cold | STEEL-35 |
 
 ### Step 5: Easy like Windows and plays games, version 0.5 (target 2027-01-15)
 
