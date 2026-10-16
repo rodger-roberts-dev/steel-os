@@ -34,7 +34,7 @@ install once from the ISO and then update automatically.
 
 | Decision | Answer | Who |
 |---|---|---|
-| Base | Fedora Atomic via **Bazzite** (`ghcr.io/ublue-os/bazzite:stable`), Universal Blue template. Two images: standard and NVIDIA. | rodger-roberts-dev proposed, T agreed (STEEL-28) |
+| Base | Fedora Atomic via **Bazzite** (`ghcr.io/ublue-os/bazzite:stable`), Universal Blue template. Plasma only (no GNOME unless users ask). Three image variants for GPUs (standard, NVIDIA newer, NVIDIA older), but one ISO: the graphics card is detected at first boot (STEEL-30). | rodger-roberts-dev proposed, T agreed (STEEL-28) |
 | Desktop | **KDE Plasma**, cascading windows, WezTerm terminal | T |
 | Keyboard | rodger-roberts-dev's bindings ship as the Plasma defaults | rodger-roberts-dev (STEEL-29) |
 | Keyboard-first or easy like Windows | Both, on Plasma | T |
@@ -42,7 +42,7 @@ install once from the ISO and then update automatically.
 | Browser and office | Chrome default, Firefox one click, LibreOffice built in | T |
 | Updates | Automatic every Tuesday, Windows-style | T (STEEL-27) |
 | Forge | One-click optional install, never default | T (STEEL-25) |
-| Hosting | Download page on blackbox-entertainment.com, files in T's R2 | T (STEEL-26) |
+| Hosting | `steel-os.org` (T owns it, plus `steelos.org`), files in T's R2 at `downloads.steel-os.org` | T (STEEL-26) |
 | Repo | Stays at rodger-roberts-dev/steel-os | T |
 
 **Still open:** the rebuild cadence (track Bazzite's stable images as they
@@ -179,13 +179,14 @@ as the security patch policy.
 
 ### Phase 7: "Release" (version 1.0)
 
-Goal: a stranger downloads one file from blackbox-entertainment.com, installs
-Steel OS, and never needs the team.
+Goal: a stranger downloads one file from steel-os.org, installs Steel OS, and
+never needs the team.
 
 Deliverables:
-- Two ISOs per release, standard and NVIDIA, built by the workflow, signed,
+- One ISO per release (the GPU variants are picked at first boot, STEEL-30), built by the workflow, signed,
   with checksums, uploaded to R2 (STEEL-26).
-- The download page on blackbox-entertainment.com.
+- The download page at steel-os.org, one Download button (one ISO, GPU detected
+  at first boot, STEEL-30).
 - `docs/install.md`, the plain-English install guide (STEEL-21).
 - Forge as a one-click install if rodger-roberts-dev has packaged it
   (STEEL-25).
