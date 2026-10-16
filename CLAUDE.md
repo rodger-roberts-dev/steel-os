@@ -7,96 +7,94 @@ project, the team, and the rules Claude must follow when working in this repo.
 
 ## 1. What steel-os is
 
-- A Linux distribution built on **Arch Linux**, based on **Omarchy**
-  (37signals/Basecamp's opinionated Arch + Hyprland setup).
+- A Linux distribution for everyday people, built as a **custom bootable image
+  on a Fedora Atomic base, starting from Bazzite**, using the Universal Blue
+  image template. Decided 2026-10-15 (STEEL-28) by rodger-roberts-dev and T.
+- Before that date the project was built on Omarchy (Arch + Hyprland). The
+  research from that period (`docs/updates-and-rollback.md`,
+  `docs/printers-and-network.md`) is kept as background. Some files in the repo
+  still date from the Omarchy era until STEEL-16 lands the image recipe.
+- Steel OS is a **Steel & Code** (steelandcode.com) project, in partnership
+  with **Blackbox Entertainment**. Say it that way on anything public.
 - Owner / lead developer: **rodger-roberts-dev** (has final say on all merges).
+  Also the author of Steel & Code Forge, an AI development platform that is an
+  optional one-click install on Steel OS (STEEL-25).
 - Product director: **T** (GitHub: `blackboxentertainment01-sys`). Not a coder —
   writes Jira stories, tests builds, and reviews behavior, not code.
 - Repo: `github.com/rodger-roberts-dev/steel-os` (private). Default branch: **`master`**.
-- Jira site: `blackboxentertainment.atlassian.net`. Project key: **STEEL**
-  (created 2026-10-15; issue types Epic, Story, Task, Bug, Subtask). First
-  stories are STEEL-1 to STEEL-5. rodger-roberts-dev does not yet have a Jira
-  account on this site, so his tickets are unassigned with "Owner:" in the text.
+- Jira site: `blackboxentertainment.atlassian.net`, project key **STEEL**.
+  Epics STEEL-8 to STEEL-15 group the stories. rodger-roberts-dev has no Jira
+  account yet, so his tickets carry "Owner:" in the text.
 
 ### Product goals (in priority order)
-1. **Safe updates.** Users never get raw Arch updates. Every update is curated,
-   snapshotted first, and can be rolled back from the boot menu.
+1. **Safe updates.** Users never get raw updates. The whole system updates as
+   one image, automatically every Tuesday, and the previous version is always in
+   the boot menu.
 2. **Easy like Windows.** A non-technical user must be able to install, update,
    connect a printer, find network computers, and install apps without a terminal.
 3. **Plays games.** Steam + Proton work out of the box; controllers just work.
-4. **One way to install apps.** A single app store / install path, not five formats.
+4. **One way to install apps.** One store (Discover) and one format (Flatpak).
 5. **Built-in security.** Protection is part of the OS, not a third-party add-on.
 
-> Note: the repo `README.md` currently describes a different philosophy
-> ("keyboard-first", "if it takes three clicks, make it one keystroke", minimal
-> apps). The README predates these goals. Goal 2 above vs. the README's
-> keyboard-first stance is an open product question for rodger-roberts-dev and T.
-
-### Open product decision
-- Default desktop: keep **Hyprland** (Omarchy default, keyboard-driven) or add /
-  switch to a Windows-like desktop (e.g. KDE Plasma). **Not decided** — do not
-  change the default desktop without an approved Jira story.
+### Decisions already made (see `ARCHITECTURE.md` section 5)
+- Desktop: **KDE Plasma** with cascading windows. Terminal: **Konsole** (WezTerm one click).
+  rodger-roberts-dev's keyboard shortcuts ship as the defaults (STEEL-29).
+- Base: **Bazzite** (`ghcr.io/ublue-os/bazzite:stable`). Three image variants
+  for GPUs (standard, NVIDIA newer, NVIDIA older), one ISO, GPU detected at
+  first boot (STEEL-30).
+- Browser: Firefox default, Chrome one click (both decided 2026-10-16 by rodger-roberts-dev and T). Office suite: LibreOffice.
+- Hosting: T owns `steel-os.org` and `steelos.org`. Download page on
+  `steel-os.org`, files in T's Cloudflare R2 at `downloads.steel-os.org`
+  (STEEL-26). One ISO; GPU detected at first boot (STEEL-30). Plasma only.
 
 ---
 
 ## 2. How the repo is built
 
-Current state (v0.1, as of 2026-10-15): the repo is a **starting skeleton**. It
-contains package manifests, two config overrides, and one audit script. There is
-no installer, no updater, no ISO, and no test suite yet.
-
-### Layout
+### Today (Omarchy era, until STEEL-16)
 ```
-README.md
-.gitignore              ignores inventory/, editor swap files, Python caches, .env
-CLAUDE.md               this file
-.claude/agents/         Claude Code agent definitions (steel-dev.md)
-config/
-  hypr/bindings.lua     Omarchy keybinding overrides (Lua). Currently rebinds
-                        ALT+RETURN to launch WezTerm via uwsm.
-  wezterm/wezterm.lua   WezTerm config. ALT+C / ALT+V copy and paste.
-packages/
-  core.txt              core apps (wezterm, neovim, zed, docker, steam, ...)
-  development.txt       dev tools (git, python, nodejs, rustup, base-devel, ...)
-  optional.txt          approved optional apps. Names are NOT yet real package
-                        names (e.g. "Google Chrome", "Battle.net"); need verifying.
-  excluded.txt          packages deliberately left out of the default install
-  review.txt            candidates for removal after dependency review
-scripts/
-  bootstrap.sh          read-only audit. For each package in core.txt and
-                        development.txt it prints [OK] installed, [MISSING]
-                        available in repos but not installed, or [VERIFY] not
-                        found in repos. Makes no changes.
+README.md, ARCHITECTURE.md, CLAUDE.md, docs/
+config/hypr/bindings.lua, config/wezterm/wezterm.lua
+packages/*.txt            app lists, being converted to the image format
+scripts/bootstrap.sh      Omarchy-era package audit; to be replaced
 ```
 
-- **Install method:** intended to be shell scripts run on top of a base
-  Omarchy/Arch install. Today only the audit script exists; nothing installs
-  anything yet.
-- **Languages:** Bash for scripts; Lua for Hyprland and WezTerm config (Omarchy's
-  Lua config format: `o.bind(...)`, `hl.unbind(...)`).
-- **Package manifests:** `packages/*.txt`, one package per line, `#` comments
-  allowed, blank lines ignored. `bootstrap.sh` only reads core and development.
-- **Config files:** `config/<app>/...`. These are meant to be copied or linked
-  into `~/.config/` on an Omarchy machine.
-- **Migrations:** none yet. There is no `migrations/` directory. When the first
-  config change that affects existing installs is made, create `migrations/`
-  following Omarchy's convention (one timestamped, idempotent script per change,
-  run once by the updater).
-- **Update command / flow:** not built yet. This is product goal 1.
-- **Snapshot + rollback:** not built yet. Omarchy ships Limine + snapper; steel-os
-  will inherit that once installs happen on top of Omarchy, but nothing in this
-  repo touches it today.
-- **Build / test an ISO:** no ISO build exists. The only runnable thing is
-  `scripts/bootstrap.sh`, which must be run inside an **Arch/Omarchy VM or
-  container**, never on the host.
-- **Tests:** none. `shellcheck scripts/*.sh` is the only check available.
+### Target layout (Universal Blue image template, from STEEL-16)
+```
+Containerfile             FROM ghcr.io/ublue-os/bazzite:stable, runs build.sh
+image-template.env        image name, organisation, description
+build_files/build.sh      installs rpm packages into the image, enables units
+system_files/             files copied verbatim into the image at /
+  etc/xdg/kglobalshortcutsrc     rodger's key bindings (Plasma defaults)
+  etc/xdg/kwinrc                 cascading window placement
+  etc/xdg/kdeglobals             Konsole pinned as the terminal
+  etc/systemd/system/uupd.timer.d/   Tuesday schedule for automatic updates
+  usr/share/...                  branding, wallpaper, Steel Apps catalogue
+disk_config/iso-kde.toml  ISO build settings
+packages/                 plain-text lists read by build.sh and first boot
+.github/workflows/        build the image; build the ISO and upload to R2
+Justfile                  local build commands (Linux only)
+cosign.pub                image signing public key (the private key is a GitHub secret, never in the repo)
+```
 
-### Relationship to upstream Omarchy
-- steel-os tracks Omarchy upstream. Keep our changes **separate and clearly
-  labeled** so upstream updates can be merged without huge conflicts.
-- Prefer adding new files over editing upstream files. When an upstream file must
-  change, keep the edit small and add a comment: `# steel-os: <reason> (STEEL-##)`
-  (use `-- steel-os: ...` in Lua files).
+- **Languages:** Containerfile; Bash for `build.sh` and first-boot scripts;
+  INI-style config files for Plasma; TOML for disk config; YAML for workflows.
+- **Build:** GitHub Actions builds the image on every push to `master` and on a
+  schedule, and builds the ISO on release. Nothing is built on T's Windows PC.
+- **Updates:** Bazzite's `uupd` updates the image and all Flatpaks in the
+  background; rollback is `rpm-ostree rollback` or picking the previous image at
+  boot. Steel OS only sets the schedule and the notification wording.
+- **Migrations:** mostly unnecessary. Settings live in the image under `/etc`,
+  so a change ships in the next image. A first-boot script handles the few
+  per-user things (Flatpak installs, default browser).
+- **Testing:** T installs the ISO in VirtualBox (VM "STEEL") or on the test
+  machine, following the PR's how-to-test list.
+
+### Relationship to upstream
+- Steel OS tracks `bazzite:stable`. Pin each Steel OS release to the Bazzite
+  image digest it was tested on and record it in `ARCHITECTURE.md`.
+- Never fork or patch Bazzite's own files. Everything Steel OS does goes in
+  `build.sh`, `system_files/`, and `packages/`.
 
 ---
 
@@ -110,37 +108,33 @@ scripts/
 - Every change goes through a **pull request** for rodger-roberts-dev to review.
   PR description must include: the Jira key, what changed, why, and how to test it.
 - One Jira story per branch / PR. Don't bundle unrelated changes.
-- T's GitHub account has push access but no admin, and `master` has no branch
-  protection. The "never push to master" rule is enforced by discipline, not by
-  GitHub.
+- `master` has no branch protection; the "never push to master" rule is
+  enforced by discipline.
 
-### Safety — this code changes operating systems
-- **Never run install, update, or setup scripts on the host machine.** They are
-  only run inside a VM or a disposable container.
-- Never run `pacman`, `yay`, `snapper`, `mkfs`, `dd`, partitioning tools, or
-  anything with `sudo` without asking T first and explaining what it does.
+### Safety — this code builds operating systems
+- **Never run image, install, or update commands on the host machine.**
+  `bootc`, `rpm-ostree`, `dnf`, `podman build`, `just build`, partitioning
+  tools, and anything with `sudo` run only inside a VM, a container, or GitHub
+  Actions. T's Windows PC cannot run them anyway; do not try.
 - Never delete files outside the repo.
-- Never put secrets, passwords, or keys in the repo.
+- Never put secrets, passwords, or keys in the repo. The cosign private key,
+  R2 credentials, and any API keys live in GitHub Actions secrets only.
 
 ### Code standards
-- Bash scripts: start with `set -euo pipefail` (matches `scripts/bootstrap.sh`),
-  quote variables, and pass **shellcheck**.
-- Lua config: match the style in `config/hypr/bindings.lua`. Unbind before
-  rebinding, and comment each override with what it does.
-- Package manifests: one real pacman/AUR package name per line. If a name is not
-  yet verified as a real package, say so in a `#` comment above it.
-- Any change to a default config that existing users already have **must ship
-  with a migration**, so installed systems pick it up on their next update.
-- Changes must be safe to run twice (idempotent).
+- Bash scripts: `set -euo pipefail` (the template's `build.sh` uses
+  `set -ouex pipefail`; match it there), quote variables, pass **shellcheck**.
+- Config files under `system_files/` are plain text; keep a comment at the top
+  of each saying what it does and which STEEL story added it.
+- Anything that changes a per-user setting on existing machines needs a
+  first-boot or post-update step that is safe to run twice.
 - Match the existing style of the file you're editing.
 
 ### Testing before a PR
 1. Run `shellcheck` on every changed script. On T's Windows machine WSL is not
-   installed and shellcheck is not on PATH, so run it in the VM or install the
-   Windows shellcheck binary.
-2. There are no automated tests yet. If you add a script, run it in a VM.
-3. Write a short **"How to test"** checklist in the PR that T can follow in a VM,
-   in plain English, step by step.
+   installed and shellcheck is not on PATH; the GitHub Action runs it.
+2. The image must build in GitHub Actions (the Action is the test).
+3. Write a short **"How to test"** checklist in the PR that T can follow in the
+   VM, in plain English, step by step.
 
 ---
 
@@ -148,8 +142,8 @@ scripts/
 
 - T is a **non-coder product director**. Explain what you did in plain English,
   short and clear. No jargon without a one-line explanation.
-- T works on **Windows 11** with VS Code. WSL is **not** installed on T's machine.
-  Building/testing Linux pieces happens in a **VM**. Say when a step needs one.
+- T works on **Windows 11** with VS Code. WSL is **not** installed. Testing
+  happens in VirtualBox (VM named STEEL) or on the test machine. Say which.
 - T prefers **complete files** over partial snippets when handing off work.
 - When a Jira story is unclear, ask T before coding. When it's clear, just do it.
 - At the end of a task, give T:
@@ -169,10 +163,12 @@ scripts/
 - If you find a bug or missing piece that's out of scope, don't fix it silently —
   suggest a new Jira story instead.
 
-### Epics (starting backlog)
-- Updates & Rollback
-- App Store / Installs
-- Printers & Networking
-- Security
-- First-Boot Setup
-- Gaming
+### Epics
+- STEEL-8 Foundations and documentation
+- STEEL-9 Updates and Rollback
+- STEEL-10 App Store and Installs
+- STEEL-11 Printers and Networking
+- STEEL-12 Security
+- STEEL-13 First-Boot Setup and Install
+- STEEL-14 Gaming
+- STEEL-15 Desktop: KDE Plasma
