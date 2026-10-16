@@ -2,6 +2,13 @@
 
 Jira: STEEL-3
 Date: 2026-10-15
+
+> **Status: background, still useful.** Later the same day the team chose a
+> Fedora Atomic base via Bazzite with KDE Plasma (STEEL-28). The package
+> inventory below is Omarchy's, but the findings about what a user sees, the
+> missing scanner and printer drivers, Windows PCs not appearing, and the need
+> for a sharing wizard all carry over. On Bazzite the front doors are Plasma's
+> System Settings Printers page and Dolphin. See `docs/roadmap.md` phase 4.
 Owner: rodger-roberts-dev (code reading by Claude Code; the hands-on VM test is still open)
 
 **How this was researched.** By reading Omarchy's source at commit `51bfd1d`
