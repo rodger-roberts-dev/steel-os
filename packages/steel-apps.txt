@@ -1,0 +1,26 @@
+# Steel OS: the one-click Steel Apps list (read by the Steel Apps screen)
+# Format: flatpak-id | display name | one-line description
+# All IDs verified on Flathub 2026-10-15. Installs come from Flathub.
+
+com.slack.Slack | Slack | Team chat
+us.zoom.Zoom | Zoom | Video meetings
+com.dropbox.Client | Dropbox | Cloud file sync
+com.discordapp.Discord | Discord | Voice and text chat
+org.mozilla.Thunderbird | Thunderbird | Email, calendar and contacts (the Outlook equivalent)
+org.mozilla.firefox | Firefox | Web browser
+org.gimp.GIMP | GIMP | Photo editing (Photoshop-style)
+org.kde.krita | Krita | Digital painting and drawing
+org.inkscape.Inkscape | Inkscape | Vector drawing and logos
+org.kde.kolourpaint | KolourPaint | Simple paint program
+org.audacityteam.Audacity | Audacity | Audio recording and editing
+com.visualstudio.code | VS Code | Code editor
+com.github.dail8859.NotepadNext | NotepadNext | Notepad++-style text editor
+org.shotcut.Shotcut | Shotcut | Simple video editor
+com.calibre_ebook.calibre | Calibre | Ebook library and converter
+com.github.johnfactotum.Foliate | Foliate | Ebook reader
+net.lutris.Lutris | Lutris | Windows game stores: EA app, Battle.net, Ubisoft
+com.heroicgameslauncher.hgl | Heroic | Epic Games, GOG, Amazon games
+io.github.hmlendea.geforcenow-electron | GeForce NOW | Cloud gaming
+
+# Not yet packaged; added when STEEL-25 lands:
+# steel-forge | Steel & Code Forge | AI development platform (optional)

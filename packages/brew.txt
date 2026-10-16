@@ -1,0 +1,14 @@
+# Steel OS: developer tools installed through Homebrew on request
+# (the "Developer setup" entry in the Steel Apps list). Bazzite ships Homebrew.
+# One formula per line.
+
+git
+jq
+ripgrep
+fd
+lazygit
+lazydocker
+gh
+# Manages Python and Node versions per project. Forge development uses it.
+mise
+docker-compose

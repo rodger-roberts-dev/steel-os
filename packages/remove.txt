@@ -1,0 +1,4 @@
+# Steel OS: things Bazzite ships that Steel OS removes (read by build_files/build.sh)
+# Empty on purpose until T boots the first image (STEEL-16) and lists what
+# Bazzite preinstalls that we do not want. Candidates will be decided in
+# STEEL-20. One package or Flatpak ID per line.

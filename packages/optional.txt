@@ -1,9 +1,0 @@
-# Steel OS approved optional applications
-# Package names and installation sources require verification
-Google Chrome
-Obsidian
-Discord
-Zoom
-Moonlight
-Battle.net
-Google web-app shortcuts

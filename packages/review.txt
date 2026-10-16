@@ -1,7 +1,0 @@
-# Candidates for removal after dependency review
-chromium
-xournalpp
-pinta
-HEY
-Basecamp
-libreoffice-fresh
