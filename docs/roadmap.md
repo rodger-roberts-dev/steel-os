@@ -107,6 +107,12 @@ Deliverables:
   the Steel Apps list.
 - Anything Bazzite ships that we do not want, listed in `packages/remove.txt`
   and removed in the recipe.
+- A first-login setup wizard like Windows, every page skippable: welcome,
+  updates toggle, choose your apps from the Steel Apps list, printers, done.
+  Based on Bazzite Portal, which already appears at first login (STEEL-35).
+  T's request after installing Bazzite: it was not clear whether it had
+  installed. The matching ISO-side fix, a full-screen "Install Steel OS"
+  screen instead of a live desktop, lands in phase 7.
 
 Tickets: STEEL-29 (bindings), STEEL-7 (Plasma defaults), STEEL-19 (browsers),
 STEEL-20 (removals).
@@ -192,6 +198,8 @@ Deliverables:
   with checksums, uploaded to R2 (STEEL-26).
 - The download page at steel-os.org, one Download button (one ISO, GPU detected
   at first boot, STEEL-30).
+- The ISO boots into a full-screen "Install Steel OS" screen with a "Try it
+  first" option, instead of a live desktop that looks installed (STEEL-35).
 - `docs/install.md`, the plain-English install guide (STEEL-21).
 - Forge as a one-click install if rodger-roberts-dev has packaged it
   (STEEL-25).
