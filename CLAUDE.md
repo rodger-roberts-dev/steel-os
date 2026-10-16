@@ -37,12 +37,12 @@ project, the team, and the rules Claude must follow when working in this repo.
 5. **Built-in security.** Protection is part of the OS, not a third-party add-on.
 
 ### Decisions already made (see `ARCHITECTURE.md` section 5)
-- Desktop: **KDE Plasma** with cascading windows. Terminal: **WezTerm**.
+- Desktop: **KDE Plasma** with cascading windows. Terminal: **Konsole** (WezTerm one click).
   rodger-roberts-dev's keyboard shortcuts ship as the defaults (STEEL-29).
 - Base: **Bazzite** (`ghcr.io/ublue-os/bazzite:stable`). Three image variants
   for GPUs (standard, NVIDIA newer, NVIDIA older), one ISO, GPU detected at
   first boot (STEEL-30).
-- Browser: Chrome default, Firefox one click. Office suite: LibreOffice.
+- Browser: Firefox default, Chrome one click (both decided 2026-10-16 by rodger-roberts-dev and T). Office suite: LibreOffice.
 - Hosting: T owns `steel-os.org` and `steelos.org`. Download page on
   `steel-os.org`, files in T's Cloudflare R2 at `downloads.steel-os.org`
   (STEEL-26). One ISO; GPU detected at first boot (STEEL-30). Plasma only.
@@ -67,7 +67,7 @@ build_files/build.sh      installs rpm packages into the image, enables units
 system_files/             files copied verbatim into the image at /
   etc/xdg/kglobalshortcutsrc     rodger's key bindings (Plasma defaults)
   etc/xdg/kwinrc                 cascading window placement
-  etc/xdg/kdeglobals             WezTerm as the terminal
+  etc/xdg/kdeglobals             Konsole pinned as the terminal
   etc/systemd/system/uupd.timer.d/   Tuesday schedule for automatic updates
   usr/share/...                  branding, wallpaper, Steel Apps catalogue
 disk_config/iso-kde.toml  ISO build settings
