@@ -1,7 +1,23 @@
 # Candidates for removal after dependency review
+# Each line is a real package name that the Omarchy base install includes.
+# The recommended decision for each is in docs/app-install-plan.md section 4.
+# Nothing is removed by this file; it is a list for T and rodger-roberts-dev.
+
+# Omarchy's default browser. Omarchy's web apps need a Chromium-family browser
+# and Google Chrome satisfies that. Recommend: remove after Chrome is default.
 chromium
+
+# Handwriting notes and PDF annotation. Recommend: remove.
 xournalpp
+
+# Simple image editor. Recommend: keep (a Windows user expects a Paint).
 pinta
-HEY
-Basecamp
+
+# Office suite. Recommend: keep, so Word and Excel files open.
+# Also listed in excluded.txt; the two files disagree. T to decide.
 libreoffice-fresh
+
+# HEY and Basecamp are not packages. They are web-app launchers that Omarchy
+# ships by default. Remove with:
+#   omarchy webapp remove HEY
+#   omarchy webapp remove Basecamp

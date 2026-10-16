@@ -1,4 +1,14 @@
 # Not included in the default Steel OS installation
+# Every line is a real package name.
+
+# Omarchy's default terminal. Steel OS uses WezTerm instead. Safe to remove
+# only after WezTerm is set as the default terminal.
 foot
+
+# Office suite. Also listed in review.txt with a recommendation to KEEP it.
+# The two files disagree; see docs/app-install-plan.md section 4. T to decide.
 libreoffice-fresh
+
+# The slower-moving LibreOffice line. Omarchy ships -fresh, so -still is never
+# needed alongside it.
 libreoffice-still

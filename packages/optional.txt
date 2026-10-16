@@ -1,9 +1,28 @@
 # Steel OS approved optional applications
-# Package names and installation sources require verification
-Google Chrome
-Obsidian
-Discord
-Zoom
-Moonlight
-Battle.net
-Google web-app shortcuts
+# Not installed by default. Offered one click at a time from the Steel Apps
+# install menu. Every line is a real package name. Sources and install
+# commands are in docs/app-install-plan.md.
+#
+# Not packages, so not listed here (see docs/app-install-plan.md section 2):
+#   Battle.net            omarchy install gaming battlenet
+#   Google web apps       omarchy webapp install <name> <url>
+
+# Omarchy Package Repository (pkgs.omarchy.org), not the AUR.
+# Steel OS default browser. Install with: omarchy install browser chrome
+google-chrome
+
+# Arch extra. Installed for rodger-roberts-dev. Install with: omarchy install browser firefox
+firefox
+
+# Arch extra. Already part of the Omarchy base install.
+obsidian
+
+# Arch extra.
+discord
+
+# AUR only. Prefer the Zoom web app (Omarchy has a built-in handler for it).
+# Keep this as the fallback for people who need the desktop client.
+zoom
+
+# Arch extra. Already part of the Omarchy base install. PC game streaming client.
+moonlight-qt
