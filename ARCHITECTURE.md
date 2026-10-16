@@ -246,6 +246,11 @@ not in this repository.
 The README's status line "Development on Byte" refers to the Byte agent, not to
 a machine.
 
+T's decision (2026-10-15): Forge is **a one-click optional install, not part
+of the default Steel OS**. A non-developer never sees it; a developer picks it
+from the Steel Apps list. Packaging it is rodger-roberts-dev's story
+(STEEL-25), since Forge is his code. See `docs/app-install-plan.md`.
+
 ### 5.3 Where does the repo live? Decided: here, for now
 
 The repo stays at `github.com/rodger-roberts-dev/steel-os`. Work happens on
