@@ -1,8 +1,10 @@
 # Steel OS branding
 
 Jira: STEEL-31
-Owner of the marks: Blackbox Entertainment. Chosen by T on 2026-10-16 from the
-"Steel & Code" concept (concept E).
+Steel OS is a Steel & Code (steelandcode.com) project in partnership with
+Blackbox Entertainment. The marks belong to Steel & Code; Blackbox
+Entertainment uses them under that partnership. Chosen by T on 2026-10-16 from
+the "Steel & Code" concept (concept E).
 
 ## The mark
 
