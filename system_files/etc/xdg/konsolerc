@@ -1,0 +1,7 @@
+# Steel OS (STEEL-18): Konsole defaults for every user.
+#
+# The menu bar is hidden by default so that Alt+V pastes instead of opening
+# the View menu (Alt+letter would otherwise open the matching menu). Press
+# Ctrl+Shift+M to show the menu bar at any time; the setting is remembered.
+[KonsoleWindow]
+ShowMenuBarByDefault=false

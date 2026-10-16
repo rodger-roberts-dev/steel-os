@@ -134,3 +134,18 @@ repo; I will fold them in.
 **To verify on the first image (STEEL-16):** that Plasma reads these three
 files from `/etc/xdg` as defaults on a fresh login, and that the Flatpak
 desktop file names for Firefox and Obsidian match what Flathub installs.
+
+## Inside Konsole (STEEL-18)
+
+| Keys | Does |
+|---|---|
+| Alt+C | Copy the selected text (Ctrl+Shift+C also works) |
+| Alt+V | Paste (Ctrl+Shift+V also works) |
+| Ctrl+C | Still stops the running program, as in every terminal |
+| Ctrl+Shift+M | Show or hide Konsole's menu bar (hidden by default so Alt+V does not open the View menu) |
+
+Shipped as `/etc/skel/.local/share/kxmlgui5/konsole/sessionui.rc` (and the
+`kxmlgui6` twin for newer Plasma) so every new user starts with it, plus
+`/etc/xdg/konsolerc` for the menu bar default. Users can change any key in
+Konsole under Settings, Configure Keyboard Shortcuts. WezTerm stays available
+as a one-click install for anyone who prefers it.
