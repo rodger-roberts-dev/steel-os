@@ -9,6 +9,11 @@ on:
         required: false
         default: false
         type: boolean
+      version:
+        description: "Version used in the file names, e.g. 0.2.0-preview"
+        required: false
+        default: "0.2.0-preview"
+        type: string
       platform:
         required: true
         type: choice
@@ -88,11 +93,35 @@ jobs:
           types: ${{ matrix.disk-type }}
           additional-args: --use-librepo=True
 
+      # Steel OS (STEEL-50): give the files a real name and a checksum, so the
+      # download page can link to steel-os-<version>-<arch>.iso and verify it.
+      - name: Name the files and write checksums
+        shell: bash
+        env:
+          OUT: ${{ steps.build.outputs.output-directory }}
+          VERSION: ${{ inputs.version || '0.2.0-preview' }}
+          ARCH: ${{ inputs.platform == 'arm64' && 'aarch64' || 'x86_64' }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT/steel-os"
+          while IFS= read -r f; do
+            case "$f" in
+              *.iso)   name="steel-os-${VERSION}-${ARCH}.iso" ;;
+              *.qcow2) name="steel-os-${VERSION}-${ARCH}.qcow2" ;;
+              *)       continue ;;
+            esac
+            mv "$f" "$OUT/steel-os/$name"
+            ( cd "$OUT/steel-os" && sha256sum "$name" > "$name.sha256" )
+          done < <(find "$OUT" -type f ( -name '*.iso' -o -name '*.qcow2' ) -not -path "$OUT/steel-os/*")
+          ls -la "$OUT/steel-os"
+          cat "$OUT/steel-os"/*.sha256
+          echo "STEEL_DIR=$OUT/steel-os" >> "$GITHUB_ENV"
+
       - name: Upload disk images and Checksum to Job Artifacts
         if: inputs.upload-to-s3 != true && github.event_name != 'pull_request'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          path: ${{ steps.build.outputs.output-directory }}
+          path: ${{ env.STEEL_DIR }}
           if-no-files-found: error
           retention-days: 0
           compression-level: 0
@@ -108,7 +137,7 @@ jobs:
           RCLONE_CONFIG_S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
           RCLONE_CONFIG_S3_REGION: ${{ secrets.S3_REGION }}
           RCLONE_CONFIG_S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
-          SOURCE_DIR: ${{ steps.build.outputs.output-directory }}
+          SOURCE_DIR: ${{ env.STEEL_DIR }}
         run: |
           sudo apt-get update
           sudo apt-get install -y rclone
