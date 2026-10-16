@@ -98,3 +98,22 @@ for size in 16 32 48 64 128 256 512; do
         "/usr/share/icons/hicolor/${size}x${size}/apps/steel-os.png"
 done
 install -D -m 0644 /ctx/branding/icon/steel-os-icon-dark.svg /usr/share/icons/hicolor/scalable/apps/steel-os.svg
+
+### 8. Keep the package repos usable for the ISO builder (STEEL-50)
+# bootc-image-builder reads the enabled dnf repos inside the image to put the
+# installer together. Bazzite leaves its "terra-mesa" repo pointing at a
+# signing key file that is not in the image, which stops the ISO build with
+# "Failed to retrieve GPG key". Repos are not used on installed machines
+# (updates come as whole images), so disabling a broken one changes nothing
+# for users. Any repo whose key file is missing is switched off here.
+for repo in /etc/yum.repos.d/*.repo; do
+    [[ -f "$repo" ]] || continue
+    while IFS= read -r keyline; do
+        keyfile="${keyline#gpgkey=file://}"
+        if [[ ! -e "$keyfile" ]]; then
+            echo "Disabling $repo: signing key $keyfile is missing"
+            sed -i -e 's/^enabled=1/enabled=0/' -e 's/^enabled=true/enabled=false/' "$repo"
+            break
+        fi
+    done < <(grep -E '^gpgkey=file://' "$repo" || true)
+done
