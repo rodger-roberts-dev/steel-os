@@ -17,8 +17,8 @@ background; the parts about printers, sharing, and what users expect still apply
 **Steel OS is a custom Bazzite image: Fedora Atomic underneath, KDE Plasma on
 top, built from a recipe file that GitHub turns into an image and an ISO.** We
 do not fork Bazzite, write an installer, run a package mirror, or write an
-updater. Bazzite already does all of those well. We add our choices (WezTerm,
-Chrome, cascading windows, rodger-roberts-dev's keyboard shortcuts), our
+updater. Bazzite already does all of those well. We add our choices (Firefox,
+Konsole, cascading windows, rodger-roberts-dev's keyboard shortcuts), our
 branding, our Tuesday update schedule, a curated list of one-click apps, and
 the printer and sharing polish a Windows user expects.
 
@@ -35,11 +35,11 @@ install once from the ISO and then update automatically.
 | Decision | Answer | Who |
 |---|---|---|
 | Base | Fedora Atomic via **Bazzite** (`ghcr.io/ublue-os/bazzite:stable`), Universal Blue template. Plasma only (no GNOME unless users ask). Three image variants for GPUs (standard, NVIDIA newer, NVIDIA older), but one ISO: the graphics card is detected at first boot (STEEL-30). | rodger-roberts-dev proposed, T agreed (STEEL-28) |
-| Desktop | **KDE Plasma**, cascading windows, WezTerm terminal | T |
+| Desktop | **KDE Plasma**, cascading windows, Konsole terminal (WezTerm one click; changed 2026-10-16) | T and rodger-roberts-dev |
 | Keyboard | rodger-roberts-dev's bindings ship as the Plasma defaults | rodger-roberts-dev (STEEL-29) |
 | Keyboard-first or easy like Windows | Both, on Plasma | T |
 | Apps | One store (Discover), one format (Flatpak), plus a curated Steel Apps list | STEEL-4 |
-| Browser and office | Chrome default, Firefox one click, LibreOffice built in | T |
+| Browser and office | Firefox default, Chrome one click (changed 2026-10-16), LibreOffice built in | T and rodger-roberts-dev |
 | Updates | Automatic every Tuesday, Windows-style | T (STEEL-27) |
 | Forge | One-click optional install, never default | T (STEEL-25) |
 | Hosting | `steel-os.org` (T owns it, plus `steelos.org`), files in T's R2 at `downloads.steel-os.org` | T (STEEL-26) |
@@ -77,19 +77,19 @@ Deliverables:
   `Justfile`, and the GitHub workflows.
 - A cosign signing key created by rodger-roberts-dev; the private half stored
   as a GitHub secret.
-- `build.sh` installs the packages in `packages/image.txt` (WezTerm first).
-- `system_files/` carries the first settings: WezTerm as the terminal, the
+- `build.sh` installs the packages in `packages/image.txt`.
+- `system_files/` carries the first settings: Konsole pinned as the terminal with Alt+C / Alt+V, the
   Tuesday update schedule, a Steel OS name in the OS release file.
 - The ISO workflow pointed at our image and at T's R2 bucket.
 - The old Omarchy-era files (`config/hypr`, `scripts/bootstrap.sh`, the old
   package lists) removed or replaced in the same PR, so the repo has one story.
 
-Tickets: STEEL-16 (image repo and first build), STEEL-18 (WezTerm),
+Tickets: STEEL-16 (image repo and first build), STEEL-18 (Konsole defaults),
 STEEL-27 (Tuesday schedule, the schedule part only), STEEL-26 (R2 upload, the
 bucket part only).
 
 Test: T downloads the ISO from R2, installs it in the VM, logs in, opens
-WezTerm from the start menu, and runs `sudo bootc status` to see the Steel OS
+Konsole from the start menu, and runs `sudo bootc status` to see the Steel OS
 image name.
 
 ### Phase 2: "Desktop defaults" (version 0.3)
@@ -98,12 +98,12 @@ Goal: the desktop looks and behaves like Steel OS, not like stock Bazzite.
 
 Deliverables:
 - rodger-roberts-dev's keyboard shortcuts as system defaults
-  (`/etc/xdg/kglobalshortcutsrc`), including Super+Return for WezTerm and
+  (`/etc/xdg/kglobalshortcutsrc`), including Super+Return for Konsole and
   Super+Space for the launcher. Every key still changeable by the user.
 - Cascading window placement by default; Plasma's built-in tiling on
   Super+T for people who want it.
 - Steel OS wallpaper, panel layout, login screen, and boot splash.
-- Chrome installed and set as the default browser on first boot; Firefox in
+- Firefox confirmed as the default browser on first boot; Chrome and WezTerm in
   the Steel Apps list.
 - Anything Bazzite ships that we do not want, listed in `packages/remove.txt`
   and removed in the recipe.
@@ -118,7 +118,7 @@ Tickets: STEEL-29 (bindings), STEEL-7 (Plasma defaults), STEEL-19 (browsers),
 STEEL-20 (removals).
 
 Test: T logs in, sees the Steel OS look, opens three windows that cascade,
-presses Super+Return and gets WezTerm, clicks a link and gets Chrome.
+presses Super+Return and gets Konsole, clicks a link and gets Firefox.
 
 ### Phase 3: "Safe updates" (version 0.4)
 
