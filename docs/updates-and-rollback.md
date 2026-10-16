@@ -1,4 +1,33 @@
-# Safe Updates and Rollback: Research Findings
+# Updates and rollback
+
+## Steel OS today (Bazzite base, STEEL-27)
+
+Steel OS inherits Bazzite's updater. Every Steel OS machine runs one image;
+an update is the next image, downloaded in the background and applied at the
+next restart. The previous image stays in the boot menu.
+
+- **When:** every **Tuesday at 4 am** local time. If the machine was off, the
+  update runs at the next boot instead. A random delay of up to 15 minutes
+  spreads the load. Set by `system_files/etc/systemd/system/uupd.timer.d/steel-os-tuesday.conf`.
+- **What:** the system image, Flatpak apps, firmware and Bazzite's extras, in
+  one run of Bazzite's `uupd` tool.
+- **Applying it:** the new image takes effect at the next restart. Nothing
+  changes under a running session.
+- **Going back:** at the boot menu pick the previous entry, or run
+  `sudo bootc rollback` in Konsole. Tested in the VM on 2026-10-16 (STEEL-24).
+- **Checking by hand:** `systemctl list-timers uupd.timer` shows the next run;
+  `sudo uupd` runs an update now.
+
+Still to come: plain-English restart notification (STEEL-27), daily Flatpak
+updates between Tuesdays (STEEL-49), the security patch policy (STEEL-23).
+
+---
+
+## Background: the Omarchy-era research (2026-10-15)
+
+The rest of this page was written when Steel OS was planned on Omarchy (Arch
+Linux). It is kept because the user-facing requirements still apply.
+
 
 Jira: STEEL-2
 Date: 2026-10-15
