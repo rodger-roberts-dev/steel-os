@@ -62,10 +62,9 @@ Three tiers. All Flatpak IDs below were confirmed on Flathub on 2026-10-15.
 
 | App | How | ID or package | Note |
 |---|---|---|---|
-| WezTerm (terminal) | rpm in the image | `wezterm` from WezTerm's Fedora repository | Steel OS default terminal. Must be in the image so it is the terminal before any app installs. |
+| Konsole (terminal) | Part of Plasma on Bazzite | rpm, already present | Steel OS default terminal (decided 2026-10-16 by rodger-roberts-dev and T). Alt+C / Alt+V copy and paste set by Steel OS. |
 | LibreOffice (office) | Flatpak, first boot | `org.libreoffice.LibreOffice` | T's "Open Office". Opens Word, Excel, PowerPoint. |
-| Google Chrome (default browser) | Flatpak, first boot | `com.google.Chrome` | Set as default browser on first boot. |
-| Firefox | Flatpak, first boot | `org.mozilla.firefox` | Bazzite already ships it; rodger-roberts-dev's browser. |
+| Firefox (default browser) | Flatpak, first boot | `org.mozilla.firefox` | Default browser (decided 2026-10-16). Bazzite already ships it. |
 | Files (Dolphin), Ark (zip), Kate (editor), Okular (PDF, EPUB), Skanpage (scanner), Spectacle (screenshots), Gwenview (images) | Part of Plasma on Bazzite | rpm, already present | Confirm on first boot which are present; add missing ones to `packages/image.txt`. |
 | Steam | Already in Bazzite | native | Bazzite's reason to exist. |
 | OBS Studio | Flatpak, first boot | `com.obsproject.Studio` | Screen capture works on Plasma Wayland. |
@@ -79,6 +78,8 @@ Three tiers. All Flatpak IDs below were confirmed on Flathub on 2026-10-15.
 
 | App | ID | Note |
 |---|---|---|
+| Google Chrome | `com.google.Chrome` | One click; Firefox is the default (decided 2026-10-16). |
+| WezTerm | `org.wezfurlong.wezterm` | One click; Konsole is the default (decided 2026-10-16). |
 | Slack | `com.slack.Slack` | T's must-have |
 | Zoom | `us.zoom.Zoom` | T's must-have. The full desktop client, no web-app workaround needed. |
 | Dropbox | `com.dropbox.Client` | T's must-have. Tray icon works on Plasma. |
@@ -104,8 +105,8 @@ Three tiers. All Flatpak IDs below were confirmed on Flathub on 2026-10-15.
 
 | App | How |
 |---|---|
-| CapCut | Chrome "install as app" of capcut.com/editor. Kdenlive is the offline editor. |
-| Xbox Cloud Gaming | Chrome "install as app" of xbox.com/play. **Cloud streaming only**: PC Game Pass downloads are impossible on Linux. Say so plainly. |
+| CapCut | capcut.com/editor in Firefox, or Chrome's "install as app" for an app-style window. Kdenlive is the offline editor. |
+| Xbox Cloud Gaming | xbox.com/play in Firefox, or Chrome's "install as app". **Cloud streaming only**: PC Game Pass downloads are impossible on Linux. Say so plainly. |
 
 ### Things with no Linux version, and their stand-ins
 
@@ -166,7 +167,7 @@ image is built:
 
 | File | Read by | Contents |
 |---|---|---|
-| `packages/image.txt` | `build.sh` at image build | rpm packages added to the system image: WezTerm, printer drivers, wsdd, anything Plasma lacks |
+| `packages/image.txt` | `build.sh` at image build | rpm packages added to the system image: printer drivers, wsdd, anything Plasma lacks |
 | `packages/flatpaks-default.txt` | first-boot script | Flatpaks installed on every machine |
 | `packages/steel-apps.txt` | the Steel Apps screen | One-click catalogue: Flatpak ID, display name, one-line description |
 | `packages/brew.txt` | the developer setup entry | Homebrew tools |
@@ -179,7 +180,7 @@ unusual.
 
 ## 5. Decisions carried over from the Omarchy plan
 
-- Chrome default, Firefox one click, LibreOffice kept: unchanged.
+- Browser and terminal defaults reversed on 2026-10-16: Firefox and Konsole are the defaults; Chrome and WezTerm are one click. LibreOffice kept.
 - The old chromium, xournalpp, foot, HEY, Basecamp removals no longer apply;
   those were Omarchy packages. `remove.txt` starts empty and is filled after T
   boots the first image and lists what Bazzite preinstalls that we do not want.
@@ -206,7 +207,7 @@ unusual.
 ## 7. Follow-up tickets
 
 1. **First-boot Flatpak install and default browser** (STEEL-19, reworded):
-   install `flatpaks-default.txt` on first login, set Chrome default,
+   install `flatpaks-default.txt` on first login, confirm Firefox is default,
    idempotent.
 2. **Steel Apps section in Bazzite Portal** (new, phase 4): add the
    `steel-apps.txt` entries as a section at the top of Bazzite Portal's

@@ -3,9 +3,7 @@
 
 # Office suite (T's "Open Office"). Opens Word, Excel, PowerPoint.
 org.libreoffice.LibreOffice
-# Default browser. The first-boot script also sets it as default.
-com.google.Chrome
-# rodger-roberts-dev's browser. Bazzite may already install it; harmless if so.
+# Default browser (decided 2026-10-16). Bazzite already installs it; this pins it.
 org.mozilla.firefox
 # Screen recording and streaming.
 com.obsproject.Studio

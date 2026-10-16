@@ -2,9 +2,6 @@
 # Fedora package names. One per line. Only system pieces go here; apps are
 # Flatpaks (see flatpaks-default.txt and steel-apps.txt).
 
-# Steel OS default terminal. From WezTerm's own Fedora repository (COPR
-# wezfurlong/wezterm-nightly); build.sh enables the repo, installs, disables it.
-wezterm
 
 # Printing for older, non-driverless printers (STEEL-3 findings).
 hplip

@@ -1,0 +1,10 @@
+# Not included in the default Steel OS installation
+# Every line is a real package name.
+
+# Omarchy's default terminal. Steel OS uses WezTerm instead. Safe to remove
+# only after WezTerm is set as the default terminal.
+foot
+
+# The slower-moving LibreOffice line. Omarchy ships libreoffice-fresh, which
+# Steel OS keeps (T, 2026-10-15), so -still is never needed alongside it.
+libreoffice-still
