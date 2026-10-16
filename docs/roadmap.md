@@ -242,10 +242,111 @@ screen, the sharing wizard, and the branding.
 
 ## What happens next
 
-1. Merge the open PRs (STEEL-1, STEEL-4, STEEL-6 and the CLAUDE.md setup).
-   STEEL-2 and STEEL-3 can merge as background research or be closed.
-2. rodger-roberts-dev puts his key bindings in the repo (STEEL-29) and creates
-   the cosign key.
-3. Claude starts STEEL-16: template files into the repo, first build.
-4. T downloads the Bazzite ISO now and installs it in the VM, so the first
-   Steel OS ISO has a known-good comparison.
+See the story-by-story plan below; step 1 is the list.
+
+---
+
+## Story-by-story plan to 1.0 (2026-10-16)
+
+Every open STEEL story, in the order it should be done, with who does it and
+what it waits on. Dates are targets for a two-person team working part time,
+not promises. The phases above still describe *what* each release contains;
+this section is the *to-do list* that gets us there.
+
+### Where things stand today
+
+| Story | State | Next action |
+|---|---|---|
+| STEEL-1, 2, 3, 4, 6 | Written, PRs #2 to #6 open | rodger-roberts-dev merges, T moves to Done |
+| STEEL-28 base decision | Decided (Bazzite) | T moves to Done |
+| STEEL-24 update and rollback test | Passed on stock Bazzite in the VM | Repeat once on the first Steel OS image, then Done |
+| STEEL-5 test machine | VirtualBox VM "STEEL" ready; Command untouched | Install the first Steel OS ISO on Command in step 2 |
+| STEEL-29 shortcuts | Translated files in PR #7; rodger's own Katana files still to come | rodger exports `~/.config/kglobalshortcutsrc` and his Konsole profile |
+| STEEL-31 branding | Logo kit and both 4K wallpapers in PR #8 | Wire into the image in step 2 |
+| STEEL-26 download site | steel-os.org live, Download button says "coming soon" | R2 upload workflow in step 6 |
+| Everything else | To Do | Below |
+
+### Step 1: Unblock (week of 2026-10-19)
+
+Nothing here needs code. It needs three people to answer and click.
+
+| Who | Story | Do this |
+|---|---|---|
+| rodger-roberts-dev | PRs #1 to #8 | Review and merge, or comment what to change |
+| rodger-roberts-dev | STEEL-16 | Create the cosign signing key and store the private half as the GitHub secret `SIGNING_SECRET`; commit `cosign.pub` |
+| rodger-roberts-dev | STEEL-29 | Export the shortcut and Konsole files from the Katana checkpoint |
+| rodger-roberts-dev | STEEL-23, STEEL-25 | Decide the rebuild cadence; say how Forge will be packaged (Flatpak, AppImage, container) |
+| T | STEEL-26 | Create an R2 API token for the `downloads.steel-os.org` bucket; rodger adds it as GitHub secrets (never in the repo) |
+| T | STEEL-20 | From the Bazzite VM, list the start-menu apps Steel OS should not ship |
+| T | STEEL-43 | USPTO trademark search for "Steel OS" |
+| T | STEEL-42 | Steel OS card on blackbox-entertainment.com |
+| T | STEEL-1, 2, 3, 4, 6, 28 | Move to Done after the merges |
+
+### Step 2: First image, version 0.2 (target 2026-11-06)
+
+| Order | Story | What | Who | Waits on |
+|---|---|---|---|---|
+| 1 | STEEL-16 | Universal Blue template in the repo: `Containerfile` from `bazzite:stable`, `build.sh`, `system_files/`, `disk_config/`, workflows. Old Omarchy-era files removed. Image builds in GitHub Actions; ISO lands in R2 | Claude | cosign key, R2 secrets |
+| 2 | STEEL-27 | Tuesday 4 am update schedule: drop-in for `uupd.timer` | Claude | STEEL-16 |
+| 3 | STEEL-18 | Konsole as the terminal with Alt+C / Alt+V; WezTerm in the one-click list | Claude | STEEL-16 |
+| 4 | STEEL-29 | rodger's shortcuts as the Plasma defaults | Claude, from rodger's files | STEEL-16, rodger's export |
+| 5 | STEEL-31 | Wallpapers, logos, `os-release` name and `VARIANT_ID=steel-os`, boot splash, login screen | Claude | STEEL-16 |
+| 6 | STEEL-5, STEEL-24 | Install the ISO in the VM and on Command; run the update and rollback test once on the real image | T | the ISO |
+
+Test for the step: T boots the ISO, sees the waves wallpaper, presses
+Super+Enter and gets Konsole, and `sudo bootc status` names the Steel OS image.
+
+### Step 3: A desktop that says Steel OS, version 0.3 (target 2026-11-20)
+
+| Order | Story | What | Who | Waits on |
+|---|---|---|---|---|
+| 1 | STEEL-7 | Panel layout, cascading windows confirmed, Plasma look | Claude | STEEL-16 |
+| 2 | STEEL-19 | Firefox confirmed default browser on first boot; Chrome one click | Claude | STEEL-17 for the per-user part |
+| 3 | STEEL-17 | First-boot script: default Flatpaks and per-user settings, safe to run twice | Claude | STEEL-16 |
+| 4 | STEEL-20 | Remove what T listed in step 1 (`packages/remove.txt`). Decision recorded here: Waydroid, Bazzite's Android app runner, stays but off by default | Claude | T's list |
+| 5 | STEEL-37 | Plain-English app names and menu categories | Claude | STEEL-20 |
+| 6 | STEEL-22 | README rewritten for Bazzite, Firefox, Konsole | Claude | STEEL-16 merged |
+
+### Step 4: Install like Windows, version 0.4 (target 2026-12-11)
+
+| Order | Story | What | Who | Waits on |
+|---|---|---|---|---|
+| 1 | STEEL-35 | Full-screen "Install Steel OS" on the ISO; first-login wizard with Skip on every page | Claude | STEEL-16 |
+| 2 | STEEL-40 | Steel Apps screen inside the wizard and in the start menu, built from `packages/steel-apps.txt` | Claude | STEEL-35 |
+| 3 | STEEL-36 | Forgotten password: three security questions, hint on the login screen, recovery guide | Claude | STEEL-35 |
+| 4 | STEEL-30 | One ISO: detect the graphics card at first boot, switch to the NVIDIA image | Claude | STEEL-16; T tests on Command with its real GPU |
+| 5 | STEEL-21 | `docs/install.md`, plain English, screenshots from the VM | Claude writes, T follows it cold | STEEL-35 |
+
+### Step 5: Easy like Windows and plays games, version 0.5 (target 2027-01-15)
+
+| Order | Story | What | Who | Waits on |
+|---|---|---|---|---|
+| 1 | STEEL-38 | Printers and scanners from System Settings; `hplip`, `gutenprint-cups`, Skanpage | Claude; T tests with a real printer | STEEL-16 |
+| 2 | STEEL-39 | Windows PCs visible, folder sharing without a terminal; `wsdd`, Samba, firewall rule | Claude; T tests with a Windows PC | STEEL-16 |
+| 3 | STEEL-32 | Controllers, joysticks, flight sticks; Oversteer; compatibility page | Claude; T tests on Command | Command running Steel OS |
+| 4 | STEEL-34 | Crew and Voxlore run on Steel OS from Steam | T | Command running Steel OS |
+| 5 | STEEL-25 | Forge as a one-click install | rodger-roberts-dev packages, Claude adds to Steel Apps | rodger's answer from step 1 |
+
+### Step 6: Release 1.0 (target 2027-01-30)
+
+| Order | Story | What | Who | Waits on |
+|---|---|---|---|---|
+| 1 | STEEL-23 | Security patch policy written down: rebuild cadence and how fast a Bazzite fix reaches users | rodger decides, Claude writes | nothing |
+| 2 | STEEL-26 | Release workflow uploads the signed ISO and checksums to R2 and updates `releases/latest.json` on steel-os.org | Claude | R2 secrets |
+| 3 | STEEL-33 | Weekly Active Devices chart on steel-os.org from Fedora's Count Me data | Claude | `VARIANT_ID` live in the image for a few weeks |
+| 4 | STEEL-41 | Release checklist run once: pin the Bazzite digest, build, test, sign, publish, flip the Download button | rodger signs and tags, T tests and flips, Claude writes the checklist | all of the above |
+
+### Epics after 1.0
+
+STEEL-12 Security has only the policy task today. After 1.0 it gets real
+stories: full-disk encryption by default, Firefox policy hardening, and
+whether an antivirus adds anything. That is on purpose; shipping a solid 1.0
+comes first.
+
+### How to read the order
+
+- Steps 2 to 4 are a chain: each needs the one before. Step 5 only needs step
+  2, so its stories can run alongside steps 3 and 4 when someone has time.
+- Within a step, the order is the dependency order. Two people can work two
+  rows at once if neither waits on the other.
+- Every row is one branch, one PR, one "How to test" list for T.
