@@ -85,13 +85,13 @@ toggle do not disturb=Meta+Ctrl+Comma,Meta+Ctrl+Comma,Toggle do not disturb
 [services][org.kde.krunner.desktop]
 _launch=Meta+Space	Alt+Space	Alt+F2,Meta+Space	Alt+Space	Alt+F2,KRunner
 
-# Terminal: WezTerm on Meta+Return and ALT+Return (rodger-roberts-dev's override)
-[services][org.wezfurlong.wezterm.desktop]
-_launch=Meta+Return	Alt+Return,Meta+Return	Alt+Return,WezTerm
+# Terminal: Konsole on Meta+Return and ALT+Return (rodger-roberts-dev, confirmed working 2026-10-16)
+[services][org.kde.konsole.desktop]
+_launch=Meta+Return	Alt+Return,Meta+Return	Alt+Return,Konsole
 
-# Browser: Chrome on Meta+Shift+Return and Meta+Shift+B
-[services][com.google.Chrome.desktop]
-_launch=Meta+Shift+Return	Meta+Shift+B,Meta+Shift+Return	Meta+Shift+B,Google Chrome
+# Browser: Firefox on Meta+Shift+Return and Meta+Shift+B (confirmed working 2026-10-16)
+[services][org.mozilla.firefox.desktop]
+_launch=Meta+Shift+Return	Meta+Shift+B,Meta+Shift+Return	Meta+Shift+B,Firefox
 
 # File manager: Dolphin on Meta+Shift+F
 [services][org.kde.dolphin.desktop]

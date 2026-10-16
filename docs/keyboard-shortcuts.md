@@ -6,7 +6,7 @@ Written for: rodger-roberts-dev to review, and for the user manual later
 
 rodger-roberts-dev's condition for the move to Bazzite was keeping his keyboard
 shortcuts. His shortcuts are Omarchy's defaults plus one override (ALT+Return
-opens WezTerm). This document lists every Omarchy default, taken from Omarchy's
+opens the terminal). This document lists every Omarchy default, taken from Omarchy's
 source (`default/hypr/bindings/*.lua`, version 4.0.0.alpha), and what it
 becomes on Steel OS. The result is shipped as system defaults in
 `system_files/etc/xdg/kglobalshortcutsrc` and `kwinrc`.
@@ -25,9 +25,9 @@ rodger-roberts-dev picks a replacement.
 |---|---|---|---|
 | Super+Space | Omarchy menu | KRunner (search, launch, calculate) | Changed: no menu tree, but the same reflex |
 | Super+Alt+Space | Apps grid | Plasma Overview with the app grid | Same |
-| Super+Return | Terminal | WezTerm | Same |
-| **Alt+Return** | **WezTerm (rodger's override)** | **WezTerm** | **Same** |
-| Super+Shift+Return, Super+Shift+B | Browser | Google Chrome | Same |
+| Super+Return | Terminal | Konsole (rodger confirmed working 2026-10-16) | Same |
+| **Alt+Return** | **Terminal (rodger's override)** | **Konsole (confirmed working)** | **Same** |
+| Super+Shift+Return, Super+Shift+B | Browser | Firefox (confirmed working) | Same |
 | Super+Shift+Alt+B | Private browser window | Not bound | None (Ctrl+Shift+N inside Chrome) |
 | Super+Shift+F | File manager | Dolphin | Same |
 | Super+Alt+Shift+F | File manager in terminal's folder | Not bound | None |
@@ -88,7 +88,7 @@ rodger-roberts-dev picks a replacement.
 | Super+Escape | System menu | Log-out screen | Changed |
 | Super+Ctrl+L | Lock | Lock | Same |
 | Super+Ctrl+V | Clipboard manager | Clipboard history | Same |
-| Super+C, Super+V, Super+X, Super+A | Universal copy, paste, cut, select-all (works in terminals too) | Not bound | None: Plasma cannot rewrite shortcuts for every app. Ctrl+C/V work everywhere except terminals; WezTerm has Alt+C/Alt+V by Steel OS config. |
+| Super+C, Super+V, Super+X, Super+A | Universal copy, paste, cut, select-all (works in terminals too) | Not bound | None: Plasma cannot rewrite shortcuts for every app. Ctrl+C/V work everywhere except terminals; Konsole has Alt+C/Alt+V by Steel OS config (rodger confirmed working). |
 | Print | Screenshot | Spectacle | Same |
 | Super+Shift+S | Screenshot | Spectacle, rectangular region | Same |
 | Alt+Print | Screen recording | Spectacle, record screen | Same |
@@ -118,7 +118,7 @@ rodger-roberts-dev picks a replacement.
 - **Same or close enough:** everything a Windows user would call a shortcut
   (launcher, terminal, browser, files, close, maximize, minimize, desktops,
   Alt+Tab, lock, screenshots, clipboard history, zoom, night light) and your
-  ALT+Return for WezTerm.
+  ALT+Return for the terminal, now Konsole.
 - **Changed:** Super+T opens Plasma's tiling instead of toggling float, since
   Steel OS windows float by default. Super+Shift+arrows snap instead of swap.
   Settings keys open a settings page instead of a bar popup.
@@ -133,4 +133,4 @@ repo; I will fold them in.
 
 **To verify on the first image (STEEL-16):** that Plasma reads these three
 files from `/etc/xdg` as defaults on a fresh login, and that the Flatpak
-desktop file names for Chrome and Obsidian match what Flathub installs.
+desktop file names for Firefox and Obsidian match what Flathub installs.
