@@ -24,9 +24,21 @@ already true:
 
 **What Steel OS adds: the Steel Apps list.** Discover shows thousands of apps.
 A Windows user wants the dozen they know. Steel OS ships a short curated list
-(`packages/steel-apps.txt`) and a screen, shown at first boot and reachable
-from Settings, with one row per approved app and one Install button each.
-Installing is a Flatpak install from Flathub; nothing is hosted by us.
+(`packages/steel-apps.txt`) with one row per approved app and one Install
+button each. Installing is a Flatpak install from Flathub; nothing is hosted
+by us.
+
+**Found on first boot (T, 2026-10-16): Bazzite Portal already is that
+screen.** Bazzite ships a "Bazzite Portal" window at first login with tabs for
+Install Applications, Get Media Apps, Manage Bazzite, Tweak Systems and
+Troubleshoot, each row with a one-line description and an install action, plus
+its own store called Bazaar. So Steel OS does not build a Steel Apps screen.
+It keeps Bazzite Portal, renames it, and adds a **Steel Apps** section at the
+top with the must-haves from `steel-apps.txt`. Bazzite's own catalogue (DaVinci
+Resolve, Antigravity, CoolerControl, ASUS tools, and the media web apps such as
+Prime Video, Apple TV, Disney Plus and HBO Max, which T asked to keep) stays
+below it. How the Portal's list is defined in the image, and whether a section
+can be added without patching Bazzite, is a check for STEEL-16.
 
 No server is needed anywhere in this. Flathub hosts the apps. The list is a
 text file inside the image.
@@ -50,10 +62,9 @@ Three tiers. All Flatpak IDs below were confirmed on Flathub on 2026-10-15.
 
 | App | How | ID or package | Note |
 |---|---|---|---|
-| WezTerm (terminal) | rpm in the image | `wezterm` from WezTerm's Fedora repository | Steel OS default terminal. Must be in the image so it is the terminal before any app installs. |
+| Konsole (terminal) | Part of Plasma on Bazzite | rpm, already present | Steel OS default terminal (decided 2026-10-16 by rodger-roberts-dev and T). Alt+C / Alt+V copy and paste set by Steel OS. |
 | LibreOffice (office) | Flatpak, first boot | `org.libreoffice.LibreOffice` | T's "Open Office". Opens Word, Excel, PowerPoint. |
-| Google Chrome (default browser) | Flatpak, first boot | `com.google.Chrome` | Set as default browser on first boot. |
-| Firefox | Flatpak, first boot | `org.mozilla.firefox` | Bazzite already ships it; rodger-roberts-dev's browser. |
+| Firefox (default browser) | Flatpak, first boot | `org.mozilla.firefox` | Default browser (decided 2026-10-16). Bazzite already ships it. |
 | Files (Dolphin), Ark (zip), Kate (editor), Okular (PDF, EPUB), Skanpage (scanner), Spectacle (screenshots), Gwenview (images) | Part of Plasma on Bazzite | rpm, already present | Confirm on first boot which are present; add missing ones to `packages/image.txt`. |
 | Steam | Already in Bazzite | native | Bazzite's reason to exist. |
 | OBS Studio | Flatpak, first boot | `com.obsproject.Studio` | Screen capture works on Plasma Wayland. |
@@ -67,6 +78,8 @@ Three tiers. All Flatpak IDs below were confirmed on Flathub on 2026-10-15.
 
 | App | ID | Note |
 |---|---|---|
+| Google Chrome | `com.google.Chrome` | One click; Firefox is the default (decided 2026-10-16). |
+| WezTerm | `org.wezfurlong.wezterm` | One click; Konsole is the default (decided 2026-10-16). |
 | Slack | `com.slack.Slack` | T's must-have |
 | Zoom | `us.zoom.Zoom` | T's must-have. The full desktop client, no web-app workaround needed. |
 | Dropbox | `com.dropbox.Client` | T's must-have. Tray icon works on Plasma. |
@@ -92,8 +105,8 @@ Three tiers. All Flatpak IDs below were confirmed on Flathub on 2026-10-15.
 
 | App | How |
 |---|---|
-| CapCut | Chrome "install as app" of capcut.com/editor. Kdenlive is the offline editor. |
-| Xbox Cloud Gaming | Chrome "install as app" of xbox.com/play. **Cloud streaming only**: PC Game Pass downloads are impossible on Linux. Say so plainly. |
+| CapCut | capcut.com/editor in Firefox, or Chrome's "install as app" for an app-style window. Kdenlive is the offline editor. |
+| Xbox Cloud Gaming | xbox.com/play in Firefox, or Chrome's "install as app". **Cloud streaming only**: PC Game Pass downloads are impossible on Linux. Say so plainly. |
 
 ### Things with no Linux version, and their stand-ins
 
@@ -154,7 +167,7 @@ image is built:
 
 | File | Read by | Contents |
 |---|---|---|
-| `packages/image.txt` | `build.sh` at image build | rpm packages added to the system image: WezTerm, printer drivers, wsdd, anything Plasma lacks |
+| `packages/image.txt` | `build.sh` at image build | rpm packages added to the system image: printer drivers, wsdd, anything Plasma lacks |
 | `packages/flatpaks-default.txt` | first-boot script | Flatpaks installed on every machine |
 | `packages/steel-apps.txt` | the Steel Apps screen | One-click catalogue: Flatpak ID, display name, one-line description |
 | `packages/brew.txt` | the developer setup entry | Homebrew tools |
@@ -167,7 +180,7 @@ unusual.
 
 ## 5. Decisions carried over from the Omarchy plan
 
-- Chrome default, Firefox one click, LibreOffice kept: unchanged.
+- Browser and terminal defaults reversed on 2026-10-16: Firefox and Konsole are the defaults; Chrome and WezTerm are one click. LibreOffice kept.
 - The old chromium, xournalpp, foot, HEY, Basecamp removals no longer apply;
   those were Omarchy packages. `remove.txt` starts empty and is filled after T
   boots the first image and lists what Bazzite preinstalls that we do not want.
@@ -194,10 +207,11 @@ unusual.
 ## 7. Follow-up tickets
 
 1. **First-boot Flatpak install and default browser** (STEEL-19, reworded):
-   install `flatpaks-default.txt` on first login, set Chrome default,
+   install `flatpaks-default.txt` on first login, confirm Firefox is default,
    idempotent.
-2. **Steel Apps screen** (new, phase 4): first-boot and Settings screen
-   reading `steel-apps.txt`, one Install button each.
+2. **Steel Apps section in Bazzite Portal** (new, phase 4): add the
+   `steel-apps.txt` entries as a section at the top of Bazzite Portal's
+   Install Applications tab, rename the window to Steel OS, keep the rest.
 3. **Developer setup entry** (new, phase 4): Homebrew installs from `brew.txt`.
 4. **remove.txt after first boot** (STEEL-20, reworded): list and remove what
    we do not want.
