@@ -45,7 +45,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        disk-type: ["qcow2", "anaconda-iso"]
+        # ISO only for now. The qcow2 VM disk fails blueprint validation with
+        # btrfs (customizations.filesystem not supported) and VirtualBox does
+        # not use qcow2 anyway; bring it back with a fixed disk.toml if wanted.
+        disk-type: ["anaconda-iso"]
     permissions:
       contents: read
       packages: read
