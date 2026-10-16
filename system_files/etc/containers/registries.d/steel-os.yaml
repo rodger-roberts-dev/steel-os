@@ -1,0 +1,6 @@
+# Steel OS (STEEL-16): where to look for signatures of the Steel OS image.
+# The public key that checks them is /etc/pki/containers/steel-os.pub.
+# Signatures are stored next to the image in the GitHub container registry.
+docker:
+  ghcr.io/rodger-roberts-dev/steel-os:
+    use-sigstore-attachments: true

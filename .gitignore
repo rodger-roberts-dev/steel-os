@@ -1,3 +1,14 @@
+# The private signing key must never be committed. The public half, cosign.pub,
+# is committed on purpose.
+cosign.key
+
+# Build output from the Justfile (local Linux builds only)
+_build_*
+_build-*/**
+output
+*_chunkah_*
+*_rpm-ostree_*
+
 # Local machine inventory
 inventory/
 

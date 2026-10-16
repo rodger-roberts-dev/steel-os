@@ -50,28 +50,25 @@ not yet a standalone installer."
 
 ---
 
-## 2. What Omarchy provides vs. what Steel OS adds
+## 2. What Bazzite provides vs. what Steel OS adds
 
-Omarchy is the foundation. Everything in the left column already works on a
-fresh Omarchy install without any Steel OS code.
+Bazzite is the foundation. Everything in the left column already works on a
+fresh Bazzite install without any Steel OS code. Steel OS is a thin layer on
+top, built as one image.
 
-| Omarchy provides | Steel OS adds (today) | Steel OS will add (planned) |
+| Bazzite provides | Steel OS adds (today, version 0.2) | Steel OS will add (planned) |
 |---|---|---|
-| Arch Linux base install | A list of which apps to install | Curated, snapshotted updates (goal 1) |
-| Hyprland desktop, keyboard-driven | A list of which apps to leave out | Printer and network setup without a terminal (goal 2) |
-| Limine boot loader with snapper snapshots | A keybinding change: ALT+RETURN opens WezTerm | Steam, Proton, and controller setup (goal 3) |
-| `omarchy-update` and migrations | WezTerm copy and paste on ALT+C and ALT+V | One app store or install path (goal 4) |
-| Theme system and app launcher | A script that checks which apps are installed | Built-in security (goal 5) |
-| Its own ISO and installer | | A Steel OS installer or install script |
+| Fedora Atomic base: the whole system is one image, updated as one, previous version always in the boot menu | The image recipe: `Containerfile`, `build_files/build.sh`, `system_files/` | Tuesday update schedule and plain-English update messages (STEEL-27) |
+| KDE Plasma desktop | rodger-roberts-dev's keyboard shortcuts, cascading windows, Konsole as the terminal (STEEL-29) | Steel OS wallpaper, login screen, boot splash, name in About (STEEL-31) |
+| Automatic updates (`uupd`) for the system, Flatpaks and more | Extra rpm packages: printer drivers and Windows network discovery (`packages/image.txt`) | Guided install and a first-login wizard with Skip (STEEL-35) |
+| Steam, Proton, controller support, Lutris, Waydroid | Our signing key in the image | Steel Apps one-click list built on Bazzite Portal (STEEL-40) |
+| Discover app store with Flatpak | GitHub workflows that build the image daily and the ISO on demand | Printers, scanners and folder sharing without a terminal (STEEL-38, 39) |
+| Bazzite Portal first-login installer | Installer ISO settings (`disk_config/iso.toml`) | One ISO with graphics card detection (STEEL-30) |
+| Secure Boot support, firewall, sandboxed apps | | Security policy and emergency fix path (STEEL-23) |
 
-The honest summary: **today Steel OS is a set of preferences written down, plus
-one audit script.** Nothing in this repo installs, updates, or configures a
-machine yet. That is expected for version 0.1.
-
-Decision on 2026-10-15 (section 5.1): the default desktop will be **KDE
-Plasma**, not Hyprland, with Hyprland kept as a second choice on the login
-screen. The "Omarchy provides" column above still applies to the base system,
-but the Hyprland desktop row becomes optional once that is built.
+The honest summary: **today Steel OS is Bazzite plus our settings files, a
+few packages and a signing key, built into an image by GitHub.** That is on
+purpose. The less we change, the safer Bazzite's updates are for our users.
 
 ---
 
@@ -79,120 +76,107 @@ but the Hyprland desktop row becomes optional once that is built.
 
 ```
 steel-os/
-├── README.md                 One-paragraph project description
-├── ARCHITECTURE.md           This file
-├── CLAUDE.md                 Rules and context for Claude Code
-├── .gitignore                Ignores inventory/, editor temp files, Python caches, .env
-├── .claude/
-│   └── agents/
-│       └── steel-dev.md      The Claude Code agent that works a STEEL story end to end
-├── config/
-│   ├── hypr/
-│   │   └── bindings.lua      Hyprland keybinding overrides (Omarchy's Lua format)
-│   └── wezterm/
-│       └── wezterm.lua       WezTerm terminal config
+├── Containerfile             Start from Bazzite, run the build script
+├── build_files/
+│   └── build.sh              Copies system_files in, installs packages/image.txt, adds the signing key
+├── system_files/             Files copied to / in the image, same paths
+│   └── etc/
+│       ├── xdg/              Plasma defaults: kglobalshortcutsrc, kwinrc, kdeglobals (STEEL-29)
+│       └── containers/registries.d/steel-os.yaml   Where our image signatures live
 ├── packages/
-│   ├── core.txt              10 apps every Steel OS machine gets
-│   ├── development.txt       14 developer tools
-│   ├── optional.txt          7 approved extras (names not yet verified)
-│   ├── excluded.txt          3 packages deliberately left out
-│   └── review.txt            6 candidates for removal
-└── scripts/
-    └── bootstrap.sh          Read-only package audit
+│   ├── image.txt             rpm packages built into the image
+│   ├── flatpaks-default.txt  Apps installed for everyone at first boot (STEEL-17)
+│   ├── steel-apps.txt        The one-click list (STEEL-40)
+│   ├── brew.txt              Command-line tools for developers
+│   └── remove.txt            Bazzite things Steel OS leaves out (STEEL-20)
+├── disk_config/
+│   ├── iso.toml              Installer settings; points installed machines at our image
+│   └── disk.toml             Virtual machine disk settings
+├── .github/workflows/
+│   ├── build.yml             Build, push and sign the image: PRs, master, daily
+│   └── build-disk.yml        Build the ISO and VM disk by hand; optional upload to R2
+├── Justfile                  The build commands the workflows call; also works on a Linux PC
+├── image-template.env        Image name, owner, description
+├── cosign.pub                Public signing key (private half is a GitHub secret, never here)
+├── branding/                 Logo, icon, wallpapers and the brand guide (STEEL-31)
+├── docs/                     Plans and research, including docs/building.md
+├── README.md, ARCHITECTURE.md, CLAUDE.md, .claude/agents/steel-dev.md
+└── .gitignore                Ignores cosign.key and local build output
 ```
 
 ### Each piece, in plain English
 
-**`packages/*.txt`: the app lists.** One package name per line. Lines starting
-with `#` are comments. These lists are the heart of Steel OS today: they say
-what a Steel OS machine should have on it.
+**`Containerfile` and `build_files/build.sh`: the recipe.** The Containerfile
+says "start from `ghcr.io/ublue-os/bazzite:stable`" and runs `build.sh` once
+inside the build. The script copies `system_files/` onto the image, installs
+every package named in `packages/image.txt`, and places our public signing
+key. Nothing in Bazzite is edited; our files are added next to theirs.
 
-- `core.txt`: wezterm (terminal), neovim and zed (editors), docker, obs-studio,
-  kdenlive (video), steam, nautilus (file manager), btop (system monitor),
-  gnome-disk-utility.
-- `development.txt`: git, python, python-pip, nodejs, npm, rustup, base-devel,
-  github-cli, jq, ripgrep, fd, lazygit, lazydocker, docker-compose.
-- `optional.txt`: Google Chrome, Obsidian, Discord, Zoom, Moonlight, Battle.net,
-  Google web-app shortcuts. **These are display names, not package names.** The
-  file itself says they still need verifying. STEEL-4 covers this.
-- `excluded.txt`: foot (a terminal Omarchy may ship; we use WezTerm instead),
-  libreoffice-fresh, libreoffice-still.
-- `review.txt`: chromium, xournalpp, pinta, HEY, Basecamp, libreoffice-fresh.
-  Things Omarchy installs that we may remove. HEY and Basecamp are 37signals
-  web apps, not packages.
+**`system_files/`: our settings.** Laid out exactly as they land on a machine.
+Each file starts with a comment saying what it does and which STEEL story
+added it. Today: the Plasma shortcut defaults from STEEL-29 and the
+signature location file.
 
-**`config/hypr/bindings.lua`: keyboard shortcuts.** Omarchy lets you override
-its default shortcuts in a Lua file. Ours does one thing: it unbinds ALT+RETURN
-and rebinds it to open WezTerm. The rest of the file is Omarchy's own commented
-examples. The file depends on Omarchy's Lua helpers (`o.bind`, `hl.unbind`) and
-will not work outside Omarchy.
+**`packages/*.txt`: the lists.** One name per line, `#` for comments.
+`image.txt` is the only one the build reads today. The Flatpak and Steel Apps
+lists are read at first boot and by the Steel Apps screen (STEEL-17, 40).
 
-**`config/wezterm/wezterm.lua`: terminal settings.** Makes ALT+C copy and ALT+V
-paste, the way Windows users expect from CTRL+C and CTRL+V. Nothing else.
+**`disk_config/`: how the ISO is made.** `iso.toml` holds the installer
+settings and the one command that, after install, points the machine at our
+image for updates. `disk.toml` sizes the virtual machine disk.
 
-**`scripts/bootstrap.sh`: the audit script.** Reads `core.txt` and
-`development.txt` and, for each package, prints one of:
+**`.github/workflows/`: the builders.** GitHub builds the image on every pull
+request and every push to `master`, and once a day so Bazzite's fixes flow
+through. The ISO is built by hand from the Actions tab. See
+`docs/building.md`.
 
-| Output | Meaning |
-|---|---|
-| `[OK]` | Installed on this machine |
-| `[MISSING]` | Exists in the Arch repos but is not installed |
-| `[VERIFY]` | Not found in the Arch repos. Wrong name, or comes from somewhere else (AUR, Flatpak) |
-
-It **makes no changes** and says so when it finishes. It does not read
-`optional.txt`, `excluded.txt`, or `review.txt`. It must be run on an Arch or
-Omarchy machine because it calls `pacman`, Arch's package tool.
+**`cosign.pub`: who signed this.** The public half of the Steel OS signing
+key. The private half lives only in the `SIGNING_SECRET` GitHub secret and in
+T's and rodger-roberts-dev's password managers.
 
 **`CLAUDE.md` and `.claude/agents/steel-dev.md`: rules for the AI assistant.**
-Not part of the OS. They tell Claude Code how this team works: one Jira story
-per branch, every change through a pull request, never run install scripts on
-a real machine.
+Not part of the OS. They tell Claude Code how this team works.
 
 ### What is not here yet
 
-- No installer or install script. Omarchy's installer is used as-is.
-- No update command. Omarchy's `omarchy-update` is used as-is.
-- No `migrations/` folder. Omarchy uses migrations to update existing machines
-  when a config changes; Steel OS will need the same once it has users.
-- No ISO. You cannot download and boot Steel OS.
-- No automated tests. The only check is `shellcheck` on the one script.
-- No mechanism to copy `config/` files onto a machine. Today a person would do
-  that by hand.
+- No first-boot script: default Flatpaks are not installed automatically
+  (STEEL-17).
+- No Steel OS look: wallpaper, login screen, name in About still say Bazzite
+  (STEEL-31).
+- No Tuesday schedule: updates run on Bazzite's daily timer (STEEL-27).
+- No guided installer or first-login wizard (STEEL-35).
+- Signature checking of updates is not enforced yet; the key is in the image
+  but `/etc/containers/policy.json` does not require it.
+- No release workflow: the ISO upload is a manual button (STEEL-41).
 
 ---
 
 ## 4. How a change gets from a Jira ticket to a user's machine
 
-### Today (version 0.1)
-
 ```
-Jira ticket  →  branch  →  pull request  →  rodger reviews  →  merge to master
-                                                                     │
-                              (manual, by hand)  ←───────────────────┘
-                                     │
-                     person copies files onto an Omarchy machine
+Jira story  →  branch  →  pull request (GitHub builds the image as the test)
+                                │
+                     rodger-roberts-dev reviews, merges to master
+                                │
+            GitHub builds again, pushes ghcr.io/rodger-roberts-dev/steel-os:latest, signs it
+                                │
+        every Steel OS machine fetches it on the next update run and applies it on restart
+                                │
+             previous image stays in the boot menu in case anything broke
 ```
 
 1. A story is written in Jira (project STEEL).
-2. A branch is created named after it, for example `STEEL-4-package-names`.
-3. The change is made and a pull request is opened. The PR says what changed,
-   why, and how to test it in plain English.
-4. T tests it on the test machine (see STEEL-5). rodger-roberts-dev reviews the
-   code and merges.
-5. Getting the change onto a real machine is manual. There is no updater yet.
+2. A branch is created named after it, for example `STEEL-27-tuesday-updates`.
+3. The change is made and a pull request is opened. GitHub builds the image;
+   a pull request whose image does not build does not merge. The PR says what
+   changed, why, and how to test it in plain English.
+4. T tests it in the VM from an ISO built on the Actions tab, or on the test
+   machine Command. rodger-roberts-dev reviews and merges.
+5. The merge builds, pushes and signs the image. Machines pick it up on their
+   next update run. Nothing is copied by hand.
 
-### Planned (once goal 1 is built)
-
-```
-merge to master  →  Steel OS updater  →  snapshot taken  →  packages + configs applied
-                                                                      │
-                                              boot menu offers rollback if anything broke
-```
-
-The exact design of the updater is the subject of STEEL-2. The intent is that a
-user clicks "Update", a snapshot is taken first, the curated set of changes is
-applied, and if anything goes wrong they pick the previous snapshot from the
-boot menu.
+The ISO is only for the first install. After that the machine updates itself
+from the image; the ISO is never needed again.
 
 ---
 

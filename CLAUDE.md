@@ -12,8 +12,7 @@ project, the team, and the rules Claude must follow when working in this repo.
   image template. Decided 2026-10-15 (STEEL-28) by rodger-roberts-dev and T.
 - Before that date the project was built on Omarchy (Arch + Hyprland). The
   research from that period (`docs/updates-and-rollback.md`,
-  `docs/printers-and-network.md`) is kept as background. Some files in the repo
-  still date from the Omarchy era until STEEL-16 lands the image recipe.
+  `docs/printers-and-network.md`) is kept as background. The Omarchy-era files were removed in STEEL-16.
 - Steel OS is a **Steel & Code** (steelandcode.com) project, in partnership
   with **Blackbox Entertainment**. Say it that way on anything public.
 - Owner / lead developer: **rodger-roberts-dev** (has final say on all merges).
@@ -51,15 +50,7 @@ project, the team, and the rules Claude must follow when working in this repo.
 
 ## 2. How the repo is built
 
-### Today (Omarchy era, until STEEL-16)
-```
-README.md, ARCHITECTURE.md, CLAUDE.md, docs/
-config/hypr/bindings.lua, config/wezterm/wezterm.lua
-packages/*.txt            app lists, being converted to the image format
-scripts/bootstrap.sh      Omarchy-era package audit; to be replaced
-```
-
-### Target layout (Universal Blue image template, from STEEL-16)
+### Layout (Universal Blue image template, since STEEL-16)
 ```
 Containerfile             FROM ghcr.io/ublue-os/bazzite:stable, runs build.sh
 image-template.env        image name, organisation, description
@@ -68,7 +59,8 @@ system_files/             files copied verbatim into the image at /
   etc/xdg/kglobalshortcutsrc     rodger's key bindings (Plasma defaults)
   etc/xdg/kwinrc                 cascading window placement
   etc/xdg/kdeglobals             Konsole pinned as the terminal
-  etc/systemd/system/uupd.timer.d/   Tuesday schedule for automatic updates
+  etc/containers/registries.d/   where our image signatures live
+  etc/systemd/system/uupd.timer.d/   Tuesday schedule for automatic updates (STEEL-27)
   usr/share/...                  branding, wallpaper, Steel Apps catalogue
 disk_config/iso-kde.toml  ISO build settings
 packages/                 plain-text lists read by build.sh and first boot
