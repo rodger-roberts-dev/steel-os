@@ -1,0 +1,13 @@
+Steel OS
+Copyright 2026 Steel & Code
+
+Steel OS is a Steel & Code (steelandcode.com) project in partnership with
+Blackbox Entertainment. The build recipe in this repository is licensed under
+the Apache License, Version 2.0 (see LICENSE).
+
+The Steel OS name, hexagon mark, logo and wallpapers in branding/ are
+trademarks and artwork of Steel & Code. The Apache License does not grant
+permission to use them (section 6); see branding/README.md.
+
+Steel OS is built on Bazzite by Universal Blue (Apache-2.0) and on Fedora.
+The software inside the image keeps its own licences.
