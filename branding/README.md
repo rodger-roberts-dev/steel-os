@@ -64,13 +64,11 @@ wallpapers; the first-kit grey hexagon wallpaper was retired the same day
   (3840x2160, final size). Dark navy with blue and orange light waves, the hex
   mark and `STEEL OS_` centred. Clean, no stray text, matches the brand
   colours. Also the candidate for the login screen and the website hero.
-- **Second wallpaper, shipped as a choice:** `wallpaper/steel-os-wallpaper-room-draft.png`
-  (1632x964, third version of the room). Isometric gaming studio: person on
+- **Second wallpaper, shipped as a choice:** `wallpaper/steel-os-wallpaper-room-3840x2160.png`
+  (3840x2160, final size). Isometric gaming studio: person on
   the couch with a controller, space game on the TV, Steel OS on the monitors
   and a neon sign. rodger-roberts-dev's favourite; appears in Plasma's
   wallpaper settings as the alternative.
 
-Still to do: render the room scene at 3840x2160 (it will look soft on a 4K
-screen at its current size), keep the Steel OS sign clear of the Plasma panel,
-and check the small text on the room monitors, which is an AI render and not
-real UI.
+Both are final size. Before the image ships, check in the VM that Plasma's
+bottom panel does not cover the logo on either wallpaper.
