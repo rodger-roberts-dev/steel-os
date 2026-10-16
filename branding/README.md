@@ -50,9 +50,19 @@ Font License, free for commercial use).
 
 ## Where each file goes in the image
 
-See STEEL-31 in Jira for the full table: Plymouth boot splash, SDDM login
-screen, wallpaper, Kickoff start button, `/usr/lib/os-release` logo, fastfetch
-terminal banner, installer product name.
+Done by `build_files/build.sh` section 5 and `system_files/` (STEEL-31):
+
+| Surface | File in the image |
+|---|---|
+| Desktop wallpaper, default | `/usr/share/backgrounds/default.jxl` links to the waves wallpaper (Bazzite's mechanism) |
+| Wallpaper chooser | `/usr/share/wallpapers/steel-os-waves/` and `steel-os-room/` as Plasma wallpaper packages |
+| Login screen | `/usr/share/sddm/themes/breeze/theme.conf.user` points at the waves wallpaper |
+| Boot splash | `/usr/share/plymouth/themes/spinner/watermark.png`, the logo at 220 px wide |
+| About this System | `/etc/xdg/kcm-about-distrorc` and `/usr/share/pixmaps/steel-os.png` |
+
+Still to do: start-menu button icon (STEEL-7), OS name in `/etc/os-release`
+and the icon in the hicolor theme (STEEL-48), installer product name
+(STEEL-35), terminal banner.
 
 ## Wallpapers
 

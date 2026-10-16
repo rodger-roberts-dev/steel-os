@@ -37,3 +37,23 @@ install -D -m 0644 /ctx/cosign.pub /etc/pki/containers/steel-os.pub
 ### 4. Services
 # Nothing enabled yet. wsdd (Windows network discovery) is installed above
 # but is switched on by STEEL-39 together with the firewall rule it needs.
+
+### 5. Branding (STEEL-31)
+# Wallpapers as Plasma wallpaper packages, so both appear in the wallpaper
+# chooser with a name. metadata.json for each lives in system_files/.
+install -D -m 0644 /ctx/branding/wallpaper/steel-os-wallpaper-waves-3840x2160.png \
+    /usr/share/wallpapers/steel-os-waves/contents/images/3840x2160.png
+install -D -m 0644 /ctx/branding/wallpaper/steel-os-wallpaper-room-3840x2160.png \
+    /usr/share/wallpapers/steel-os-room/contents/images/3840x2160.png
+
+# Default desktop wallpaper, the way Bazzite does it: Fedora's Plasma reads
+# /usr/share/backgrounds/default.jxl and default-dark.jxl, and Bazzite points
+# those at its own image. We point them at the waves wallpaper. The file is a
+# PNG behind a .jxl name; the image loader checks the content, not the name.
+# If the VM test shows a blank desktop, convert the wallpapers to JXL.
+ln -sf /usr/share/wallpapers/steel-os-waves/contents/images/3840x2160.png /usr/share/backgrounds/default.jxl
+ln -sf /usr/share/wallpapers/steel-os-waves/contents/images/3840x2160.png /usr/share/backgrounds/default-dark.jxl
+rm -f /usr/share/backgrounds/default.xml
+
+# Logo for System Settings > About (see system_files/etc/xdg/kcm-about-distrorc)
+install -D -m 0644 /ctx/branding/icon/png/steel-os-icon-dark-256.png /usr/share/pixmaps/steel-os.png

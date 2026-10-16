@@ -14,6 +14,7 @@ COPY build_files /
 COPY system_files /system_files
 COPY packages /packages
 COPY cosign.pub /cosign.pub
+COPY branding /branding
 
 # Base image: Bazzite stable, KDE Plasma, AMD and Intel graphics.
 # The NVIDIA variants (bazzite-nvidia-open, bazzite-nvidia) are handled by

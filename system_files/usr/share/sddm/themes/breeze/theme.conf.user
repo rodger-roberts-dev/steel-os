@@ -1,0 +1,6 @@
+# Steel OS (STEEL-31): login screen background.
+# This is the override file Plasma's own "Login Screen" settings page writes;
+# it sits next to Breeze's theme.conf and wins over it.
+[General]
+type=image
+background=/usr/share/wallpapers/steel-os-waves/contents/images/3840x2160.png

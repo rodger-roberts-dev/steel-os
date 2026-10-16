@@ -1,0 +1,13 @@
+{
+    "KPackageStructure": "Plasma/Wallpaper",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Steel & Code"
+            }
+        ],
+        "Id": "steel-os-room",
+        "License": "All rights reserved; Steel OS artwork, see branding/README.md",
+        "Name": "Steel OS Gaming Room"
+    }
+}
