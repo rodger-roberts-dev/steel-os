@@ -12,7 +12,7 @@ built on Arch Linux and Hyprland.
 - Minimal applications
 - Keyboard-first navigation
 - WezTerm as the default terminal
-- Google Chrome as the default browser
+- Google Chrome as the default browser and firefox for my uncle LOL
 - Forge-powered development
 - Reproducible configurations
 
