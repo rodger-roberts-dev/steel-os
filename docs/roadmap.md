@@ -198,8 +198,16 @@ Two routes, cheapest first:
 
 Also in this phase: publish the `steel-os` package in our own small package
 repository (Omarchy publishes its build tooling), so phase 1's install script
-becomes `pacman -S steel-os`. This is a static set of files on GitHub Releases
-or similar. It is not an app server; nothing needs to run.
+becomes `pacman -S steel-os`. This is a static set of files. It is not an app
+server; nothing needs to run.
+
+**Where downloads live (decided by T, 2026-10-15):** the download page is on
+`blackbox-entertainment.com`, which is already behind Cloudflare, and the files
+(the ISO, the steel-os package, checksums and signatures) sit in T's existing
+Cloudflare R2 storage under a subdomain such as `downloads.blackbox-entertainment.com`.
+R2 has no bandwidth charges, so a popular ISO costs nothing extra. A GitHub
+Action uploads each release to R2 automatically. GitHub Releases remains a
+mirror for people who prefer it.
 
 Test: a person outside the team installs Steel OS from the download page using
 only the install guide.
