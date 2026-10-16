@@ -1,0 +1,6 @@
+# Steel OS (STEEL-50): default root filesystem for installs and disk images.
+# bootc-image-builder and `bootc install` read this; without it the ISO build
+# stops with "no default root filesystem type specified in container".
+# btrfs matches what Bazzite's own installer uses.
+[install.filesystem.root]
+type = "btrfs"

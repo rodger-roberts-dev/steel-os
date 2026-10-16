@@ -91,7 +91,9 @@ jobs:
           image: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.DEFAULT_TAG }}
           chown: ${{ env.USER_UID }}:${{ env.USER_GID }}
           types: ${{ matrix.disk-type }}
-          additional-args: --use-librepo=True
+          # Bazzite does not declare a default root filesystem, so bootc-image-builder
+          # must be told. Bazzite installs use btrfs.
+          additional-args: --use-librepo=True --rootfs btrfs
 
       # Steel OS (STEEL-50): give the files a real name and a checksum, so the
       # download page can link to steel-os-<version>-<arch>.iso and verify it.
