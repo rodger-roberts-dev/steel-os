@@ -13,25 +13,23 @@ Jira: STEEL-1
 Steel OS is a **Steel & Code** (steelandcode.com) project, made in partnership
 with **Blackbox Entertainment**. Say it that way on anything public.
 
-Steel OS is a Linux operating system for everyday people. It is built on top of
-**Arch Linux** using **Omarchy**, an opinionated Arch setup made by 37signals
-(the Basecamp company). Omarchy gives us a working desktop, an installer, an
-updater, and a snapshot system. Steel OS adds the choices, apps, and tools that
-make it suitable for a non-technical person.
+Steel OS is a Linux operating system for everyday people. It is built as a
+**custom image on top of Bazzite**, the Fedora Atomic gaming desktop made by
+Universal Blue, using their image template. Bazzite gives us a working KDE
+Plasma desktop, an installer, whole-image updates with rollback, and gaming
+support out of the box. Steel OS adds the choices, apps, and polish that make
+it suitable for a non-technical person. Decided 2026-10-15 (section 5.5);
+before that the project was based on Omarchy (Arch + Hyprland).
 
-Steel OS is **not** a fork of Arch or of Omarchy. It is a layer that sits on top
-of an Omarchy install and changes what is installed and how it behaves.
-
-In the product director's words: "Steel OS is an Arch/Omarchy-based
-distribution. We maintain package manifests for core applications, development
-tools, optional software, and excluded packages. The bootstrap script currently
-performs a read-only package audit. The project is in early alpha development,
-not yet a standalone installer."
+Steel OS is **not** a fork of Fedora or of Bazzite. It is a short recipe
+(section 3) that starts from Bazzite's image and adds our files on top. Every
+Steel OS machine runs that one image and updates to the next one as a whole.
 
 ### Product goals, in priority order
 
-1. **Safe updates.** Users never get raw Arch updates. Every update is curated,
-   a snapshot is taken first, and the user can roll back from the boot menu.
+1. **Safe updates.** Users never get raw package updates. The whole system
+   updates as one tested image, automatically every Tuesday, and the previous
+   version is always in the boot menu.
 2. **Easy like Windows.** A non-technical user must be able to install the OS,
    update it, connect a printer, find network computers, and install apps
    without ever opening a terminal.
