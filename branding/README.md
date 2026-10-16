@@ -35,7 +35,7 @@ Forge Orange is for accents and large shapes, not small body text on white.
 | `logo/` | Horizontal logo, SVG, in `color-on-dark`, `color-on-light`, `mono-white`, `mono-black`, plus `png/` at 2000 px wide | Website, login screen, installer, documents |
 | `mark/` | The hexagon mark only, same four variants, SVG | Start menu button, boot splash, favicon source |
 | `icon/` | Square rounded app icon, SVG in `dark`, `light`, `orange`, `mono-white`, `mono-black`, plus `png/` at 16 to 1024 px | `/usr/share/icons/hicolor/` in the image, the About screen logo, the web app icon |
-| `wallpaper/` | PNG at 3840x2160, 2560x1440, 1920x1080 and the SVG source | Default desktop wallpaper and login background |
+| `wallpaper/` | Two chosen drafts (waves = default, room = option) plus the first-kit hexagon PNGs at 3840x2160, 2560x1440, 1920x1080 and the SVG source | Default desktop wallpaper, optional wallpaper, login background |
 
 All SVGs are pure shapes with the lettering converted to outlines, so no font is
 needed on the machine. The lettering was set in Saira Stencil One (SIL Open
@@ -47,9 +47,9 @@ Font License, free for commercial use).
 - Do not recolour, stretch, rotate or add shadows. On busy photos use a mono
   version.
 - Smallest sizes: mark 16 px, horizontal logo 120 px wide.
-- The `wallpaper/` files predate the final colour choice and use a grey
-  hexagon with the orange glow; they are the starting wallpaper until a
-  blue-and-orange version is made.
+- The first-kit `wallpaper/` PNGs predate the final colour choice and use a
+  grey hexagon with the orange glow; the chosen wallpapers are the two drafts
+  described under Wallpaper candidates.
 
 ## Where each file goes in the image
 
@@ -59,11 +59,22 @@ terminal banner, installer product name.
 
 ## Wallpaper candidates
 
+Decided 2026-10-16 by rodger-roberts-dev and T.
+
+- **Default desktop wallpaper:** `wallpaper/steel-os-wallpaper-waves-draft.png`
+  (1672x941). Dark navy with blue and orange light waves, the hex mark and
+  `STEEL OS_` centred. Clean, no stray text, matches the brand colours. This is
+  also the candidate for the website hero background and the login screen.
+- **Optional wallpaper (shipped, user can pick it):**
+  `wallpaper/steel-os-wallpaper-room-draft.png` (1631x964). Isometric gaming
+  room, second version: person on the couch with a controller, space game on
+  the TV, Steel OS on the monitors and a neon sign. rodger-roberts-dev liked
+  this one; it stays in the image as a choice in the wallpaper settings.
 - `wallpaper/steel-os-wallpaper-3840x2160.png` and smaller sizes: the hexagon
-  wallpaper from the first kit. Safe default.
-- `wallpaper/steel-os-wallpaper-room-draft.png` (added by T, 2026-10-16): an
-  isometric gaming-room scene with the Steel OS mark on the screens and a neon
-  sign. **Chosen as the Steel OS desktop image by rodger-roberts-dev and T, 2026-10-16.** Two things to fix before it ships: the small text on the
-  screens is garbled (AI render artifact) and should be removed or replaced
-  with real UI, and the composition closely mirrors Bazzite's own wallpaper,
-  so a Steel OS version should differ enough to be recognisably ours.
+  wallpaper from the first kit, grey hex with orange glow. Kept as the fallback
+  until the two above are rendered at full size.
+
+Before either draft ships: regenerate at 3840x2160 (the drafts are about
+1600 px wide and will look soft on a 4K screen), keep the logo centred so
+Plasma's panel does not cover it, and check the small text on the room
+monitors, which is still an AI render and not real UI.
