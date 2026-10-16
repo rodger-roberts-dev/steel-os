@@ -100,28 +100,19 @@ done
 install -D -m 0644 /ctx/branding/icon/steel-os-icon-dark.svg /usr/share/icons/hicolor/scalable/apps/steel-os.svg
 
 ### 8. Keep the package repos usable for the ISO builder (STEEL-50)
-# bootc-image-builder reads the enabled dnf repos inside the image to put the
-# installer together. Bazzite leaves its "terra-mesa" repo pointing at a
-# signing key file that is not in the image, which stops the ISO build with
-# "Failed to retrieve GPG key". Repos are not used on installed machines
-# (updates come as whole images), so disabling a broken one changes nothing
-# for users. Any repo whose key file is really missing is switched off here.
-# Fedora writes its key paths with $releasever and $basearch, so those are
-# expanded first; otherwise every Fedora repo would be switched off too.
-releasever="$(rpm -E %fedora)"
-basearch="$(rpm -E %_arch)"
+# bootc-image-builder copies the enabled dnf repos out of the image and runs
+# dnf in its own container to assemble the installer. A repo whose signing
+# key is a local file (gpgkey=file://...) only works there if that file also
+# exists in the builder's container. Fedora's own keys do; Bazzite's extra
+# repos (terra, rpmfusion and friends) point at keys that do not, and the ISO
+# build stops with "Failed to retrieve GPG key". Repos are not used on an
+# installed machine (updates arrive as whole images), so every repo that is
+# not Fedora's own and keys from a local file is switched off in the image.
 for repo in /etc/yum.repos.d/*.repo; do
     [[ -f "$repo" ]] || continue
-    while IFS= read -r keyline; do
-        keyfile="${keyline#gpgkey=file://}"
-        keyfile="${keyfile//\$releasever/$releasever}"
-        keyfile="${keyfile//\$\{releasever\}/$releasever}"
-        keyfile="${keyfile//\$basearch/$basearch}"
-        keyfile="${keyfile//\$\{basearch\}/$basearch}"
-        if [[ ! -e "$keyfile" ]]; then
-            echo "Disabling $repo: signing key $keyfile is missing"
-            sed -i -e 's/^enabled=1/enabled=0/' -e 's/^enabled=true/enabled=false/' "$repo"
-            break
-        fi
-    done < <(grep -E '^gpgkey=file://' "$repo" || true)
+    if grep -qE '^gpgkey=file://' "$repo" && ! grep -qE '^gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora' "$repo"; then
+        echo "Disabling $repo: its signing key is a local file the ISO builder cannot read"
+        sed -i -e 's/^enabled=1/enabled=0/' -e 's/^enabled=true/enabled=false/' "$repo"
+    fi
 done
+grep -l '^enabled=1' /etc/yum.repos.d/*.repo || true
