@@ -257,11 +257,12 @@ this section is the *to-do list* that gets us there.
 
 | Story | State | Next action |
 |---|---|---|
-| STEEL-1, 2, 3, 4, 6 | Written, PRs #2 to #6 open | rodger-roberts-dev merges, T moves to Done |
+| STEEL-2, 3 | Done: PRs #3 and #4 merged 2026-10-16 | Nothing |
+| STEEL-1, 4, 6 | PRs #2, #5, #6 merged before the last commits landed; master lacks the Bazzite and Firefox/Konsole changes | rodger-roberts-dev merges follow-ups #9 (CLAUDE.md), #10, #11, #12; then Done |
 | STEEL-28 base decision | Decided (Bazzite) | T moves to Done |
 | STEEL-24 update and rollback test | Passed on stock Bazzite in the VM | Repeat once on the first Steel OS image, then Done |
 | STEEL-5 test machine | VirtualBox VM "STEEL" ready; Command untouched | Install the first Steel OS ISO on Command in step 2 |
-| STEEL-29 shortcuts | Translated files in PR #7; rodger's own Katana files still to come | rodger exports `~/.config/kglobalshortcutsrc` and his Konsole profile |
+| STEEL-29 shortcuts | PR #7 merged; the Konsole/Firefox commit is in follow-up #13; rodger's own Katana files still to come | rodger merges #13 and exports `~/.config/kglobalshortcutsrc` and his Konsole profile |
 | STEEL-31 branding | Logo kit and both 4K wallpapers in PR #8 | Wire into the image in step 2 |
 | STEEL-26 download site | steel-os.org live, Download button says "coming soon" | R2 upload workflow in step 6 |
 | Everything else | To Do | Below |
@@ -272,7 +273,7 @@ Nothing here needs code. It needs three people to answer and click.
 
 | Who | Story | Do this |
 |---|---|---|
-| rodger-roberts-dev | PRs #1 to #8 | Review and merge, or comment what to change |
+| rodger-roberts-dev | PRs #8 to #13 | Review and merge: #8 branding, #9 CLAUDE.md, #10 architecture, #11 app plan, #12 roadmap, #13 shortcuts. #9 to #13 carry the commits the first merges missed |
 | rodger-roberts-dev | STEEL-16 | Create the cosign signing key and store the private half as the GitHub secret `SIGNING_SECRET`; commit `cosign.pub` |
 | rodger-roberts-dev | STEEL-29 | Export the shortcut and Konsole files from the Katana checkpoint |
 | rodger-roberts-dev | STEEL-23, STEEL-25 | Decide the rebuild cadence; say how Forge will be packaged (Flatpak, AppImage, container) |
@@ -280,7 +281,7 @@ Nothing here needs code. It needs three people to answer and click.
 | T | STEEL-20 | From the Bazzite VM, list the start-menu apps Steel OS should not ship |
 | T | STEEL-43 | USPTO trademark search for "Steel OS" |
 | T | STEEL-42 | Steel OS card on blackbox-entertainment.com |
-| T | STEEL-1, 2, 3, 4, 6, 28 | Move to Done after the merges |
+| T | STEEL-1, 4, 6, 28 | Move to Done after #10, #11, #12 merge; STEEL-28 can go to Done now |
 
 ### Step 2: First image, version 0.2 (target 2026-11-06)
 
