@@ -63,7 +63,7 @@ terminal banner, installer product name.
   wallpaper from the first kit. Safe default.
 - `wallpaper/steel-os-wallpaper-room-draft.png` (added by T, 2026-10-16): an
   isometric gaming-room scene with the Steel OS mark on the screens and a neon
-  sign. Draft. Two things to fix before it ships: the small text on the
+  sign. **Chosen as the Steel OS desktop image by rodger-roberts-dev and T, 2026-10-16.** Two things to fix before it ships: the small text on the
   screens is garbled (AI render artifact) and should be removed or replaced
   with real UI, and the composition closely mirrors Bazzite's own wallpaper,
   so a Steel OS version should differ enough to be recognisably ours.
