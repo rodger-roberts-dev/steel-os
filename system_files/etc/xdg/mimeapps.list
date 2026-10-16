@@ -1,0 +1,13 @@
+# Steel OS (STEEL-19): default applications for every user.
+# Replaces Bazzite's file of the same name; the Bazaar line is Bazzite's and is
+# kept. Firefox (Flatpak, installed by STEEL-17) is the default browser. A
+# user who picks Chrome in System Settings > Default Applications overrides
+# this for their own account only.
+[Default Applications]
+application/vnd.flatpak.ref=io.github.kolunmi.Bazaar.desktop
+x-scheme-handler/http=org.mozilla.firefox.desktop
+x-scheme-handler/https=org.mozilla.firefox.desktop
+x-scheme-handler/about=org.mozilla.firefox.desktop
+x-scheme-handler/unknown=org.mozilla.firefox.desktop
+text/html=org.mozilla.firefox.desktop
+application/xhtml+xml=org.mozilla.firefox.desktop
