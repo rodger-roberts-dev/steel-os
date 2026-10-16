@@ -160,6 +160,11 @@ Goal: product goal 3. Almost entirely inherited from Bazzite.
 Deliverables:
 - Confirm Steam, controllers, and Proton work on the test machine with a real
   GPU. Bazzite ships them.
+- Controllers, joysticks and flight sticks work when plugged in (T,
+  2026-10-15): Bazzite covers Xbox, PlayStation, Nintendo and most joysticks;
+  Steel OS adds udev rules for the awkward flight sticks, a "Test your
+  controller" entry, Oversteer for wheels, and an honest compatibility page.
+  Tested on the physical machine with real devices (STEEL-32).
 - Lutris (for the EA app), Heroic, and GeForce NOW in the Steel Apps list.
   Battle.net through Lutris.
 - A short "gaming on Steel OS" page that says plainly: Xbox Game Pass is cloud
