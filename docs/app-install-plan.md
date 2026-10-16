@@ -103,11 +103,22 @@ are already in the Omarchy base install.
 | Slack | `slack-desktop` | **OPR** (also AUR) | `omarchy install app Slack slack-desktop`. Omarchy's own menu already offers this. |
 | Dropbox | `dropbox` (plus `dropbox-cli`, `nautilus-dropbox`) | **OPR** (also AUR) | `omarchy install service dropbox`. Note: its Omarchy top-bar plugin does not exist on Plasma; the Dropbox tray icon works there. |
 
-**T's must-haves (2026-10-15):** Slack, Zoom, and Dropbox must each be a
-one-click install, or at least an easy one. All three are covered: Slack and
-Dropbox come from Omarchy's own repository with existing installers, and Zoom
-works as a web app out of the box. They are the first three rows of the Steel
-Apps list.
+| Office suite ("Open Office") | `libreoffice-fresh` | Arch extra | Already installed by Omarchy on every machine: zero clicks. See the note below. |
+
+**T's must-haves (2026-10-15):** Slack, Zoom, Dropbox, and an office suite must
+each be a one-click install, or at least an easy one. All four are covered:
+Slack and Dropbox come from Omarchy's own repository with existing installers,
+Zoom works as a web app out of the box, and the office suite is already
+installed. Slack, Zoom and Dropbox are the first three rows of the Steel Apps
+list.
+
+**About "Open Office".** Apache OpenOffice has had no meaningful development
+for years and is not in the Arch repositories (only an old `openoffice-bin` in
+the AUR). LibreOffice is its direct successor, made by the same community that
+left OpenOffice, and it opens and saves Word, Excel and PowerPoint files.
+Omarchy installs `libreoffice-fresh` by default, so every Steel OS machine
+already has it. This settles the keep-or-remove question in section 4: **keep
+LibreOffice**, and it is removed from `packages/excluded.txt` in this PR.
 | Moonlight (game streaming) | `moonlight-qt` | Arch extra | Already in Omarchy base |
 | Battle.net | not a package | Blizzard installer via `umu-launcher` (OPR) | `omarchy install gaming battlenet` |
 | Google web apps (Gmail, Calendar, Drive, Docs) | not packages | web apps | `omarchy webapp install` with each URL. Omarchy fetches the icon. |
@@ -133,9 +144,9 @@ here for the two items that are not packages (Battle.net, web apps).
 `packages/review.txt`: each entry now has a comment with the recommended
 decision. HEY and Basecamp, which are not packages, are explained in a comment.
 
-`packages/excluded.txt`: comments added. `libreoffice-fresh` appears in both
-`excluded.txt` and `review.txt`, which contradict each other. Left in both,
-flagged, for T to decide.
+`packages/excluded.txt`: comments added. `libreoffice-fresh` appeared in both
+`excluded.txt` and `review.txt`, which contradicted each other. T decided on
+2026-10-15 to keep an office suite, so it is removed from `excluded.txt`.
 
 ---
 
@@ -148,7 +159,7 @@ These are the "Part 1" decisions the ticket assigns to people, not to Claude.
 | `chromium` (review) | Remove **after** Chrome is installed and set as default | Omarchy ships it as the default browser; web apps need a Chromium-family browser, which Chrome satisfies. |
 | `xournalpp` (review) | Remove | Handwriting and PDF annotation. Niche. |
 | `pinta` (review) | **Keep** | A Windows user expects a Paint. |
-| `libreoffice-fresh` (review and excluded) | **Keep** | "Easy like Windows" users open Word and Excel files. If removed, nothing on the system opens a `.docx`. |
+| `libreoffice-fresh` (review and excluded) | **Keep. Decided by T on 2026-10-15** (asked for a one-click office suite) | "Easy like Windows" users open Word and Excel files. Removed from `excluded.txt`; marked keep in `review.txt`. |
 | HEY, Basecamp (review) | Remove the web-app launchers | 37signals products most users will not have. `omarchy webapp remove HEY` and `omarchy webapp remove Basecamp`. |
 | `foot` (excluded) | Remove only after WezTerm is the default terminal | Omarchy's terminal launcher must point at WezTerm first. |
 | Zoom | Web app, not the AUR package | Keeps the AUR out of the default set. |

@@ -5,10 +5,6 @@
 # only after WezTerm is set as the default terminal.
 foot
 
-# Office suite. Also listed in review.txt with a recommendation to KEEP it.
-# The two files disagree; see docs/app-install-plan.md section 4. T to decide.
-libreoffice-fresh
-
-# The slower-moving LibreOffice line. Omarchy ships -fresh, so -still is never
-# needed alongside it.
+# The slower-moving LibreOffice line. Omarchy ships libreoffice-fresh, which
+# Steel OS keeps (T, 2026-10-15), so -still is never needed alongside it.
 libreoffice-still

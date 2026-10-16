@@ -13,8 +13,9 @@ xournalpp
 # Simple image editor. Recommend: keep (a Windows user expects a Paint).
 pinta
 
-# Office suite. Recommend: keep, so Word and Excel files open.
-# Also listed in excluded.txt; the two files disagree. T to decide.
+# Office suite. KEEP, decided by T on 2026-10-15 (asked for a one-click
+# office suite; LibreOffice is OpenOffice's maintained successor and is
+# already installed by Omarchy). Listed here only so the decision is recorded.
 libreoffice-fresh
 
 # HEY and Basecamp are not packages. They are web-app launchers that Omarchy
