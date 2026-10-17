@@ -3,24 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Printers, scanners and network · Steel OS Help</title>
+<title>Printers, scanners and sharing · Steel OS Help</title>
 <link rel="stylesheet" href="help.css">
 </head>
 <body>
 <div class="wrap">
 <header class="top">
   <a class="brand" href="index.html">STEEL <span class="os">OS</span> Help</a>
-  <nav><a href="index.html">Help home</a><a href="getting-started.html">Getting started</a><a href="apps.html">Apps</a><a href="updates.html">Updates</a><a href="shortcuts.html">Shortcuts</a><a href="gaming.html">Gaming</a><a href="troubleshooting.html">Something went wrong</a></nav>
+  <nav><a href="index.html">Help home</a><a href="getting-started.html">Getting started</a><a href="apps.html">Apps</a><a href="updates.html">Updates</a><a href="network.html">Wi-Fi and home network</a><a href="shortcuts.html">Shortcuts</a><a href="gaming.html">Gaming</a><a href="troubleshooting.html">Something went wrong</a></nav>
 </header>
-<h1>Printers, scanners and network</h1>
-<p class="lede">Most printers are found in one click; older ones use drivers that are already built in.</p>
+<h1>Printers, scanners and sharing</h1>
+<p class="lede">USB printers set themselves up, network printers are found by themselves, and the common brands need no driver download.</p>
 <h2>Add a printer</h2>
 <ol>
-  <li>Turn the printer on. Connect it by USB, or make sure it is on the same network.</li>
-  <li>Open <b>System Settings</b>, then <b>Printers</b>.</li>
-  <li>Click <b>Add</b>. Pick your printer from the list and follow the steps.</li>
+  <li><b>USB:</b> plug the printer in and switch it on. Steel OS sets it up by itself within a few seconds.</li>
+  <li><b>Wi-Fi or network:</b> most printers appear by themselves. If yours doesn't, open <b>System Settings</b>, then <b>Printers</b>, click <b>Add</b> and pick it from the list.</li>
   <li>Print a test page.</li>
 </ol>
+<p>HP, Canon, Brother and Epson printers work without downloading a driver, as do most printers made since about 2015.</p>
 <p>Printing to a PDF file works in every app, with no printer.</p>
 <h2>Scan</h2>
 <p>Open <b>Skanpage</b> from the start menu, pick your scanner, then <b>Scan</b>.</p>
@@ -31,7 +31,14 @@
   <li>If the Windows PC isn't listed, type <code>smb://</code> followed by its name in the address bar, for example <code>smb://office-pc</code>, and press <kbd>Enter</kbd>.</li>
   <li>Sign in with the Windows account name and password.</li>
 </ol>
-<p class="note">Sharing a folder from Steel OS to Windows with a right-click is coming in a later update.</p>
+<h2>Share a folder with Windows PCs</h2>
+<ol>
+  <li>In Dolphin, right-click the folder, then <b>Properties</b>, then the <b>Share</b> tab.</li>
+  <li>Tick <b>Share with Microsoft Windows (SMB)</b>, and choose who can open it and whether they can change files.</li>
+  <li>On the Windows PC, open File Explorer, then <b>Network</b>, then this computer. Sign in with your Steel OS user name and password.</li>
+</ol>
+<h2>A printer or scanner that still doesn't work</h2>
+<p>A few models need the maker's own driver, which Steel OS can't include: some Brother scanners over USB (Brother's <i>brscan</i>) and some Canon laser printers (Canon's <i>CAPT</i>). Download the Linux driver from the maker's website, or report the model at <a href="https://steel-os.org/report">steel-os.org/report</a> and we'll look into it.</p>
 <footer>Steel OS Help is built into Steel OS (start menu, Steel OS Help) and is also at steel-os.org/help. Something missing? Tell us at <a href="https://steel-os.org/report">steel-os.org/report</a>.</footer>
 </div>
 </body>

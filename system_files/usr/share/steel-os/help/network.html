@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wi-Fi and home network · Steel OS Help</title>
+<link rel="stylesheet" href="help.css">
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <a class="brand" href="index.html">STEEL <span class="os">OS</span> Help</a>
+  <nav><a href="index.html">Help home</a><a href="getting-started.html">Getting started</a><a href="apps.html">Apps</a><a href="updates.html">Updates</a><a href="printers.html">Printers and sharing</a><a href="shortcuts.html">Shortcuts</a><a href="gaming.html">Gaming</a><a href="troubleshooting.html">Something went wrong</a></nav>
+</header>
+<h1>Wi-Fi and home network</h1>
+<p class="lede">Getting online works like Windows: click the network icon, pick your network, type the password.</p>
+<h2>Connect to Wi-Fi</h2>
+<ol>
+  <li>Click the <b>network icon</b> on the taskbar, at the bottom right next to the clock.</li>
+  <li>Click your Wi-Fi network, then <b>Connect</b>.</li>
+  <li>Type the Wi-Fi password and press <kbd>Enter</kbd>. It is usually printed on a sticker on your router.</li>
+</ol>
+<p>Steel OS remembers the network and connects by itself next time.</p>
+<h2>Use a cable</h2>
+<p>Plug a network cable into the PC. It connects by itself; there is nothing to set up.</p>
+<h2>A network that isn't in the list (hidden Wi-Fi)</h2>
+<ol>
+  <li>Open <b>System Settings</b>, then <b>Wi-Fi &amp; Networking</b>.</li>
+  <li>Click <b>+</b> (Add new connection), choose <b>Wi-Fi</b>, then <b>Create</b>.</li>
+  <li>Type the network name exactly, choose the security type (usually <b>WPA/WPA2 Personal</b> or <b>WPA3 Personal</b>), type the password, then <b>Save</b>.</li>
+</ol>
+<h2>Use your phone's internet</h2>
+<ul>
+  <li><b>Phone hotspot:</b> turn on the hotspot on your phone. It appears in the Wi-Fi list like any network.</li>
+  <li><b>USB tethering:</b> connect the phone with its cable and turn on USB tethering on the phone. Steel OS treats it like a cable connection.</li>
+</ul>
+<h2>Share this PC's internet (hotspot)</h2>
+<p>Click the network icon on the taskbar, then the <b>hotspot</b> button at the top. Other devices can then join the network it shows, using the password it shows.</p>
+<h2>Work or school Wi-Fi</h2>
+<p>Networks that ask for a user name as well as a password (for example <i>eduroam</i>) need a few extra details. Pick the network, and when Steel OS asks, fill in what your IT department gives you: usually the method (<b>PEAP</b> or <b>TTLS</b>), your user name and password, and sometimes a certificate.</p>
+<h2>VPN</h2>
+<p>Most VPN services and workplaces give you a file to import.</p>
+<ol>
+  <li>Open <b>System Settings</b>, then <b>Wi-Fi &amp; Networking</b>.</li>
+  <li>Click <b>+</b>, then at the bottom <b>Import VPN connection</b>, and choose the file. WireGuard files end in <code>.conf</code>; OpenVPN files end in <code>.ovpn</code>.</li>
+  <li>Type your VPN user name and password if asked, then <b>Save</b>.</li>
+  <li>To connect, click the network icon on the taskbar and switch the VPN on.</li>
+</ol>
+<p>WireGuard, OpenVPN, Cisco AnyConnect and Cisco IPsec work out of the box. Some VPN services also have their own app in the App Store.</p>
+<h2>Other computers and printers at home</h2>
+<p>Finding Windows PCs, opening their shared folders, sharing your own folders, and network printers are on <a href="printers.html">Printers and sharing</a>.</p>
+<h2>A fixed address (only if you need one)</h2>
+<p>Some home setups, such as a game server or a printer reserved by address, need the PC to keep the same address. In <b>Wi-Fi &amp; Networking</b>, pick the connection, open <b>IPv4</b>, change <b>Method</b> to <b>Manual</b>, and type the address, netmask and gateway your router uses.</p>
+<h2>Something's not working</h2>
+<div class="tbl"><table>
+<tr><th>What you see</th><th>Try this</th></tr>
+<tr><td>Your network isn't in the list</td><td>Check that the airplane-mode icon isn't on. Move closer to the router. Some routers have two networks (2.4 GHz and 5 GHz); try the other one.</td></tr>
+<tr><td>It says the password is wrong</td><td>Passwords are case-sensitive. Check the sticker on the router again.</td></tr>
+<tr><td>Connected, but websites don't open</td><td>Restart the router: unplug it, wait 30 seconds, plug it back in. Then, in the network list, right-click the network, choose <b>Forget</b>, and connect again.</td></tr>
+<tr><td>Slow or keeps dropping</td><td>Move closer to the router, or use a cable. On routers with two networks, the 5 GHz one is faster when you are close.</td></tr>
+<tr><td>A hotel or caf&eacute; network with a sign-in page</td><td>Open Firefox. The sign-in page appears; accept it, and the internet starts working.</td></tr>
+</table></div>
+<footer>Steel OS Help is built into Steel OS (start menu, Steel OS Help) and is also at steel-os.org/help. Something missing? Tell us at <a href="https://steel-os.org/report">steel-os.org/report</a>.</footer>
+</div>
+</body>
+</html>
