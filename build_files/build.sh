@@ -360,6 +360,10 @@ done
 # order, next to the start button. Anyone can pin or unpin more.
 # The four desktop boxes (Super+1 to 4) move from beside the start button to
 # beside the clock, numbered, so they don't look like empty taskbar spots.
+# Steam stays installed and on the taskbar, but no longer starts by itself at
+# login (T, 2026-10-17): the base image launched it silently at every login,
+# and its first-run download got in the way while people set up their PC.
+rm -f /etc/skel/.config/autostart/steam.desktop /etc/xdg/autostart/steam.desktop
 STEEL_PINS='"preferred://browser", "applications:steel-os-portal.desktop", "preferred://filemanager", "applications:io.github.kolunmi.Bazaar.desktop", "applications:steel-shield.desktop", "applications:steam.desktop", "applications:net.lutris.Lutris.desktop", "applications:org.kde.konsole.desktop"'
 for f in /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/bazzite-pins.js \
          /usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js; do
