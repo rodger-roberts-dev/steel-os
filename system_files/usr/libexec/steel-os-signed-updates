@@ -1,0 +1,24 @@
+#!/usr/bin/bash
+# Steel OS (STEEL-47): make sure this PC only accepts signed Steel OS updates.
+#
+# The image's /etc/containers/policy.json requires every image from
+# ghcr.io/steel-and-code to carry a valid Steel OS signature (public key
+# /etc/pki/containers/steel-os.pub). PCs installed from the Steel OS ISO
+# already follow the image in "signed" mode. A PC that was switched to Steel OS
+# by hand may follow it in "unverified" mode, which skips that check; this
+# moves it to signed mode once, without downloading anything.
+
+set -euo pipefail
+
+ref="$(rpm-ostree status --json 2>/dev/null \
+    | jq -r '[.deployments[] | select(.booted == true) | .["container-image-reference"]][0] // empty')"
+case "$ref" in
+    ostree-unverified-registry:ghcr.io/steel-and-code/*)
+        image="${ref#ostree-unverified-registry:}"
+        echo "Steel OS: following $image without signature checks; switching to signed updates."
+        bootc switch --mutate-in-place --enforce-container-sigpolicy "$image"
+        ;;
+    *)
+        echo "Steel OS: updates are signature-checked ($ref)."
+        ;;
+esac

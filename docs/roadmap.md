@@ -35,27 +35,29 @@ the polish a Windows user expects.
   install.
 - **Updates.** Automatic every Tuesday at 4 am, with the previous version kept
   in the boot menu. See [updates-and-rollback.md](updates-and-rollback.md).
+- **One installer for every PC.** Three editions (AMD and Intel, NVIDIA RTX
+  and GTX 16, older NVIDIA GTX 900 and 1000); each PC moves to the right one by
+  itself after installation.
+- **Forgotten password.** Optional security questions, and **Forgot your
+  password?** on the login screen.
+- **Steel OS Setup and Help.** A first-login welcome with Skip on every page, and
+  plain-English help pages that work offline.
+- **Updates and security.** Apps update daily, a "Restart to finish updating"
+  notice, only signed updates accepted, and a same-day emergency channel. See
+  [security-policy.md](security-policy.md).
 - **Licences and credits.** Apache-2.0, a NOTICE file crediting Bazzite,
   Universal Blue and Fedora, and links to all source code.
 
 ## Next: 0.2.0 Preview for testers (target: early November 2026)
 
-- The installer defaults to "Use entire disk", ends with **Restart now**, and
-  has no Fedora feedback page.
-- A welcome screen at first login, where every step can be skipped.
-- Steel Apps grouped into Everyday, Work, Creative, Games and Developer tabs.
-- An install guide in plain English and a release checklist.
+- The installer defaults to "Use entire disk" and ends with **Restart now**
+  (built; in testing).
+- An install guide in plain English and a release checklist (written).
 - A **Download Preview** button on steel-os.org, with a SHA-256 checksum,
   release notes and known issues.
 
 ## Then: 0.3 to 0.5 (target: 15 January 2027)
 
-- **Accounts.** Forgotten-password recovery with security questions and a hint
-  on the login screen.
-- **Graphics.** One installer for every PC: it detects an NVIDIA card and
-  switches to the right image.
-- **Updates and security.** A plain-English restart notice, apps updating daily,
-  machines that refuse unsigned updates, and a written patch policy.
 - **Printers and network.** Printers and scanners such as the Canon PIXMA
   MG3620 working over USB with no driver download, Windows PCs visible on the
   network, and right-click folder sharing. See

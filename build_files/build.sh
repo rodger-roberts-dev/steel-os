@@ -436,6 +436,31 @@ else
     readlink -f /etc/systemd/system/display-manager.service || true
 fi
 
+### 18. Updates and security (STEEL-27, STEEL-49, STEEL-47, STEEL-23)
+# Policy in docs/security-policy.md. The system updates on Tuesday (uupd.timer,
+# see section 4 / system_files); apps update every day; an update that is
+# waiting shows "Restart to finish updating"; only signed Steel OS images are
+# accepted; and an urgent fix can reach PCs the same day.
+chmod 0755 /usr/libexec/steel-os-update-notice /usr/libexec/steel-os-signed-updates \
+    /usr/libexec/steel-os-urgent-update
+systemctl enable steel-os-app-updates.timer steel-os-signed-updates.service \
+    steel-os-urgent-update.timer
+systemctl --global enable steel-os-app-updates.timer steel-os-update-notice.timer
+
+# Only images signed with the Steel OS key are accepted from
+# ghcr.io/steel-and-code (all three editions). Bazzite's own entries stay.
+POLICY=/etc/containers/policy.json
+[[ -f "$POLICY" ]] || echo '{"default":[{"type":"reject"}],"transports":{"docker":{}}}' > "$POLICY"
+jq '.transports.docker["ghcr.io/steel-and-code"] = [{
+        "type": "sigstoreSigned",
+        "keyPath": "/etc/pki/containers/steel-os.pub",
+        "signedIdentity": {"type": "matchRepository"}
+    }]' "$POLICY" > "$POLICY.new"
+mv "$POLICY.new" "$POLICY"
+jq -e '.transports.docker["ghcr.io/steel-and-code"][0].type == "sigstoreSigned"' "$POLICY" >/dev/null
+test -s /etc/pki/containers/steel-os.pub
+jq -c '.transports.docker | keys' "$POLICY"
+
 ### 9. Rebuild the boot image so the boot splash shows Steel OS (STEEL-31)
 # The logo shown while the machine starts is read from the initramfs, a small
 # boot image Bazzite generated before our files were added. Our watermark in

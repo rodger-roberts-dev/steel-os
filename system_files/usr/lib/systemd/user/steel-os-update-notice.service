@@ -1,0 +1,9 @@
+# Steel OS (STEEL-27): "Restart to finish updating" when an update is waiting.
+[Unit]
+Description=Steel OS update restart notice
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/steel-os-update-notice

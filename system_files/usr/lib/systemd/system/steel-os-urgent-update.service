@@ -1,0 +1,9 @@
+# Steel OS (STEEL-23): download an urgent update the same day, if announced.
+[Unit]
+Description=Steel OS urgent update check
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/steel-os-urgent-update

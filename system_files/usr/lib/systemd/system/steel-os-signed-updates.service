@@ -1,0 +1,11 @@
+# Steel OS (STEEL-47): accept only signed Steel OS updates on this PC.
+[Unit]
+Description=Steel OS signed updates check
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/steel-os-signed-updates
+
+[Install]
+WantedBy=multi-user.target

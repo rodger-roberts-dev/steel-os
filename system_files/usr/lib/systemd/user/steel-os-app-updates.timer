@@ -1,0 +1,12 @@
+# Steel OS (STEEL-49): daily updates for this user's own Flatpak apps.
+[Unit]
+Description=Steel OS daily app updates (this user)
+
+[Timer]
+OnCalendar=daily
+RandomizedDelaySec=3h
+Persistent=true
+OnStartupSec=30min
+
+[Install]
+WantedBy=timers.target

@@ -53,14 +53,19 @@ The previous image stays in the boot menu
 Rolling back changes only the system. Files, settings and apps in the home
 folder are kept.
 
-## Still to come
+## Apps, notices, signatures and emergencies
 
-| Change | Why |
-|---|---|
-| Plain-English restart notice with **Restart now** and **Later** | Users see that an update is ready without opening a terminal |
-| Apps update every day, the system still on Tuesday | App fixes, above all for Firefox, don't need a restart, so they shouldn't wait a week |
-| Machines refuse any update not signed with the Steel OS key | Today images are signed, but installed machines don't yet check the signature |
-| A written security patch policy | How fast a Fedora or Bazzite fix reaches users, and the same-day emergency rebuild for critical fixes |
+- **Apps update every day,** quietly, on mains power. The system still updates
+  only on Tuesday. Apps don't need a restart, so their fixes, above all
+  Firefox's, don't wait a week.
+- **"Restart to finish updating".** When an update has been downloaded, a
+  notification offers **Restart now** or **Later**. It appears at most once a
+  day for the same update and never interrupts.
+- **Only signed updates.** PCs accept Steel OS images only when they are signed
+  with the Steel OS key, as `/etc/containers/policy.json` requires. PCs that
+  were switched to Steel OS by hand are moved to signed updates automatically.
+- **Emergencies.** A critical fix can reach PCs the same day: see
+  [security-policy.md](security-policy.md).
 
 ## How to test (in a VM)
 
