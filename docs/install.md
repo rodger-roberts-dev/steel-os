@@ -105,3 +105,19 @@ That's it. Steel OS updates itself every Tuesday from now on.
 | The default apps never appear | Check the internet connection, then restart. They retry by themselves. |
 
 Still stuck? Report it at **steel-os.org/report** with a photo of the screen.
+
+---
+
+## Privacy: the weekly device count
+
+Like Fedora and Bazzite, Steel OS takes part in Fedora's anonymous weekly
+device count (DNF Count Me). Once a week, one update check carries a flag
+saying "a Steel OS machine of this version". No name, no serial number, no IP
+address is kept. Fedora publishes the totals, and steel-os.org shows the
+Steel OS line.
+
+To switch it off, open a terminal and run:
+
+```
+sudo systemctl mask --now rpm-ostree-countme.timer
+```
