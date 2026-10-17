@@ -1,5 +1,7 @@
-# Steel & Code Forge (STEEL-25): where the one-click install gets Forge from.
-# One line, anything pip can install: a public wheel URL, a public git URL, or
-# a package name. While this is empty, Forge is not shown in the Portal.
-# When the public package is published, put its address on the line below.
-
+# Steel & Code Forge (STEEL-25): where the one-click install downloads Forge.
+# One line: a .tar.gz of Forge's public source. Steel OS runs Forge's own
+# installer (scripts/install-forge.sh) from it. While this is empty, Forge is
+# not shown in the Portal.
+# The installer is on Forge's feature/forge-user-installer branch for now;
+# switch this to .../refs/heads/main.tar.gz once it is merged there.
+https://github.com/steel-and-code/steel-and-code-forge/archive/refs/heads/feature/forge-user-installer.tar.gz

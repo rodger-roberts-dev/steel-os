@@ -160,9 +160,11 @@ if os.path.exists(FORGE_SOURCE) and any(
         l.strip() and not l.strip().startswith("#") for l in open(FORGE_SOURCE, encoding="utf-8")):
     EXTRAS["Developer"].append(action(
         "steel-and-code-forge", "Steel & Code Forge",
-        "Developer · Terminal-first AI agents from Steel & Code, starting with Byte, the coding agent. "
-        "Every command it wants to run goes through Forge's safety checks first. Needs an OpenRouter key.",
-        status_script="test -x \"$HOME/.local/bin/forge\" && echo install || echo uninstall",
+        "Developer · Steel & Code's AI agents in one terminal: Byte (software engineering), Neighbor "
+        "(general assistant), the Forge terminal interface and the browser Workbench, with optional Hermes. "
+        "Every command an agent wants to run goes through Forge's safety checks first. Early alpha. "
+        "Needs an OpenRouter key; the installer asks for it.",
+        status_script="/usr/libexec/steel-os-forge status | grep -qx installed && echo install || echo uninstall",
         options=[
             ("install", "Install Steel & Code Forge", "/usr/libexec/steel-os-forge install" + PAUSE),
             ("uninstall", "Uninstall Steel & Code Forge", "/usr/libexec/steel-os-forge uninstall" + PAUSE),
