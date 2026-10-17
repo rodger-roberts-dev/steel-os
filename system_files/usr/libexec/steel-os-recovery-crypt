@@ -1,0 +1,63 @@
+#!/usr/bin/python3
+# Steel OS (STEEL-36): hash and check security-question answers.
+#
+# Uses libxcrypt, the same library and the same yescrypt scheme that
+# /etc/shadow uses for passwords. The answer is read from standard input, so
+# it never appears in a process list.
+#
+#   steel-os-recovery-crypt hash            print a new yescrypt hash
+#   steel-os-recovery-crypt verify HASH     exit 0 if the answer matches
+#   steel-os-recovery-crypt normalise       print the answer as it is hashed
+#
+# Answers are normalised before hashing: spaces at the ends removed, inner
+# runs of spaces made single, and everything lower-cased, so "  New  York"
+# and "new york" match.
+
+import ctypes
+import ctypes.util
+import hmac
+import sys
+
+
+def normalise(text):
+    return " ".join(text.strip().split()).lower()
+
+
+def libcrypt():
+    name = ctypes.util.find_library("crypt") or "libcrypt.so.2"
+    lib = ctypes.CDLL(name, use_errno=True)
+    lib.crypt.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    lib.crypt.restype = ctypes.c_char_p
+    lib.crypt_gensalt.argtypes = [ctypes.c_char_p, ctypes.c_ulong, ctypes.c_char_p, ctypes.c_int]
+    lib.crypt_gensalt.restype = ctypes.c_char_p
+    return lib
+
+
+def main():
+    if len(sys.argv) < 2:
+        sys.exit("usage: steel-os-recovery-crypt hash | verify HASH | normalise")
+    answer = normalise(sys.stdin.read())
+    if sys.argv[1] == "normalise":
+        print(answer)
+        return 0
+    if not answer:
+        sys.exit("empty answer")
+    lib = libcrypt()
+    if sys.argv[1] == "hash":
+        setting = lib.crypt_gensalt(b"$y$", 0, None, 0)
+        if not setting:
+            sys.exit("could not make a salt")
+        result = lib.crypt(answer.encode(), setting)
+        if not result or not result.startswith(b"$y$"):
+            sys.exit("hashing failed")
+        print(result.decode())
+        return 0
+    if sys.argv[1] == "verify" and len(sys.argv) == 3:
+        stored = sys.argv[2].encode()
+        result = lib.crypt(answer.encode(), stored)
+        return 0 if result and hmac.compare_digest(result, stored) else 1
+    sys.exit("usage: steel-os-recovery-crypt hash | verify HASH | normalise")
+
+
+if __name__ == "__main__":
+    sys.exit(main())

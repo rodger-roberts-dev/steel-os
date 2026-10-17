@@ -24,3 +24,8 @@ swtpm
 
 # First-login setup dialogs (STEEL-35). Usually already part of KDE.
 kdialog
+
+# Password reset window before the login screen (STEEL-36): a minimal
+# full-screen session, and text-mode dialogs as a fallback.
+cage
+dialog

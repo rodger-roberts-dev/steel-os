@@ -1,0 +1,35 @@
+#!/usr/bin/bash
+# Steel OS (STEEL-36): run the password reset if the login screen asked for it.
+#
+# The login screen's "Forgot your password?" link writes a request note into
+# /var/lib/steel-os/recovery-request (writable only by the login screen and
+# root) and restarts the PC. At boot this runs before the login screen. If the
+# note is there, it is deleted at once and the reset window opens full screen
+# on this PC's own display: graphical in a kiosk session (cage), or text mode
+# on the console if that can't start. Nothing happens without the note.
+
+set -uo pipefail
+
+REQUEST=/var/lib/steel-os/recovery-request/request
+UI=/usr/libexec/steel-os-recovery-reset-ui
+
+[[ -e "$REQUEST" ]] || exit 0
+rm -f "$REQUEST"
+
+plymouth quit 2>/dev/null || true
+
+export XDG_RUNTIME_DIR=/run/steel-os-reset
+mkdir -p "$XDG_RUNTIME_DIR"
+chmod 0700 "$XDG_RUNTIME_DIR"
+export QT_QPA_PLATFORM=wayland
+export XDG_CURRENT_DESKTOP=KDE
+
+if command -v cage >/dev/null 2>&1 && cage -s -- "$UI" gui; then
+    exit 0
+fi
+
+# Fallback: text mode on the console.
+export TERM=linux
+"$UI" text
+clear 2>/dev/null || true
+exit 0

@@ -36,8 +36,8 @@ open_portal() {
 # --- 1. Welcome ------------------------------------------------------------
 dialog --yes-label "Next" --no-label "Skip setup" --yesno \
 "<h2>Welcome to Steel OS</h2>
-<p>Four quick steps get your computer ready: how updates work, your apps,
-and your printer.</p>
+<p>A few quick steps get your computer ready: how updates work, your apps,
+your printer, and a way back in if you forget your password.</p>
 <p>Every step can be skipped. You can run this setup again any time from
 the start menu: <b>Steel OS Setup</b>.</p>" || exit 0
 
@@ -101,6 +101,11 @@ if dialog --yes-label "Set up a printer now" --no-label "Later" --yesno \
 Older HP, Canon and Epson printers use drivers that are already built in.</p>
 <p>You can do this any time from System Settings, Printers.</p>"; then
     nohup setsid systemsettings kcm_printer_manager >/dev/null 2>&1 &
+fi
+
+# --- 4b. Security questions (STEEL-36), optional ------------------------
+if [[ -x /usr/libexec/steel-os-recovery-setup ]]; then
+    /usr/libexec/steel-os-recovery-setup --from-setup || true
 fi
 
 # --- 5. Done ---------------------------------------------------------------
