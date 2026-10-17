@@ -58,6 +58,29 @@ rm -f /usr/share/backgrounds/default.xml
 # Logo for System Settings > About (see system_files/etc/xdg/kcm-about-distrorc)
 install -D -m 0644 /ctx/branding/icon/png/steel-os-icon-dark-256.png /usr/share/pixmaps/steel-os.png
 
+### 5b. No Bazzite name on the desktop (STEEL-31, STEEL-40)
+# Bazzite Portal opens at every first login and says "Bazzite" throughout.
+# Steel OS replaces it with the Steel Apps screen (STEEL-40); until then it
+# does not start by itself, is hidden from the start menu and is taken off
+# the taskbar. Bazzite's announcement pop-up is switched off too.
+rm -f /etc/skel/.config/autostart/bazzite-portal.desktop
+rm -f /etc/xdg/autostart/bazzite-announcement.desktop
+for f in /usr/share/applications/*yafti*.desktop; do
+    [[ -f "$f" ]] || continue
+    grep -q '^NoDisplay=' "$f" && sed -i 's/^NoDisplay=.*/NoDisplay=true/' "$f" \
+        || sed -i '/^\[Desktop Entry\]/a NoDisplay=true' "$f"
+done
+for f in /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/bazzite-pins.js \
+         /usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js; do
+    [[ -f "$f" ]] && sed -i '/yafti_gtk\.desktop/d' "$f"
+done
+
+# New users get Plasma's default layout and Plasma marks every update script
+# as already done for them, so the wallpaper script also has to run inside
+# the default layout (the same way Bazzite adds its taskbar pins).
+LAYOUT=/usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js
+sed -i '$r /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/steel-os-wallpaper.js' "$LAYOUT"
+
 ### 6. Default apps at first boot (STEEL-17)
 # The Flatpak list ships inside the image; a small service installs it from
 # Flathub after the first boot with a network. See
@@ -116,3 +139,16 @@ for repo in /etc/yum.repos.d/*.repo; do
     fi
 done
 grep -l '^enabled=1' /etc/yum.repos.d/*.repo || true
+
+### 9. Rebuild the boot image so the boot splash shows Steel OS (STEEL-31)
+# The logo shown while the machine starts is read from the initramfs, a small
+# boot image Bazzite generated before our files were added. Our watermark in
+# /usr/share/plymouth/themes/spinner/ only appears once the initramfs is
+# rebuilt. Same command Bazzite uses (its build_files/build-initramfs).
+# Keep this the LAST section: anything copied in after it would not reach
+# the boot screen.
+QUALIFIED_KERNEL="$(rpm -q --queryformat='%{evr}.%{arch}' kernel-core | tail -n 1)"
+export DRACUT_NO_XATTR=1
+/usr/bin/dracut --no-hostonly --kver "$QUALIFIED_KERNEL" --reproducible --zstd -v \
+    --add ostree --add fido2 -f "/usr/lib/modules/$QUALIFIED_KERNEL/initramfs.img"
+chmod 0600 "/usr/lib/modules/$QUALIFIED_KERNEL/initramfs.img"
