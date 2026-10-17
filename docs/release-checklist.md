@@ -30,7 +30,9 @@ Use a fresh virtual machine: UEFI firmware, 8 GB of memory, 64 GB disk.
 
 - [ ] The ISO boots to the Steel OS live desktop. Nothing says Bazzite or Fedora.
 - [ ] The installer runs in Steel OS colours, with **Use entire disk** selected.
-- [ ] Installation finishes, and **Restart now** restarts into Steel OS.
+- [ ] The last installer screen has no Fedora feedback QR code. **Finish**
+      closes it, and the **Steel OS is installed** window's **Restart now**
+      restarts into Steel OS.
 - [ ] The boot splash, login screen, wallpaper and lock screen are Steel OS.
 - [ ] Steel OS Setup appears at first login; every page can be skipped.
 - [ ] Choosing one app in Setup installs it, and a notification says so.

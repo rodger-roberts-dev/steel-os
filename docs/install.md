@@ -73,8 +73,8 @@ the open-source NVIDIA driver. Click **Continue**.
 4. **Create account:** your name, a user name and a password. This account is
    the computer's administrator.
 5. **Review** the summary and click **Install**. It takes 10 to 20 minutes.
-6. When it says Steel OS is installed, click **Restart now** and remove the
-   USB stick when the screen goes dark.
+6. When it says the installation is complete, click **Finish**. A window says
+   **Steel OS is installed**. Remove the USB stick and click **Restart now**.
 
 ## 6. First start
 

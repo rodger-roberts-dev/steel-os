@@ -13,6 +13,10 @@ dnf install -qy --enable-repo=fedora-cisco-openh264 --allowerasing firefox anaco
 
 mkdir -p /var/lib/rpm-state # Needed for Anaconda Web UI
 
+# Steel OS (STEEL-35): "Use entire disk" preselected and "Finish" on the last
+# installer screen. See installer/patch-anaconda-webui.py.
+python3 /src/patch-anaconda-webui.py /usr/share/cockpit/anaconda-webui
+
 # Utilities for displaying a dialog prompting users to review secure boot documentation
 dnf install -qy --setopt=install_weak_deps=0 qrencode yad
 
@@ -114,6 +118,7 @@ ostreecontainer --url=$imageref:$imagetag --transport=containers-storage --no-si
 %include /usr/share/anaconda/post-scripts/restore-selinux-labels.ks
 %include /usr/share/anaconda/post-scripts/secureboot-enroll-key.ks
 %include /usr/share/anaconda/post-scripts/secureboot-docs.ks
+%include /usr/share/anaconda/post-scripts/steel-os-installed.ks
 
 EOF
 

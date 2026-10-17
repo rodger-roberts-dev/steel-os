@@ -11,6 +11,8 @@
 # Plain English, no links to documentation the user cannot reach yet.
 
 conky -c /usr/share/conky/conky.conf &
+# Offers "Restart now" once an install has finished and the installer is closed.
+/usr/bin/steel-os-install-done &
 
 shutdown_now() {
     systemctl poweroff || shutdown -h now || true

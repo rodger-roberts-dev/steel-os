@@ -1,0 +1,22 @@
+#!/usr/bin/bash
+# Steel OS (STEEL-35): after a successful install, offer "Restart now".
+#
+# The installer cannot restart the PC from the live USB itself. Its last
+# button ("Finish") closes it; this script, started with the live desktop,
+# waits for the install-finished mark and for the installer to close, then
+# asks the user to remove the USB stick and restart.
+
+while [[ ! -e /run/steel-os-installed ]]; do
+    sleep 5
+done
+while pgrep -x anaconda >/dev/null 2>&1 || pgrep -f '/usr/sbin/anaconda' >/dev/null 2>&1; do
+    sleep 3
+done
+
+yad --on-top --center --buttons-layout=center --text-align=center \
+    --title="Steel OS is installed" --image=steel-os \
+    --text="<big><b>Steel OS is installed</b></big>\n\nRemove the USB stick, then click <b>Restart now</b>.\nSteel OS starts from the disk." \
+    --button="Restart now:0" --button="Stay in the live desktop:1"
+if [[ $? -eq 0 ]]; then
+    systemctl reboot || sudo systemctl reboot
+fi
