@@ -1,0 +1,27 @@
+# Steel OS (STEEL-36): the password reset, only when "Forgot your password?"
+# was clicked on the login screen before this restart. Runs on this PC's own
+# screen before the login screen starts.
+[Unit]
+Description=Steel OS password reset (only when requested at the login screen)
+ConditionPathExists=/var/lib/steel-os/recovery-request/request
+After=systemd-user-sessions.service plymouth-start.service systemd-logind.service
+Before=display-manager.service
+Conflicts=getty@tty1.service
+After=getty@tty1.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/steel-os-recovery-reset
+# A real seat session on tty1, so the kiosk can use the screen, keyboard and mouse.
+PAMName=login
+TTYPath=/dev/tty1
+TTYReset=yes
+TTYVHangup=yes
+TTYVTDisallocate=yes
+StandardInput=tty
+StandardOutput=journal+console
+UtmpIdentifier=tty1
+TimeoutStartSec=30min
+
+[Install]
+WantedBy=graphical.target

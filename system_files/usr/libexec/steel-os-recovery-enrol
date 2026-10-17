@@ -1,0 +1,49 @@
+#!/usr/bin/bash
+# Steel OS (STEEL-36): save the security questions for the user who ran it.
+#
+# Runs as root through pkexec (polkit action org.steel-os.recovery.enrol,
+# which asks for the user's own password). Reads three lines from standard
+# input, each "question<TAB>answer", and stores the question with a yescrypt
+# hash of the answer in /var/lib/steel-os/recovery/<user> (root only).
+# The answers themselves are never written anywhere.
+#
+#   steel-os-recovery-enrol          save (replaces any earlier questions)
+#   steel-os-recovery-enrol --remove remove this user's questions
+
+set -euo pipefail
+umask 077
+
+DIR=/var/lib/steel-os/recovery
+CRYPT=/usr/libexec/steel-os-recovery-crypt
+
+uid="${PKEXEC_UID:-}"
+[[ -n "$uid" ]] || { echo "Run through pkexec." >&2; exit 1; }
+user="$(id -nu "$uid")"
+[[ "$user" =~ ^[a-z_][a-z0-9_.-]*$ ]] || { echo "Unexpected user name." >&2; exit 1; }
+
+mkdir -p "$DIR"
+chmod 0700 "$DIR"
+
+if [[ "${1:-}" == "--remove" ]]; then
+    rm -f "$DIR/$user" "$DIR/$user.attempts"
+    echo "Security questions removed for $user."
+    exit 0
+fi
+
+tmp="$(mktemp "$DIR/.$user.XXXXXX")"
+trap 'rm -f "$tmp"' EXIT
+count=0
+while IFS=$'\t' read -r question answer; do
+    [[ -z "$question" ]] && continue
+    question="${question//$'\r'/}"
+    hash="$(printf '%s' "$answer" | "$CRYPT" hash)"
+    printf '%s\t%s\n' "$question" "$hash" >> "$tmp"
+    count=$((count + 1))
+done
+[[ $count -eq 3 ]] || { echo "Expected three questions, got $count." >&2; exit 1; }
+
+chmod 0600 "$tmp"
+mv -f "$tmp" "$DIR/$user"
+trap - EXIT
+rm -f "$DIR/$user.attempts"
+echo "Security questions saved for $user."

@@ -374,6 +374,52 @@ grep -rl -- '--app-name=Bazzite' /usr/share/ublue-os/just 2>/dev/null \
 
 gtk-update-icon-cache -f /usr/share/icons/hicolor 2>/dev/null || true
 
+### 17. Forgotten password: security questions and a reset from the login screen (STEEL-36)
+# Design: docs/password-recovery-design.md. Optional security questions (set
+# up in Steel OS Setup or the Portal) let a user reset a forgotten password:
+# "Forgot your password?" on the login screen restarts the PC into a reset
+# window that checks the answers and sets a new password.
+chmod 0755 /usr/libexec/steel-os-recovery-crypt /usr/libexec/steel-os-recovery-enrol \
+    /usr/libexec/steel-os-recovery-setup /usr/libexec/steel-os-recovery-reset \
+    /usr/libexec/steel-os-recovery-reset-ui
+
+# Self-test: answers hash with yescrypt and check correctly, or the build stops.
+selftest_hash="$(printf ' New  York ' | /usr/libexec/steel-os-recovery-crypt hash)"
+[[ "$selftest_hash" == '$y$'* ]] || { echo "Steel OS recovery: yescrypt hashing failed" >&2; exit 1; }
+printf 'new york' | /usr/libexec/steel-os-recovery-crypt verify "$selftest_hash" \
+    || { echo "Steel OS recovery: a correct answer was rejected" >&2; exit 1; }
+if printf 'boston' | /usr/libexec/steel-os-recovery-crypt verify "$selftest_hash"; then
+    echo "Steel OS recovery: a wrong answer was accepted" >&2
+    exit 1
+fi
+echo "Steel OS recovery: answer hashing self-test passed"
+
+# The login screen: Breeze plus "Forgot your password?". If Breeze's layout
+# ever changes so the button can't be added, the plain theme stays and the
+# reset service is not switched on.
+if python3 /ctx/sddm/make-login-theme.py | tee /dev/stderr | grep -qx OK; then
+    # Keep whatever greeter environment the base image sets; add file writes
+    # for the reset note.
+    GREETER_ENV="$(grep -h '^GreeterEnvironment=' /usr/lib/sddm/sddm.conf.d/*.conf \
+        /etc/sddm.conf.d/*.conf /etc/sddm.conf 2>/dev/null | tail -1 | cut -d= -f2- || true)"
+    mkdir -p /etc/sddm.conf.d
+    printf '%s\n' \
+        "# Steel OS (STEEL-36): Steel OS login theme with \"Forgot your password?\"." \
+        "[Theme]" \
+        "Current=steel-os" \
+        "" \
+        "[General]" \
+        "GreeterEnvironment=${GREETER_ENV:+${GREETER_ENV},}QML_XHR_ALLOW_FILE_WRITE=1" \
+        > /etc/sddm.conf.d/zz-steel-os.conf
+    if [[ -f /etc/sddm.conf ]] && grep -q '^Current=' /etc/sddm.conf; then
+        sed -i 's/^Current=.*/Current=steel-os/' /etc/sddm.conf
+    fi
+    cat /etc/sddm.conf.d/zz-steel-os.conf
+    systemctl enable steel-os-recovery-reset.service
+else
+    echo "Steel OS recovery: WARNING login theme not changed; reset service not enabled"
+fi
+
 ### 9. Rebuild the boot image so the boot splash shows Steel OS (STEEL-31)
 # The logo shown while the machine starts is read from the initramfs, a small
 # boot image Bazzite generated before our files were added. Our watermark in

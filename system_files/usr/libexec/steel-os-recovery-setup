@@ -1,0 +1,74 @@
+#!/usr/bin/bash
+# Steel OS (STEEL-36): choose three security questions, so a forgotten
+# password can be reset from the login screen. Optional.
+#
+# Shown as a page of Steel OS Setup and from "Security questions" in the
+# Steel OS Portal. Saving runs steel-os-recovery-enrol through pkexec, which
+# asks for the user's own password.
+
+set -uo pipefail
+
+TITLE="Security questions"
+QUESTIONS=(
+    "What was the name of your first pet?"
+    "In which city were you born?"
+    "What was the name of your favourite teacher?"
+    "What was the first car you owned?"
+    "What is your oldest cousin's first name?"
+    "What was the name of the street you grew up on?"
+    "What was your childhood nickname?"
+    "What was the name of your first school?"
+)
+
+command -v kdialog >/dev/null 2>&1 || exit 0
+dialog() { kdialog --title "$TITLE" --icon dialog-password "$@"; }
+
+
+intro="<h2>Security questions</h2>
+<p>If you ever forget your password, click <b>Forgot your password?</b> on the login
+screen and answer these three questions to set a new one, like on Windows.</p>
+<p>Pick questions only you know the answers to. Answers are not case
+sensitive. They are stored scrambled, so nobody can read them, not even
+Steel OS.</p>
+<p><b>Disk encryption:</b> if you turned it on, its password can't be reset this
+way or any other way.</p>"
+
+if [[ "${1:-}" == "--from-setup" ]]; then
+    dialog --yes-label "Set up questions" --no-label "Skip" --yesno "$intro" || exit 0
+else
+    dialog --yes-label "Set up questions" --no-label "Cancel" --yesno "$intro" || exit 0
+fi
+
+chosen=()
+answers=()
+for n in 1 2 3; do
+    options=()
+    for q in "${QUESTIONS[@]}"; do
+        skip=no
+        for c in "${chosen[@]}"; do [[ "$c" == "$q" ]] && skip=yes; done
+        [[ $skip == no ]] && options+=("$q")
+    done
+    q="$(dialog --combobox "Question $n of 3" "${options[@]}" --default "${options[0]}")" || exit 0
+    while true; do
+        a="$(dialog --inputbox "<b>$q</b><br>Your answer:")" || exit 0
+        a_norm="$(printf '%s' "$a" | /usr/libexec/steel-os-recovery-crypt normalise)"
+        if [[ ${#a_norm} -lt 2 ]]; then
+            dialog --sorry "Please type an answer of at least two letters."
+            continue
+        fi
+        break
+    done
+    chosen+=("$q")
+    answers+=("$a")
+done
+
+data=""
+for i in 0 1 2; do
+    data+="${chosen[$i]}"$'\t'"${answers[$i]}"$'\n'
+done
+
+if printf '%s' "$data" | pkexec /usr/libexec/steel-os-recovery-enrol >/dev/null 2>&1; then
+    dialog --msgbox "<h3>Security questions saved</h3><p>If you forget your password, click <b>Forgot your password?</b> on the login screen.</p>"
+else
+    dialog --sorry "The security questions were not saved. You can try again from the Steel OS Portal, Welcome tab."
+fi

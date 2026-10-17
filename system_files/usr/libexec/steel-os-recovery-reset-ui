@@ -1,0 +1,128 @@
+#!/usr/bin/bash
+# Steel OS (STEEL-36): the password reset window.
+#
+# Started as root by steel-os-recovery-reset at boot, before the login
+# screen, only after someone clicked "Forgot your password?" on the login
+# screen. Mode "gui" uses kdialog inside a full-screen kiosk session; mode
+# "text" uses dialog on the console if the graphical session can't start.
+#
+# Checks the user's three security answers against the stored hashes, then
+# sets a new password with chpasswd. Three wrong tries lock the reset for that
+# user for 15 minutes.
+
+set -uo pipefail
+
+MODE="${1:-gui}"
+DIR=/var/lib/steel-os/recovery
+CRYPT=/usr/libexec/steel-os-recovery-crypt
+TITLE="Reset a forgotten password"
+LOCK_SECONDS=900
+MAX_TRIES=3
+
+# --- Small wrappers so the same steps work in both modes -------------------
+say() {      # say "html text"
+    if [[ $MODE == gui ]]; then kdialog --title "$TITLE" --icon steel-os --msgbox "$1"
+    else dialog --title "$TITLE" --msgbox "$(sed 's/<[^>]*>//g' <<< "$1")" 14 70; fi
+}
+ask_yes() {  # ask_yes "html" "yes label" "no label"
+    if [[ $MODE == gui ]]; then kdialog --title "$TITLE" --icon steel-os --yes-label "$2" --no-label "$3" --yesno "$1"
+    else dialog --title "$TITLE" --yes-label "$2" --no-label "$3" --yesno "$(sed 's/<[^>]*>//g' <<< "$1")" 16 74; fi
+}
+ask_text() { # ask_text "prompt" -> stdout
+    if [[ $MODE == gui ]]; then kdialog --title "$TITLE" --icon steel-os --inputbox "$1"
+    else dialog --title "$TITLE" --stdout --inputbox "$(sed 's/<[^>]*>//g' <<< "$1")" 10 70; fi
+}
+ask_secret() { # ask_secret "prompt" -> stdout
+    if [[ $MODE == gui ]]; then kdialog --title "$TITLE" --icon steel-os --password "$1"
+    else dialog --title "$TITLE" --stdout --insecure --passwordbox "$(sed 's/<[^>]*>//g' <<< "$1")" 10 70; fi
+}
+
+# --- Start -------------------------------------------------------------------
+ask_yes "<h2>Reset a forgotten password</h2>
+<p>Answer your three security questions, then choose a new password.</p>
+<p>Your files, apps and settings are not touched.</p>
+<p><b>Note:</b> a disk-encryption password can't be reset this way.</p>" \
+    "Continue" "Cancel and go to the login screen" || exit 0
+
+while true; do
+    user="$(ask_text "Your user name (the short name you log in with, for example <b>alex</b>):")" || exit 0
+    user="$(tr -d '[:space:]' <<< "$user" | tr '[:upper:]' '[:lower:]')"
+    [[ -z "$user" ]] && continue
+
+    entry="$(getent passwd "$user" || true)"
+    uid="$(cut -d: -f3 <<< "$entry")"
+    if [[ -z "$entry" || -z "$uid" || "$uid" -lt 1000 || "$uid" -ge 60000 ]]; then
+        say "<p>There is no account called <b>$user</b> on this computer. Check the spelling and try again.</p>"
+        continue
+    fi
+    if [[ ! -s "$DIR/$user" ]]; then
+        say "<h3>No security questions for $user</h3>
+<p>This account has no security questions set up, so the password can't be reset here.</p>
+<p>Another administrator on this computer can set a new password in <b>System Settings, Users</b>.</p>"
+        exit 0
+    fi
+    break
+done
+
+# Too many wrong tries recently?
+attempts_file="$DIR/$user.attempts"
+now=$(date +%s)
+count=0; since=0
+if [[ -r "$attempts_file" ]]; then
+    read -r count since < "$attempts_file" || true
+    count=${count:-0}; since=${since:-0}
+    if (( now - since > LOCK_SECONDS )); then count=0; since=$now; fi
+fi
+if (( count >= MAX_TRIES )); then
+    wait_min=$(( (LOCK_SECONDS - (now - since) + 59) / 60 ))
+    say "<h3>Too many wrong answers</h3><p>For safety, try again in about $wait_min minutes. Restart the computer and click <b>Forgot your password?</b> again then.</p>"
+    exit 0
+fi
+
+# Ask the three questions.
+all_right=yes
+while IFS=$'\t' read -r question hash <&3; do
+    [[ -z "$question" ]] && continue
+    answer="$(ask_text "<b>$question</b>")" || exit 0
+    if ! printf '%s' "$answer" | "$CRYPT" verify "$hash"; then
+        all_right=no
+    fi
+done 3< "$DIR/$user"
+sleep 2
+
+if [[ $all_right != yes ]]; then
+    count=$((count + 1)); (( since == 0 )) && since=$now
+    printf '%s %s\n' "$count" "$since" > "$attempts_file"
+    chmod 0600 "$attempts_file"
+    left=$(( MAX_TRIES - count ))
+    if (( left > 0 )); then
+        say "<h3>That didn't match</h3><p>One or more answers were wrong. You have $left more tries before a 15-minute wait. Restart and click <b>Forgot your password?</b> to try again.</p>"
+    else
+        say "<h3>Too many wrong answers</h3><p>For safety, the reset is locked for 15 minutes.</p>"
+    fi
+    exit 0
+fi
+
+# New password, typed twice.
+while true; do
+    p1="$(ask_secret "New password for <b>$user</b>:")" || exit 0
+    p2="$(ask_secret "Type the new password again:")" || exit 0
+    if [[ -z "$p1" ]]; then
+        say "<p>The password can't be empty.</p>"; continue
+    fi
+    if [[ "$p1" != "$p2" ]]; then
+        say "<p>The two passwords didn't match. Please try again.</p>"; continue
+    fi
+    if [[ "$p1" == *:* || "$p1" == *$'\n'* ]]; then
+        say "<p>Please don't use a colon (:) in the password.</p>"; continue
+    fi
+    break
+done
+
+if printf '%s:%s\n' "$user" "$p1" | chpasswd; then
+    rm -f "$attempts_file"
+    say "<h3>Password changed</h3><p>Log in as <b>$user</b> with your new password.</p>"
+else
+    say "<h3>The password could not be changed</h3><p>Please report this at steel-os.org/report.</p>"
+fi
+unset p1 p2
