@@ -329,6 +329,11 @@ python3 /ctx/portal/make-portal.py /ctx/packages/steel-apps.txt /ctx/portal/base
 # Portal. The Portal is in the start menu, the favourites and on the taskbar;
 # its "Launch at startup" switch makes it open at every login.
 chmod 0755 /usr/libexec/steel-os-setup /usr/libexec/steel-os-help
+
+# One installer for every PC (STEEL-30): at boot, move the PC to the Steel OS
+# edition that matches its graphics card, then ask for a restart at login.
+chmod 0755 /usr/libexec/steel-os-graphics-check /usr/libexec/steel-os-graphics-notice
+systemctl enable steel-os-graphics-check.service
 rm -f /etc/skel/.config/autostart/steel-os-portal.desktop
 for f in /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/bazzite-pins.js \
          /usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js; do

@@ -1,0 +1,9 @@
+[Desktop Entry]
+# Steel OS (STEEL-30): asks for a restart after the graphics edition switch.
+Name=Steel OS graphics notice
+Exec=/usr/libexec/steel-os-graphics-notice
+Icon=steel-os
+Terminal=false
+Type=Application
+NoDisplay=true
+X-KDE-autostart-after=panel

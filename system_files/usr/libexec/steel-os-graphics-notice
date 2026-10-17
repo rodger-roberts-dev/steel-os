@@ -1,0 +1,33 @@
+#!/usr/bin/bash
+# Steel OS (STEEL-30): after the graphics check has switched this PC to the
+# right edition, ask the user to restart. Runs at login (autostart).
+
+set -uo pipefail
+
+READY=/var/lib/steel-os/graphics-switch-ready
+[[ -r "$READY" ]] || exit 0
+wanted="$(cat "$READY")"
+
+# Already running the new edition? Then there is nothing to ask.
+booted="$(rpm-ostree status --booted --json 2>/dev/null | jq -r '.deployments[0]["container-image-reference"] // empty' || true)"
+case "$booted" in
+    */"$wanted":*|*/"$wanted") exit 0 ;;
+esac
+
+case "$wanted" in
+    steel-os-nvidia)        what="NVIDIA's own graphics driver for your graphics card" ;;
+    steel-os-nvidia-legacy) what="the NVIDIA graphics driver for your GeForce card" ;;
+    *)                      what="the graphics setup for this PC" ;;
+esac
+
+if command -v kdialog >/dev/null 2>&1; then
+    if kdialog --title "Steel OS" --icon steel-os --yes-label "Restart now" --no-label "Later" --yesno \
+"<h3>Restart to finish setting up your graphics</h3>
+<p>Steel OS has downloaded $what. It starts the next time you restart.</p>
+<p>Games and video will run better afterwards. Your files and apps stay as they are.</p>"; then
+        systemctl reboot
+    fi
+else
+    notify-send --app-name="Steel OS" --icon=steel-os "Restart to finish setting up your graphics" \
+        "Steel OS has downloaded $what. It starts at the next restart." || true
+fi
