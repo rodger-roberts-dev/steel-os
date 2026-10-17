@@ -342,6 +342,35 @@ for f in /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/bazzit
     sed -i 's|"applications:org.kde.konsole.desktop",|"applications:org.kde.konsole.desktop",\n                    "applications:steel-os-portal.desktop",|' "$f"
     grep -q 'steel-os-portal.desktop' "$f" && echo "Steel OS Portal pinned in $f" || echo "Steel OS Portal: no Konsole pin found in $f"
 done
+# Taskbar for new users (T, 2026-10-17): Firefox, Steel OS Portal, file
+# manager, App Store, Steel Shield, Steam, Lutris and the terminal, in that
+# order, next to the start button. Anyone can pin or unpin more.
+# The four desktop boxes (Super+1 to 4) move from beside the start button to
+# beside the clock, numbered, so they don't look like empty taskbar spots.
+STEEL_PINS='"preferred://browser", "applications:steel-os-portal.desktop", "preferred://filemanager", "applications:io.github.kolunmi.Bazaar.desktop", "applications:steel-shield.desktop", "applications:steam.desktop", "applications:net.lutris.Lutris.desktop", "applications:org.kde.konsole.desktop"'
+for f in /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/bazzite-pins.js \
+         /usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js; do
+    [[ -f "$f" ]] || continue
+    STEEL_PINS="$STEEL_PINS" python3 - "$f" <<'PYEOF'
+import os, re, sys
+p = sys.argv[1]
+s = open(p).read()
+new, n = re.subn(r'writeConfig\("launchers",\s*\[[^\]]*\]\)',
+                 'writeConfig("launchers", [' + os.environ["STEEL_PINS"] + '])', s)
+open(p, "w").write(new)
+print(f"Steel OS taskbar pins set in {p}: {n}")
+PYEOF
+done
+LAYOUT=/usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js
+if grep -q '^panel.addWidget("org.kde.plasma.pager")' "$LAYOUT" && grep -q '^panel.addWidget("org.kde.plasma.systemtray")' "$LAYOUT"; then
+    sed -i '/^panel.addWidget("org.kde.plasma.pager")$/d' "$LAYOUT"
+    sed -i 's|^panel.addWidget("org.kde.plasma.systemtray")$|var steelPager = panel.addWidget("org.kde.plasma.pager")\nsteelPager.currentConfigGroup = ["General"]\nsteelPager.writeConfig("displayedText", "Number")\npanel.addWidget("org.kde.plasma.systemtray")|' "$LAYOUT"
+    echo "Steel OS: desktop switcher moved next to the clock"
+else
+    echo "Steel OS: WARNING default panel layout changed; desktop switcher left where it is"
+fi
+grep -n 'addWidget' "$LAYOUT" | head -12
+
 # Start menu favourites for new users: the Steel OS Portal replaces
 # Bazzite Portal in the list Bazzite ships.
 FAVS=/usr/share/kde-settings/kde-profile/default/xdg/kicker-extra-favoritesrc
