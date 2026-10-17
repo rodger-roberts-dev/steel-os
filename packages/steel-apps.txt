@@ -15,6 +15,7 @@ org.inkscape.Inkscape | Inkscape | Vector drawing and logos
 org.kde.kolourpaint | KolourPaint | Simple paint program
 org.audacityteam.Audacity | Audacity | Audio recording and editing
 com.visualstudio.code | VS Code | Code editor
+org.gnome.Boxes | GNOME Boxes | Run other operating systems in a window (virtual machines)
 com.github.dail8859.NotepadNext | NotepadNext | Notepad++-style text editor
 org.shotcut.Shotcut | Shotcut | Simple video editor
 com.calibre_ebook.calibre | Calibre | Ebook library and converter
