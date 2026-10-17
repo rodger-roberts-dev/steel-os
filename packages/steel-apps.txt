@@ -16,11 +16,10 @@ org.kde.kolourpaint | KolourPaint | Simple paint program
 org.audacityteam.Audacity | Audacity | Audio recording and editing
 com.visualstudio.code | VS Code | Code editor
 # Virtual machines. Virtual Machine Manager is the recommended one: it worked
-# where GNOME Boxes stalled on an NVIDIA laptop in testing (2026-10-16). It is
-# installed by a Steel Apps script that runs Bazzite's own setup
-# (ujust setup-virtualization virt-on): libvirt service, the virt-manager
-# Flatpak and its QEMU extension, kernel settings, user group, then a restart.
-#   script:virt-manager | Virtual Machine Manager | Run other operating systems in a window (needs a restart once)
+# where GNOME Boxes stalled on an NVIDIA laptop in testing (2026-10-16). The
+# virtual machine service it needs is built into the Steel OS image, so this is
+# a plain one-click install that works straight away.
+org.virt_manager.virt-manager | Virtual Machine Manager | Run other operating systems in a window (virtual machines)
 org.gnome.Boxes | GNOME Boxes | Run other operating systems in a window (simpler; less reliable on NVIDIA laptops)
 com.github.dail8859.NotepadNext | NotepadNext | Notepad++-style text editor
 org.shotcut.Shotcut | Shotcut | Simple video editor

@@ -272,6 +272,25 @@ fi
 rm -rf /usr/share/yafti
 rm -f /usr/share/applications/*yafti*.desktop /etc/skel/.config/autostart/bazzite-portal.desktop
 
+### 15. Virtual machines work out of the box (STEEL-40)
+# Bazzite does not ship the libvirt virtual machine service; its
+# "ujust setup-virtualization" assumes it is there. Steel OS includes it
+# (packages/image.txt) and switches it on, so Virtual Machine Manager from
+# Steel Apps works right after install with no extra setup and no restart.
+# libvirt's services start on demand when an app connects (socket activation).
+for unit in virtqemud.socket virtnetworkd.socket virtstoraged.socket \
+            virtnodedevd.socket virtsecretd.socket virtinterfaced.socket \
+            virtproxyd.socket virtlogd.socket virtlockd.socket; do
+    if systemctl list-unit-files "$unit" >/dev/null 2>&1; then
+        systemctl enable "$unit"
+    fi
+done
+# The default NAT network starts with the first VM.
+if [[ -f /etc/libvirt/qemu/networks/default.xml ]]; then
+    mkdir -p /etc/libvirt/qemu/networks/autostart
+    ln -sf ../default.xml /etc/libvirt/qemu/networks/autostart/default.xml
+fi
+
 ### 9. Rebuild the boot image so the boot splash shows Steel OS (STEEL-31)
 # The logo shown while the machine starts is read from the initramfs, a small
 # boot image Bazzite generated before our files were added. Our watermark in

@@ -1,0 +1,8 @@
+// Steel OS (STEEL-40): administrators (the account made during install is in
+// the "wheel" group) may manage virtual machines without being added to the
+// libvirt group or typing a password every time.
+polkit.addRule(function (action, subject) {
+    if (action.id === "org.libvirt.unix.manage" && subject.isInGroup("wheel")) {
+        return polkit.Result.YES;
+    }
+});
