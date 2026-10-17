@@ -11,7 +11,8 @@ point. It takes about 30 minutes.
 
 - A 64-bit PC from the last ten years, with 8 GB of memory (4 GB at least) and
   64 GB of free disk space.
-- A USB stick of 8 GB or more. Everything on it will be erased.
+- A USB stick of 16 GB or more (the installer is about 8.5 GB). Everything on it
+  will be erased.
 - **A backup of everything on the PC you are installing to.** Installing
   Steel OS with "Use entire disk" erases that disk.
 - An internet connection, ideally a cable for the first start.
