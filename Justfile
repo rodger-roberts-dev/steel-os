@@ -110,6 +110,19 @@ build $target_image=image_name $tag=default_tag:
         STEEL_OS_BUILD="${STEEL_OS_BUILD}-$(git rev-parse --short HEAD)"
     fi
     BUILD_ARGS+=("--build-arg" "STEEL_OS_BUILD=${STEEL_OS_BUILD}")
+    # Version: VERSION holds the milestone (major.minor, changed by hand when a
+    # milestone is reached); the last number counts merges to master since then,
+    # so every build counts up by itself: 0.4.0, 0.4.1, 0.4.2...
+    STEEL_OS_MILESTONE="$(tr -d '[:space:]' < VERSION 2>/dev/null || echo 0.0)"
+    VERSION_COMMIT="$(git log -1 --first-parent --format=%H -- VERSION 2>/dev/null || true)"
+    if [[ -n "$VERSION_COMMIT" ]]; then
+        STEEL_OS_PATCH="$(git rev-list --count --first-parent "${VERSION_COMMIT}..HEAD" 2>/dev/null || echo 0)"
+    else
+        STEEL_OS_PATCH=0
+    fi
+    STEEL_OS_VERSION="${STEEL_OS_MILESTONE}.${STEEL_OS_PATCH}"
+    echo "Steel OS version: ${STEEL_OS_VERSION}"
+    BUILD_ARGS+=("--build-arg" "STEEL_OS_VERSION=${STEEL_OS_VERSION}")
     # Same number as an image label, so an installer's .image.txt can name it.
     LABELS+=("--label" "steel-os.build=${STEEL_OS_BUILD}")
     if [[ -z "$(git status -s)" ]]; then
