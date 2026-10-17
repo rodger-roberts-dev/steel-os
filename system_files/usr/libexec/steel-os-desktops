@@ -1,0 +1,82 @@
+#!/usr/bin/bash
+# Steel OS: switch virtual desktops off and on.
+#   steel-os-desktops toggle   off <-> on (Super+Shift+D)
+#   steel-os-desktops off      one desktop, and the desktop boxes leave the taskbar
+#   steel-os-desktops on       four desktops, with numbered boxes next to the clock
+#   steel-os-desktops status   prints on or off
+# Windows on desktops that are removed move to the remaining one; nothing is
+# closed. The choice is kept after restarting.
+
+set -euo pipefail
+
+DESKTOPS_ON=4
+
+kwin_desktops() { # prints the desktop ids, in order
+    gdbus call --session --dest org.kde.KWin --object-path /VirtualDesktopManager \
+        --method org.freedesktop.DBus.Properties.Get org.kde.KWin.VirtualDesktopManager desktops \
+        | grep -oE "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" || true
+}
+
+count() { kwin_desktops | wc -l; }
+
+plasma() {
+    local q
+    q="$(command -v qdbus6 || command -v qdbus-qt6 || command -v qdbus || true)"
+    if [[ -n "$q" ]]; then "$q" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$1" >/dev/null
+    else gdbus call --session --dest org.kde.plasmashell --object-path /PlasmaShell \
+        --method org.kde.PlasmaShell.evaluateScript "$1" >/dev/null; fi
+}
+
+pager_remove() {
+    plasma 'var ps = panels();
+for (var i = 0; i < ps.length; ++i) {
+    var ws = ps[i].widgets("org.kde.plasma.pager");
+    for (var j = 0; j < ws.length; ++j) { ws[j].remove(); }
+}'
+}
+
+pager_add() { # numbered boxes, placed just before the system tray when Plasma allows it
+    plasma 'var ps = panels();
+for (var i = 0; i < ps.length; ++i) {
+    var p = ps[i];
+    if (p.widgets("org.kde.plasma.pager").length) { continue; }
+    if (!p.widgets("org.kde.plasma.icontasks").length && !p.widgets("org.kde.plasma.taskmanager").length) { continue; }
+    var pager = p.addWidget("org.kde.plasma.pager");
+    pager.currentConfigGroup = ["General"];
+    pager.writeConfig("displayedText", "Number");
+    pager.reloadConfig();
+    var trays = p.widgets("org.kde.plasma.systemtray");
+    try { if (trays.length && typeof pager.index !== "undefined") { pager.index = trays[0].index; } } catch (e) {}
+}'
+}
+
+desktops_off() {
+    local ids id
+    mapfile -t ids < <(kwin_desktops)
+    for id in "${ids[@]:1}"; do
+        gdbus call --session --dest org.kde.KWin --object-path /VirtualDesktopManager \
+            --method org.kde.KWin.VirtualDesktopManager.removeDesktop "$id" >/dev/null
+    done
+    pager_remove
+    echo off
+}
+
+desktops_on() {
+    local n
+    n="$(count)"
+    while (( n < DESKTOPS_ON )); do
+        gdbus call --session --dest org.kde.KWin --object-path /VirtualDesktopManager \
+            --method org.kde.KWin.VirtualDesktopManager.createDesktop "$n" "Desktop $((n + 1))" >/dev/null
+        n=$((n + 1))
+    done
+    pager_add
+    echo on
+}
+
+case "${1:-toggle}" in
+    off) desktops_off ;;
+    on) desktops_on ;;
+    status) (( $(count) > 1 )) && echo on || echo off ;;
+    toggle) if (( $(count) > 1 )); then desktops_off; else desktops_on; fi ;;
+    *) echo "usage: steel-os-desktops toggle|on|off|status" >&2; exit 2 ;;
+esac
