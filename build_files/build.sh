@@ -394,6 +394,19 @@ if printf 'boston' | /usr/libexec/steel-os-recovery-crypt verify "$selftest_hash
 fi
 echo "Steel OS recovery: answer hashing self-test passed"
 
+# Login manager. Fedora 44's KDE uses Plasma Login Manager, whose login screen
+# is compiled into the program, so it can't carry the "Forgot your password?"
+# button. Steel OS uses SDDM with the Breeze theme instead (both still part of
+# Fedora; packages/image.txt), and Plasma Login Manager is switched off.
+if [[ -f /usr/lib/systemd/system/sddm.service ]]; then
+    systemctl disable plasmalogin.service 2>/dev/null || true
+    ln -sf /usr/lib/systemd/system/sddm.service /etc/systemd/system/display-manager.service
+    echo "Steel OS: login manager is SDDM"
+else
+    echo "Steel OS: WARNING sddm is not installed; keeping the base image's login manager"
+    rpm -q sddm sddm-breeze plasma-login-manager 2>&1 || true
+fi
+
 # The login screen: Breeze plus "Forgot your password?". If Breeze's layout
 # ever changes so the button can't be added, the plain theme stays and the
 # reset service is not switched on.
@@ -418,6 +431,9 @@ if python3 /ctx/sddm/make-login-theme.py | tee /dev/stderr | grep -qx OK; then
     systemctl enable steel-os-recovery-reset.service
 else
     echo "Steel OS recovery: WARNING login theme not changed; reset service not enabled"
+    rpm -q sddm sddm-breeze plasma-login-manager 2>&1 || true
+    ls -la /usr/share/sddm/themes 2>&1 || true
+    readlink -f /etc/systemd/system/display-manager.service || true
 fi
 
 ### 9. Rebuild the boot image so the boot splash shows Steel OS (STEEL-31)
