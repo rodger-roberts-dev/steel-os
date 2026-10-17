@@ -8,7 +8,11 @@
 # (steel-shield-extra.timer) and Steel Shield scans against it automatically.
 #
 # Needs a free abuse.ch Auth-Key in the repository secret ABUSECH_AUTH_KEY
-# (https://auth.abuse.ch). Until that secret exists the job does nothing.
+# (https://auth.abuse.ch), and the repository variable
+# SHIELD_EXTRA_LIST_APPROVED set to "true". abuse.ch's terms of use require
+# their consent before their data is redistributed, so the variable is set
+# only once abuse.ch/Spamhaus have agreed. Until both exist the job does
+# nothing.
 name: Steel Shield threat list
 
 on:
@@ -31,9 +35,15 @@ jobs:
         id: build
         env:
           ABUSECH_AUTH_KEY: ${{ secrets.ABUSECH_AUTH_KEY }}
+          APPROVED: ${{ vars.SHIELD_EXTRA_LIST_APPROVED }}
         shell: bash
         run: |
           set -euo pipefail
+          if [[ "${APPROVED:-}" != "true" ]]; then
+            echo "::notice::Waiting for abuse.ch's consent (repository variable SHIELD_EXTRA_LIST_APPROVED is not true); the extra threat list is off."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           if [[ -z "${ABUSECH_AUTH_KEY:-}" ]]; then
             echo "::notice::No ABUSECH_AUTH_KEY secret yet; the extra threat list is off."
             echo "skip=true" >> "$GITHUB_OUTPUT"
