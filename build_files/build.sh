@@ -304,7 +304,7 @@ sed -i \
     -e "s|^AUTOSTART_FILE = .*|AUTOSTART_FILE = os.path.join(AUTOSTART_DIR, 'steel-os-portal.desktop')|" \
     -e 's|^Comment=Helps you setup Bazzite$|Comment=Set up Steel OS and install apps in one click|' \
     -e 's|^Exec=yafti_gtk.py /usr/share/yafti/yafti.yml$|Exec=yafti_gtk.py /usr/share/steel-os/portal.yml|' \
-    -e 's|^Icon=io.github.ublue_os.yafti_gtk$|Icon=steel-os|' \
+    -e 's|^Icon=io.github.ublue_os.yafti_gtk$|Icon=steel-os-portal|' \
     -e 's|^DEFAULT_ACCENT = .*|DEFAULT_ACCENT = "#F2641E"|' \
     "$PORTAL_ENGINE"
 if grep -qi bazzite "$PORTAL_ENGINE"; then
@@ -312,8 +312,11 @@ if grep -qi bazzite "$PORTAL_ENGINE"; then
     grep -ni bazzite "$PORTAL_ENGINE" >&2
     exit 1
 fi
-# The engine's window icon: the Steel OS hexagon.
-install -D -m 0644 /usr/share/icons/hicolor/scalable/apps/steel-os.svg \
+# The Portal's own icon (branding/portal), used by its launcher and, under
+# the engine's name, for its window.
+install -D -m 0644 /ctx/branding/portal/steel-os-portal.svg \
+    /usr/share/icons/hicolor/scalable/apps/steel-os-portal.svg
+install -D -m 0644 /ctx/branding/portal/steel-os-portal.svg \
     /usr/share/icons/hicolor/scalable/apps/io.github.ublue_os.yafti_gtk.svg
 mkdir -p /usr/share/steel-os
 python3 /ctx/portal/make-portal.py /ctx/packages/steel-apps.txt /ctx/portal/base.yml \
@@ -329,6 +332,36 @@ for f in /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/bazzit
     sed -i 's|"applications:org.kde.konsole.desktop",|"applications:org.kde.konsole.desktop",\n                    "applications:steel-os-portal.desktop",|' "$f"
     grep -q 'steel-os-portal.desktop' "$f" && echo "Steel OS Portal pinned in $f" || echo "Steel OS Portal: no Konsole pin found in $f"
 done
+# Start menu favourites for new users: the Steel OS Portal replaces
+# Bazzite Portal in the list Bazzite ships.
+FAVS=/usr/share/kde-settings/kde-profile/default/xdg/kicker-extra-favoritesrc
+if [[ -f "$FAVS" ]]; then
+    sed -i 's/io\.github\.ublue_os\.yafti_gtk\.desktop/steel-os-portal.desktop/' "$FAVS"
+    grep -q 'steel-os-portal\.desktop' "$FAVS" \
+        || sed -i 's/^Prepend=\(.*\)$/Prepend=\1steel-os-portal.desktop;/' "$FAVS"
+    grep '^Prepend=' "$FAVS"
+fi
+
+# The App Store's Curated page: Steel Apps by category first, then the
+# picks the base image already had (build_files/portal/make-bazaar.py).
+BAZAAR_CONTENT=/usr/share/ublue-os/bazaar/content.yaml
+mkdir -p "$(dirname "$BAZAAR_CONTENT")"
+python3 /ctx/portal/make-bazaar.py /ctx/packages/steel-apps.txt "$BAZAAR_CONTENT" "$BAZAAR_CONTENT.new"
+mv "$BAZAAR_CONTENT.new" "$BAZAAR_CONTENT"
+
+# Bazzite's offline "Documentation" app shows Bazzite's manual. Hidden until
+# Steel OS has its own help pages.
+for f in /usr/share/applications/bazzite-documentation.desktop; do
+    [[ -f "$f" ]] || continue
+    grep -q '^NoDisplay=' "$f" && sed -i 's/^NoDisplay=.*/NoDisplay=true/' "$f" \
+        || sed -i '/^\[Desktop Entry\]/a NoDisplay=true' "$f"
+done
+
+# Notifications from the system tools (for example after adding a media app)
+# carry the Steel OS name, not Bazzite's.
+grep -rl -- '--app-name=Bazzite' /usr/share/ublue-os/just 2>/dev/null \
+    | xargs -r sed -i 's/--app-name=Bazzite/--app-name="Steel OS"/g'
+
 gtk-update-icon-cache -f /usr/share/icons/hicolor 2>/dev/null || true
 
 ### 9. Rebuild the boot image so the boot splash shows Steel OS (STEEL-31)
