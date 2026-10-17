@@ -1,0 +1,14 @@
+# Steel OS (STEEL-29): write the Steel OS keyboard shortcuts into the user's
+# settings before the desktop starts. Plasma 6 reads shortcuts only when KWin
+# starts, so this must run first.
+[Unit]
+Description=Steel OS keyboard shortcuts for this user
+Before=plasma-kwin_wayland.service plasma-kwin_x11.service plasma-plasmashell.service
+PartOf=graphical-session-pre.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/steel-os-shortcuts
+
+[Install]
+WantedBy=graphical-session-pre.target

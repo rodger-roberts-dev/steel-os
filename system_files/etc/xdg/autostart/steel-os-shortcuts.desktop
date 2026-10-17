@@ -1,8 +1,0 @@
-[Desktop Entry]
-# Steel OS (STEEL-29): apply Steel OS keyboard shortcuts at login.
-Type=Application
-Name=Steel OS shortcuts
-Exec=/usr/libexec/steel-os-shortcuts
-NoDisplay=true
-X-KDE-autostart-phase=1
-OnlyShowIn=KDE;
