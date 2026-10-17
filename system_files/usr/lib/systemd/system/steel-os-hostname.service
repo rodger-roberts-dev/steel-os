@@ -1,0 +1,11 @@
+# Steel OS (STEEL-48): rename computers still called "bazzite".
+[Unit]
+Description=Steel OS default computer name
+After=systemd-hostnamed.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/steel-os-hostname
+
+[Install]
+WantedBy=multi-user.target

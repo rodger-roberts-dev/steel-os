@@ -9,6 +9,10 @@
 
 set -euo pipefail
 
+# Users created before Steel OS removed Bazzite Portal still have their own
+# copy of its autostart entry; remove it (STEEL-31). Harmless if absent.
+rm -f "$HOME/.config/autostart/bazzite-portal.desktop"
+
 SRC=/usr/share/steel-os/kglobalshortcutsrc
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/steel-os"
 STAMP="$STATE_DIR/shortcuts.done"

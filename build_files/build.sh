@@ -226,6 +226,17 @@ for f in /usr/share/pixmaps/fedora-logo*.svg /usr/share/pixmaps/system-logo*.svg
 done
 gtk-update-icon-cache -f /usr/share/icons/hicolor 2>/dev/null || true
 
+### 13. No Bazzite left in the terminal or for older users (STEEL-48, STEEL-31)
+# Terminal welcome message: Steel OS text and tips instead of Bazzite's
+# (template in system_files/usr/share/ublue-os/motd/). Bazzite's own tips
+# and Swedish template link to Bazzite's docs and Discord; remove them.
+rm -f /usr/share/ublue-os/motd/tips/10-ublue.md /usr/share/ublue-os/motd/tips/20-bazzite.md
+rm -rf /usr/share/ublue-os/motd/tips/sv
+cp -f /usr/share/ublue-os/motd/template.md /usr/share/ublue-os/motd/template.sv.md
+# Computers named "bazzite" by an early image get renamed at boot.
+chmod 0755 /usr/libexec/steel-os-hostname
+systemctl enable steel-os-hostname.service
+
 ### 9. Rebuild the boot image so the boot splash shows Steel OS (STEEL-31)
 # The logo shown while the machine starts is read from the initramfs, a small
 # boot image Bazzite generated before our files were added. Our watermark in
