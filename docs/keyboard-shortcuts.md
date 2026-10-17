@@ -1,150 +1,102 @@
-# Keyboard Shortcuts: Omarchy to Steel OS (Plasma)
+# Keyboard shortcuts
 
-Date: 2026-10-15
-Written for: Steel & Code (S&C) to review, and for the user manual later
+Updated: 2026-10-17
 
-S&C's condition for the move to Bazzite was keeping the existing keyboard
-shortcuts. Those shortcuts are Omarchy's defaults plus one override (ALT+Return
-opens the terminal). This document lists every Omarchy default, taken from Omarchy's
-source (`default/hypr/bindings/*.lua`, version 4.0.0.alpha), and what it
-becomes on Steel OS. The result is shipped as system defaults in
-`system_files/etc/xdg/kglobalshortcutsrc` and `kwinrc`.
+Every keyboard shortcut Steel OS sets up out of the box. **Super** is the
+Windows key. Any shortcut can be changed in System Settings, Shortcuts, and
+**Super+K** opens that page directly.
 
-**Super** is the Windows key. Plasma calls it **Meta**.
-
-Legend: **Same** = same key, same result. **Changed** = same key, closest
-Plasma behaviour. **None** = no Plasma equivalent; the key does nothing until
-S&C picks a replacement.
+The shortcuts are set in `system_files/etc/xdg/kglobalshortcutsrc` and applied
+for every user before the desktop starts. Konsole's copy and paste keys are set
+in `system_files/etc/skel/.local/share/kxmlgui6/konsole/sessionui.rc`.
 
 ---
 
-## 1. Apps and launcher
+## Apps
 
-| Key | Omarchy | Steel OS | Status |
-|---|---|---|---|
-| Super+Space | Omarchy menu | KRunner (search, launch, calculate) | Changed: no menu tree, but the same reflex |
-| Super+Alt+Space | Apps grid | Plasma Overview with the app grid | Same |
-| Super+Return | Terminal | Konsole (S&C confirmed working 2026-10-16) | Same |
-| **Alt+Return** | **Terminal (S&C's override)** | **Konsole (confirmed working)** | **Same** |
-| Super+Shift+Return, Super+Shift+B | Browser | Firefox (confirmed working) | Same |
-| Super+Shift+Alt+B | Private browser window | Not bound | None (Ctrl+Shift+N inside Chrome) |
-| Super+Shift+F | File manager | Dolphin | Same |
-| Super+Alt+Shift+F | File manager in terminal's folder | Not bound | None |
-| Super+Shift+N | Editor | Kate | Same |
-| Super+Shift+O | Obsidian | Obsidian (Flatpak) | Same |
-| Super+Ctrl+Q, calculator key | Calculator | KCalc | Same |
-| Super+Ctrl+T | Activity (btop) | System Monitor | Changed: graphical instead of terminal |
-| Super+Ctrl+E | Emojis | Plasma emoji selector | Same |
-| Super+K | Keybindings list | Shortcuts settings page | Changed |
-| Super+Shift+M, Super+Shift+D, Super+Shift+G, Super+Shift+W, Super+Shift+/ | Spotify, Docker TUI, Signal, Omawrite, 1Password | Not bound | None: Omarchy preinstalls; add per app if wanted |
-| Super+Shift+A/E/C/Y/P/X and friends | Omarchy web apps (ChatGPT, HEY, YouTube, Maps, X) | Not bound | None: HEY and friends are not Steel OS defaults |
-| Super+Alt+Return, Super+Ctrl+Return | Tmux, Herdr | Not bound | None: Omarchy-specific terminal tools |
+| Keys | Opens |
+|---|---|
+| Super+Enter or Alt+Enter | Terminal (Konsole). Ctrl+Alt+T also works |
+| Super+Shift+Enter or Super+Shift+B | Web browser (Firefox) |
+| Super+Shift+F | File manager (Dolphin) |
+| Super+Shift+N | Text editor (Kate) |
+| Super+Shift+O | Obsidian |
+| Super+Space, Alt+Space or Alt+F2 | Search and app launcher (KRunner) |
+| Super+Ctrl+Q or the Calculator key | Calculator |
+| Super+Ctrl+T | System Monitor |
+| Super+Ctrl+E | Emoji picker |
+| Super+K | Shortcuts settings (this list, editable) |
 
-## 2. Windows
+An app's shortcut does nothing until that app is installed.
 
-| Key | Omarchy | Steel OS | Status |
-|---|---|---|---|
-| Super+W, Super+Q | Close window | Close window | Same |
-| Ctrl+Alt+Delete | Close all windows | Plasma log-out screen | Changed |
-| Super+F | Full screen | Full screen | Same |
-| Super+Alt+F | Full width (maximized) | Maximize | Same |
-| Super+Ctrl+F | Tiled full screen | Not bound | None |
-| Super+T | Toggle floating / tiling | Not bound | Steel OS uses floating windows by default |
-| Super+O | Pop window out (float and pin) | Keep window above others | Changed |
-| Super+M | Minimize to dock | Minimize to taskbar | Same |
-| Super+Left/Right/Up/Down | Focus window in that direction | Same | Same |
-| Super+Shift+Left/Right/Up/Down | Swap window in that direction | Not bound | Quick-tiling disabled; floating windows |
-| Alt+Tab, Alt+Shift+Tab | Next / previous window | Same | Same |
-| Super+P | Pseudo window | Not bound | None (tiling concept) |
-| Super+J | Toggle split direction | Not bound | None (tiling concept) |
-| Super+L, Super+Alt+L | Cycle workspace layout | Not bound | None (tiling concept) |
-| Super+Home, Super+Alt+Home | Save / restore window width | Not bound | None |
-| Super+minus / Super+equals and the Shift, Alt, Ctrl variants | Resize window in steps | Not bound | None: Plasma resizes with Super+right-drag or Alt+F8 |
-| Super+G and the group keys | Window grouping | Not bound | None: Plasma has no window groups |
-| Super+S, Super+grave, Super+Alt+S | Scratchpad workspace | Not bound | None: no scratchpad in Plasma |
-| Super+Backspace, Super+Shift+Backspace, Super+Ctrl+Backspace | Transparency, gaps, square aspect | Not bound | None (Hyprland visual toggles) |
-| Super+mouse drag / Super+right-drag | Move / resize window | Same, Plasma default | Same |
-
-## 3. Workspaces and monitors
-
-| Key | Omarchy | Steel OS | Status |
-|---|---|---|---|
-| Super+1 to 0 | Switch to workspace 1 to 10 | Switch to virtual desktop 1 to 10 | Same |
-| Super+Shift+1 to 0 | Move window to workspace | Move window to virtual desktop | Same |
-| Super+Shift+Alt+1 to 0 | Move window silently | Not bound | None |
-| Super+Tab, Super+Shift+Tab | Next / previous workspace | Same | Same |
-| Super+Ctrl+Tab | Former workspace | Walk through desktops | Changed |
-| Super+scroll | Scroll workspaces | Not bound | None (Plasma supports it on the desktop edge; off by default) |
-| Ctrl+Alt+Tab, Ctrl+Alt+Shift+Tab | Next / previous monitor | Same | Same |
-| Super+Shift+Alt+arrows | Move workspace to another monitor | Not bound | None |
-| Super+/ and Super+Alt+/ | Monitor scaling up / down | Not bound | None (Display settings) |
-| Super+Ctrl+Delete, Super+Ctrl+Alt+Delete | Laptop display toggle / mirror | Not bound | None (Display settings; Plasma's Meta+P offers it) |
-
-## 4. System, settings, and capture
-
-| Key | Omarchy | Steel OS | Status |
-|---|---|---|---|
-| Super+Escape | System menu | Log-out screen | Changed |
-| Super+Ctrl+L | Lock | Lock | Same |
-| Super+Ctrl+V | Clipboard manager | Clipboard history | Same |
-| Super+C, Super+V, Super+X, Super+A | Universal copy, paste, cut, select-all (works in terminals too) | Not bound | None: Plasma cannot rewrite shortcuts for every app. Ctrl+C/V work everywhere except terminals; Konsole has Alt+C/Alt+V by Steel OS config (S&C confirmed working). |
-| Print | Screenshot | Spectacle | Same |
-| Super+Shift+S | Screenshot | Spectacle, rectangular region | Same |
-| Alt+Print | Screen recording | Spectacle, record screen | Same |
-| Super+Print | Color picker | Not bound | None (KColorChooser can be added) |
-| Super+Ctrl+Print | OCR text from screen | Not bound | None |
-| Super+Ctrl+A/B/D/W/P | Audio, Bluetooth, Display, Network, Power panels | The matching System Settings page | Changed: a settings page instead of a bar popup |
-| Super+Ctrl+1 to 9 | Bar panel by number | Not bound | None |
-| Super+Ctrl+N | Night light | Night light | Same |
-| Super+Ctrl+I | Toggle idle lock | Not bound | None (Power settings) |
-| Super+Ctrl+Z, Super+Ctrl+Alt+Z | Screen zoom in / reset | Same | Same |
-| Super+Ctrl+comma | Silence notifications | Do not disturb | Same |
-| Super+comma, Super+Shift+comma, Super+Alt+comma, Super+Shift+Alt+comma | Dismiss / history of notifications | Not bound | None: Plasma has no shortcuts for these; the notification popup has the buttons |
-| Super+Shift+Space | Toggle top bar | Not bound | None (panel auto-hide is a setting) |
-| Super+Ctrl+Space, Super+Shift+Ctrl+Space | Background, theme menus | Not bound | None (Settings) |
-| Super+Ctrl+S | Share menu (LocalSend) | Not bound | None: KDE Connect is Plasma's equivalent; could be bound later |
-| Super+Ctrl+R and friends | Reminders | Not bound | None |
-| Super+Ctrl+Alt+T/B/W | Show time, battery, weather | Not bound | None (on the panel) |
-| Super+Ctrl+X, F9, Right Alt | Dictation | Not bound | None |
-| Super+Shift+Ctrl+A | AI agent picker | Not bound | None (Forge later) |
-| Volume, brightness, media, touchpad keys | Hardware keys | Plasma defaults, same behaviour | Same |
-| Shift+volume keys, Alt+volume keys | Switch output, precise steps | Not bound | None |
-
----
-
-## Summary for S&C
-
-- **Same or close enough:** everything a Windows user would call a shortcut
-  (launcher, terminal, browser, files, close, maximize, minimize, desktops,
-  Alt+Tab, lock, screenshots, clipboard history, zoom, night light) and your
-  ALT+Return for the terminal, now Konsole.
-- **Changed:** Steel OS uses floating windows by default. Super+T and
-  Super+Shift+arrow quick-tiling shortcuts are unbound.
-  Settings keys open a settings page instead of a bar popup.
-- **No equivalent:** the tiling-specific keys (splits, groups, scratchpad,
-  gaps, layouts), the universal Super+C/V copy and paste, and the Omarchy
-  notification and reminder keys.
-
-**What I need from you:** your personal bindings beyond Omarchy's defaults, if
-any, and your answer on the "None" rows you actually use. Each one either gets a
-Plasma replacement or stays unbound. Add them to this file or to a note in the
-repo; I will fold them in.
-
-**To verify on the first image:** that Plasma reads these three
-files from `/etc/xdg` as defaults on a fresh login, and that the Flatpak
-desktop file names for Firefox and Obsidian match what Flathub installs.
-
-## Inside Konsole
+## Windows
 
 | Keys | Does |
 |---|---|
-| Alt+C | Copy the selected text (Ctrl+Shift+C also works) |
-| Alt+V | Paste (Ctrl+Shift+V also works) |
-| Ctrl+C | Still stops the running program, as in every terminal |
-| Ctrl+Shift+M | Show or hide Konsole's menu bar (hidden by default so Alt+V does not open the View menu) |
+| Super+W, Super+Q or Alt+F4 | Close the window |
+| Super+F | Full screen |
+| Super+Alt+F | Maximise |
+| Super+M | Minimise |
+| Super+O | Keep the window above others |
+| Super+Left, Right, Up or Down | Move focus to the window in that direction |
+| Alt+Tab, Alt+Shift+Tab | Switch between windows |
+| Super+Alt+Space | Overview of all windows and desktops |
 
-Shipped as `/etc/skel/.local/share/kxmlgui5/konsole/sessionui.rc` (and the
-`kxmlgui6` twin for newer Plasma) so every new user starts with it, plus
-`/etc/xdg/konsolerc` for the menu bar default. Users can change any key in
-Konsole under Settings, Configure Keyboard Shortcuts. WezTerm stays available
-as a one-click install for anyone who prefers it.
+Windows open floating and cascading, like Windows. Quick-tiling shortcuts are
+switched off.
+
+## Desktops
+
+Steel OS starts with four virtual desktops in one row.
+
+| Keys | Does |
+|---|---|
+| Super+1 to Super+4 | Go to desktop 1 to 4 |
+| Super+Shift+1 to Super+Shift+4 | Move the current window to desktop 1 to 4 |
+| Super+Tab, Super+Shift+Tab | Next or previous desktop |
+| Ctrl+Alt+Tab | Move focus to the next screen (multi-monitor) |
+
+Super+5 to Super+0 work too if more desktops are added in System Settings.
+
+## Terminal (Konsole)
+
+| Keys | Does |
+|---|---|
+| Alt+C or Ctrl+Shift+C | Copy |
+| Alt+V or Ctrl+Shift+V | Paste |
+
+The menu bar is hidden so that Alt+V pastes instead of opening a menu.
+
+## Screen and system
+
+| Keys | Does |
+|---|---|
+| Print | Screenshot tool |
+| Super+Shift+S | Screenshot of a selected area |
+| Alt+Print | Record the screen |
+| Super+Ctrl+V | Clipboard history |
+| Super+Ctrl+Z, Super+Ctrl+Shift+Z | Zoom the screen in, out |
+| Super+Ctrl+Alt+Z | Zoom back to normal |
+| Super+Ctrl+N | Night light on or off |
+| Super+Ctrl+Comma | Do not disturb on or off |
+| Super+L or Super+Ctrl+L | Lock the screen |
+| Super+Esc or Ctrl+Alt+Del | Log out, restart or shut down |
+
+## Settings pages
+
+| Keys | Opens |
+|---|---|
+| Super+Ctrl+A | Sound |
+| Super+Ctrl+B | Bluetooth |
+| Super+Ctrl+D | Displays |
+| Super+Ctrl+W | Wi-Fi and network |
+| Super+Ctrl+P | Power |
+
+---
+
+## Where they came from
+
+The set started from the keyboard-first layout of Omarchy, the system Steel OS
+was first built on, and was translated to KDE Plasma when Steel OS moved to
+Bazzite. Tiling-window shortcuts were left out because Steel OS uses floating
+windows.

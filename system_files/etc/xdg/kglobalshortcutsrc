@@ -7,8 +7,7 @@
 # Any user can change any key in System Settings > Shortcuts; their change is
 # stored in ~/.config/kglobalshortcutsrc and overrides this file.
 #
-# See docs/keyboard-shortcuts.md for the full mapping, including Omarchy
-# bindings that have no Plasma equivalent.
+# See docs/keyboard-shortcuts.md for the full list of Steel OS shortcuts.
 
 [kwin]
 _k_friendly_name=KWin
