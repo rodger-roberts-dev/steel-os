@@ -22,7 +22,7 @@ if [[ ! -r "$LIST" ]]; then
 fi
 
 # Drop comments and blank lines; one Flatpak ID per line.
-mapfile -t WANTED < <(grep -Ev '^[[:space:]]*(#|$)' "$LIST" | tr -d '[:space:]' | sort -u)
+mapfile -t WANTED < <(grep -Ev '^[[:space:]]*(#|$)' "$LIST" | sed 's/[[:space:]]//g' | sort -u)
 if [[ ${#WANTED[@]} -eq 0 ]]; then
     echo "Steel OS: default app list is empty, nothing to do."
     exit 0
