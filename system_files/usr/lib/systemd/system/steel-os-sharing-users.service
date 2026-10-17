@@ -1,0 +1,11 @@
+# Steel OS (STEEL-39): administrators can share folders with Windows PCs.
+[Unit]
+Description=Steel OS: allow administrators to share folders
+After=local-fs.target systemd-sysusers.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/steel-os-sharing-users
+
+[Install]
+WantedBy=multi-user.target

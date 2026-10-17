@@ -1,0 +1,12 @@
+#!/usr/bin/bash
+# Steel OS (STEEL-39): let the PC's administrators share folders with
+# Windows PCs from Dolphin (right-click a folder, Properties, Share), without
+# an extra setup step. Adds every member of "wheel" (the account made during
+# install is one) to Samba's "usershares" group. Safe to run at every boot.
+set -euo pipefail
+getent group usershares >/dev/null || exit 0
+members="$(getent group wheel | cut -d: -f4 | tr ',' ' ')"
+for user in $members; do
+    id -nG "$user" 2>/dev/null | tr ' ' '\n' | grep -qx usershares && continue
+    usermod -aG usershares "$user" && echo "Steel OS: $user can now share folders"
+done

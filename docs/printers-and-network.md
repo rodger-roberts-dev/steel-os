@@ -3,115 +3,96 @@
 Updated: 2026-10-17
 
 How Steel OS handles printing, scanning, finding other computers and sharing
-folders, what is already in the image, and what is still to build. Steel OS is
-built on Bazzite (Fedora Atomic) with the KDE Plasma desktop.
-
-Lines marked **(to confirm)** come from Bazzite's Fedora KDE base and have not
-yet been checked on an installed Steel OS machine. Section 5 has the one
-command that checks them.
+folders with Windows PCs. Steel OS is built on Bazzite (Fedora Atomic) with the
+KDE Plasma desktop.
 
 ---
 
 ## 1. Short answer
 
-| Task | Today | Goal |
-|---|---|---|
-| Print to a modern network printer | Works: System Settings, Printers, Add | Printer appears without clicking Add |
-| Print to an older printer (HP, Canon, Epson) | Drivers included in the image | Same |
-| Print over USB | Works for most printers; to be tested with the Canon PIXMA MG3620 | Plug in and print, no driver download |
-| Scan | Skanpage scanning app **(to confirm)** | Scan from the MG3620 over USB |
-| Open a Windows PC's shared folder | Works in Dolphin by typing `smb://PCNAME` | Windows PCs listed on their own |
-| Steel OS appears in Windows Explorer | `wsdd` included in the image | Same, once sharing is on |
-| Share a folder to Windows | Not yet | Right-click a folder, Share, done |
-| Send a file to a phone or laptop | KDE Connect **(to confirm)**; LocalSend as a Steel App later | Same |
-
----
-
-## 2. What is in the Steel OS image
-
-**Added by Steel OS** (`packages/image.txt`):
-
-| Package | What it does |
+| Task | How |
 |---|---|
-| `hplip` | Drivers for HP printers and scanners that need them |
-| `gutenprint-cups` | Drivers for older Canon, Epson and other printers that are not driverless |
-| `wsdd` | Makes Steel OS visible in Windows Explorer's Network, and helps find Windows PCs |
+| Print to a network printer | Most appear by themselves. Otherwise: System Settings, Printers, Add |
+| Print over USB | Plug it in; Steel OS sets it up by itself |
+| Scan | Skanpage, USB or network scanners |
+| Open a Windows PC's shared folder | Dolphin, Network, or type `smb://PCNAME` |
+| Be seen by Windows PCs | Built in: Steel OS appears in Windows Explorer's Network |
+| Share a folder with Windows | Right-click the folder in Dolphin, Properties, **Share** |
 
-**From Bazzite's Fedora KDE base** (to confirm on an installed machine):
+## 2. Printers by brand
+
+The four common brands work without downloading a driver.
+
+| Brand | Printing | Scanning |
+|---|---|---|
+| **HP** | HPLIP, HP's own Linux driver, covers nearly every HP printer | HPLIP |
+| **Canon** (PIXMA, MAXIFY, imageCLASS) | Gutenprint for most PIXMA models, including the MG3600 series; driverless (AirPrint) for Wi-Fi models | SANE's PIXMA driver over USB and the network |
+| **Brother** | brlaser for Brother laser printers; driverless for newer models over the network or USB | Driverless network scanning (eSCL/WSD) on most Wi-Fi models |
+| **Epson** | Gutenprint for hundreds of models; driverless for most since about 2015 | SANE's Epson drivers and Epson scanner firmware; driverless on Wi-Fi models |
+| **Others** | Driverless (IPP Everywhere / AirPrint) for most printers made since about 2015; Samsung and some Xerox lasers via SpliX; manufacturer PPDs from the foomatic database | Driverless network scanning |
+
+**Driverless** means the printer itself tells the computer how to print. No
+driver is needed. Most printers with Wi-Fi or a network port work this way, and
+newer USB printers do too (ipp-usb).
+
+**Not covered:** Brother scanners that only work with Brother's own `brscan`
+driver over USB, and a few Canon laser printers that need Canon's CAPT driver.
+These drivers aren't free software, so Steel OS can't include them; the help
+page explains what to do.
+
+## 3. What is in the Steel OS image
 
 | Piece | What it does |
 |---|---|
-| CUPS | The print system |
-| Plasma Printers page (`print-manager`) | System Settings, Printers: add, remove and manage printers, see the print queue |
-| Avahi and mDNS | Finds printers and computers on the local network by name |
-| Skanpage and SANE | Scanning app and scanner drivers. SANE's `pixma` driver covers most Canon PIXMA scanners |
-| Dolphin network support | Opens Windows (SMB) shares from the file manager |
-| firewalld | The firewall. Fedora's desktop zone lets local discovery and Windows file-sharing clients through |
-| KDE Connect | Send files and notifications between Steel OS and a phone |
+| CUPS with `cups-browsed` | The print system; network printers that support driverless printing are added by themselves |
+| `system-config-printer-udev` | Sets up a USB printer the moment it's plugged in |
+| `hplip`, `gutenprint-cups`, `printer-driver-brlaser`, `splix`, `foomatic-db-ppds` | Drivers for HP, Canon, Epson, Brother, Samsung and many more |
+| `ipp-usb` | Driverless printing and scanning over USB for newer printers |
+| Plasma Printers page | System Settings, Printers: add, remove, manage, see the queue |
+| `skanpage`, `sane-backends-drivers-scanners`, `sane-airscan`, `iscan-firmware` | The scanning app and scanner drivers, including driverless network scanners |
+| `wsdd` | Steel OS appears in Windows Explorer's Network, and finds Windows PCs |
+| `samba`, `samba-usershares`, `kdenetwork-filesharing` | Share a folder with a right-click; Windows PCs open it |
+| Firewall | Allows file sharing, printer discovery and Windows network discovery |
 
----
+File sharing starts only once a folder has actually been shared, so nothing
+listens on the file-sharing ports until then. The PC's administrators can
+share folders straight away; no extra setup step is needed.
 
-## 3. What a user does today
+## 4. What a user does
 
 **Add a printer**
-1. Open System Settings, then **Printers**.
-2. Click **Add**. Most network printers and USB printers appear in the list.
-3. Pick it. Modern printers use the driverless profile automatically. Older
-   ones use a driver from `hplip` or Gutenprint.
-4. Print a test page.
+1. USB: plug it in and switch it on. It appears in Printers by itself.
+2. Network: most appear by themselves. If not, open System Settings,
+   **Printers**, click **Add**, and pick it from the list.
+3. Print a test page.
 
 Printing to a PDF file works in every app with no printer.
 
 **Scan**
-Open **Skanpage** from the start menu, pick the scanner, then click Scan.
-**(to confirm)**
+Open **Skanpage** from the start menu, pick the scanner, click **Scan**.
 
-**Open a Windows PC's shared folder**
-1. Open **Dolphin** (the file manager), then click **Network** in the sidebar.
-2. Linux machines, Macs and NAS boxes usually appear on their own. Windows 10
-   and 11 PCs often don't, which is true on every Linux system.
-3. Type `smb://PCNAME/` or `smb://192.168.1.20/` in the address bar. Sign in
-   with the Windows account name and password.
+**Open a shared folder on a Windows PC**
+1. Open **Dolphin**, the file manager, and click **Network**.
+2. If the PC isn't listed, type `smb://PCNAME/` or `smb://192.168.1.20/` in the
+   address bar.
+3. Sign in with the Windows account name and password.
 
----
+**Share a folder with Windows PCs**
+1. In Dolphin, right-click the folder, then **Properties**, then the **Share**
+   tab.
+2. Tick **Share with Microsoft Windows (SMB)**. Choose who can open it and
+   whether they can change files.
+3. On the Windows PC, open File Explorer, **Network**, then this PC. Sign in
+   with your Steel OS user name and password.
 
-## 4. What is still to build
+## 5. How to check (on the test PC)
 
-| Gap | Plan |
-|---|---|
-| Printers appear only after clicking Add | Decide whether to turn on automatic printer discovery for driverless printers. Test it first. |
-| Canon PIXMA MG3620 over USB | Make it print and scan over USB with no driver download. Test on the Command test PC. Add `ipp-usb` (driverless printing over USB) if the printer supports it; otherwise use the Gutenprint driver. |
-| Windows PCs not listed in Dolphin | Check whether `wsdd` fixes it. If not, the help page says "type the PC's name". |
-| No way to share a folder to Windows | A "Share this folder" option on right-click in Dolphin: Samba, with safe defaults and a firewall rule limited to the local network. No terminal. |
-| Printers and Scanners are two separate apps | A "Printers and Scanners" entry in the Steel OS Portal that opens both |
-| Quick file sending | LocalSend as a one-click Steel App, alongside KDE Connect |
-
----
-
-## 5. How to check (in a VM or on the test PC)
-
-**Confirm what Bazzite includes.** Run this in the terminal and paste the
-output into the team chat:
-
-```
-rpm -q cups cups-browsed print-manager skanpage sane-backends ipp-usb samba samba-client kdenetwork-filesharing kio-extras avahi nss-mdns firewalld kdeconnectd; firewall-cmd --get-default-zone
-```
-
-Each line says either a version number (installed) or "is not installed".
-
-**Printer** (a real printer is needed, so use the test PC)
-1. System Settings, Printers. Is anything listed before clicking Add?
-2. Click Add and wait 10 seconds. Does the network printer appear? Does the
-   MG3620 appear when plugged in over USB?
-3. Add it and print a test page. Did it ask for a password?
-4. Print any document to PDF. Does the file appear?
-
-**Scanner**
-5. Open Skanpage with the MG3620 plugged in. Is the scanner listed? Scan one page.
-
-**Network**
-6. Dolphin, Network. Which machines appear? Is the Windows PC there?
-7. Type `smb://` and the Windows PC's name. Do the shares open after signing in?
-8. On the Windows PC, open Explorer, Network. Does the Steel OS machine appear?
-
-The answers decide the work in section 4.
+1. Plug in the Canon MG3620 over USB. Within a few seconds it is listed in
+   System Settings, Printers. Print a test page.
+2. Open Skanpage with the MG3620 connected. Scan one page.
+3. A Brother printer on the same network appears in Printers without clicking
+   Add, or after **Add**. Print a test page.
+4. Dolphin, Network: the Windows PC is listed, or opens with `smb://` and its
+   name.
+5. Share a folder from Dolphin. On the Windows PC, File Explorer, Network shows
+   the Steel OS PC and the shared folder opens.

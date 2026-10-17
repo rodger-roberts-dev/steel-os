@@ -461,6 +461,30 @@ jq -e '.transports.docker["ghcr.io/steel-and-code"][0].type == "sigstoreSigned"'
 test -s /etc/pki/containers/steel-os.pub
 jq -c '.transports.docker | keys' "$POLICY"
 
+### 19. Printers, scanners and Windows networking (STEEL-38, STEEL-39)
+# Packages in packages/image.txt. Here: switch the services on.
+# - Network printers that support driverless printing are added by themselves.
+# - Steel OS shows up in Windows Explorer's Network (wsdd).
+# - Windows file sharing starts only when a folder is shared (path unit), and
+#   the firewall lets file sharing through so Windows PCs can reach it.
+chmod 0755 /usr/libexec/steel-os-sharing-users
+for unit in cups.socket cups-browsed.service wsdd.service steel-os-file-sharing.path steel-os-sharing-users.service; do
+    if systemctl list-unit-files "$unit" >/dev/null 2>&1; then
+        systemctl enable "$unit"
+    else
+        echo "Steel OS: $unit not found"
+    fi
+done
+if command -v firewall-offline-cmd >/dev/null 2>&1; then
+    zone="$(firewall-offline-cmd --get-default-zone)"
+    for svc in samba samba-client mdns ipp-client ws-discovery ws-discovery-client; do
+        firewall-offline-cmd --zone="$zone" --add-service="$svc" >/dev/null 2>&1 \
+            && echo "Steel OS firewall: $svc allowed in $zone" \
+            || echo "Steel OS firewall: $svc not available in this firewalld"
+    done
+fi
+rpm -q hplip gutenprint-cups printer-driver-brlaser ipp-usb sane-airscan skanpage samba-usershares kdenetwork-filesharing wsdd || true
+
 ### 9. Rebuild the boot image so the boot splash shows Steel OS (STEEL-31)
 # The logo shown while the machine starts is read from the initramfs, a small
 # boot image Bazzite generated before our files were added. Our watermark in

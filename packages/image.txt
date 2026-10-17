@@ -35,3 +35,30 @@ dialog
 sddm
 sddm-breeze
 sddm-wayland-plasma
+
+# Printers and scanners, the common brands without hunting for drivers (STEEL-38).
+# HP: hplip (above). Canon and Epson: gutenprint-cups (above) and driverless.
+# Brother lasers: brlaser. Most printers since about 2015: driverless (IPP
+# Everywhere / AirPrint), over the network or USB (ipp-usb).
+printer-driver-brlaser
+ipp-usb
+cups-browsed
+foomatic
+foomatic-db-ppds
+splix
+# Plug in a USB printer and it is set up by itself.
+system-config-printer-udev
+# Scanning: Skanpage app, SANE drivers (Canon PIXMA, Epson, many more),
+# Epson scanner firmware, and driverless network scanners (eSCL / WSD, used by
+# most Brother, Canon, Epson and HP models with Wi-Fi).
+skanpage
+sane-backends-drivers-scanners
+sane-airscan
+iscan-firmware
+
+# Windows networking (STEEL-39): be seen by Windows PCs (wsdd, above), open
+# their shares in Dolphin, and share a folder with a right-click (Samba
+# usershares + Dolphin's Share tab).
+samba
+samba-usershares
+kdenetwork-filesharing

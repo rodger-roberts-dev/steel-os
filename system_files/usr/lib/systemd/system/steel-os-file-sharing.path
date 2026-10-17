@@ -1,0 +1,12 @@
+# Steel OS (STEEL-39): start Windows file sharing (Samba) only once someone
+# has actually shared a folder with Dolphin's Share tab. Until then nothing
+# listens on the file-sharing ports.
+[Unit]
+Description=Start Windows file sharing when a folder is shared
+
+[Path]
+PathExistsGlob=/var/lib/samba/usershares/*
+Unit=smb.service
+
+[Install]
+WantedBy=multi-user.target
