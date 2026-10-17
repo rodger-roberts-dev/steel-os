@@ -112,8 +112,8 @@ Still stuck? Report it at **steel-os.org/report** with a photo of the screen.
 
 Like Fedora and Bazzite, Steel OS takes part in Fedora's anonymous weekly
 device count (DNF Count Me). Once a week, one update check carries a flag
-saying "a Steel OS machine of this version". No name, no serial number, no IP
-address is kept. Fedora publishes the totals, and steel-os.org shows the
+saying "a Steel OS machine of this version". The totals Fedora publishes
+contain no names, serial numbers or IP addresses, and steel-os.org shows the
 Steel OS line.
 
 To switch it off, open a terminal and run:
