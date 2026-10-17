@@ -27,4 +27,9 @@
     .pf-v6-c-form__section:has(#anaconda-screen-accounts-root-account-enable-root-account) {
         display: none;
     }
+
+    /* No Fedora feedback link or QR code on the last screen (STEEL-35). */
+    .feedback-section {
+        display: none !important;
+    }
 }

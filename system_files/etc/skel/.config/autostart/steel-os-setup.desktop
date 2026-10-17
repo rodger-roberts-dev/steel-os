@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Steel OS Setup
+Comment=First-login welcome (runs once)
+Exec=/usr/libexec/steel-os-setup
+Icon=steel-os
+Terminal=false
+Type=Application
+X-GNOME-Autostart-enabled=true
+X-KDE-autostart-after=panel

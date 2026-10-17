@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Steel OS Setup
+GenericName=First-time setup
+Comment=Run the welcome steps again: updates, apps and printers
+Exec=/usr/libexec/steel-os-setup --again
+Icon=steel-os
+Terminal=false
+Type=Application
+Categories=System;Settings;
+Keywords=setup;welcome;first;wizard;steel;

@@ -21,3 +21,6 @@ wsdd
 libvirt-daemon-kvm
 libvirt-daemon-config-network
 swtpm
+
+# First-login setup dialogs (STEEL-35). Usually already part of KDE.
+kdialog

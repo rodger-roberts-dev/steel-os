@@ -13,6 +13,10 @@ dnf install -qy --enable-repo=fedora-cisco-openh264 --allowerasing firefox anaco
 
 mkdir -p /var/lib/rpm-state # Needed for Anaconda Web UI
 
+# Steel OS (STEEL-35): "Use entire disk" preselected and "Finish" on the last
+# installer screen. See installer/patch-anaconda-webui.py.
+python3 /src/patch-anaconda-webui.py /usr/share/cockpit/anaconda-webui
+
 # Utilities for displaying a dialog prompting users to review secure boot documentation
 dnf install -qy --setopt=install_weak_deps=0 qrencode yad
 
@@ -23,7 +27,7 @@ imageref="${imageref%%:*}"
 imagetag="$(podman images --format '{{ .Tag }}\n' "$imageref" | head -1)"
 sbkey='https://github.com/ublue-os/akmods/raw/main/certs/public_key.der'
 SECUREBOOT_KEY="/usr/share/ublue-os/sb_pubkey.der"
-SECUREBOOT_DOC_URL="https://docs.bazzite.gg/sb"
+SECUREBOOT_DOC_URL="https://steel-os.org"
 SECUREBOOT_DOC_URL_QR="/usr/share/ublue-os/secure_boot_qr.png"
 
 # Steel OS anaconda profile
@@ -54,7 +58,7 @@ It might interrupt the installation process.
 In such case, please, do <b>one</b> of the following:
     a) Disconnect its storage drive.
     b) Disable Bitlocker in Windows.
-    c) Delete it in GNOME Disks.
+    c) Delete it with a disk tool, if you no longer need it.
 
 Do you wish to continue?
 WARNINGEOF
@@ -114,6 +118,7 @@ ostreecontainer --url=$imageref:$imagetag --transport=containers-storage --no-si
 %include /usr/share/anaconda/post-scripts/restore-selinux-labels.ks
 %include /usr/share/anaconda/post-scripts/secureboot-enroll-key.ks
 %include /usr/share/anaconda/post-scripts/secureboot-docs.ks
+%include /usr/share/anaconda/post-scripts/steel-os-installed.ks
 
 EOF
 
@@ -160,7 +165,7 @@ SECUREBOOT_DOC_URL="$SECUREBOOT_DOC_URL"
 SECUREBOOT_DOC_URL_QR="$SECUREBOOT_DOC_URL_QR"
 
 LC_ALL=C mokutil -t "\$SECUREBOOT_KEY" | grep -q "is already in the enrollment request" && \
-    run0 --user=liveuser yad --timeout=0 --on-top --button=Ok:0 --image="\$SECUREBOOT_DOC_URL_QR" --text="<b>Secure Boot Key added:</b>\nPlease check the documentation to finish enrolling the key\n\$SECUREBOOT_DOC_URL"
+    run0 --user=liveuser yad --timeout=0 --on-top --button=OK:0 --image=dialog-information --text="<b>One more step at the next start (Secure Boot)</b>\n\nWhen the PC restarts, a blue screen appears. Choose <b>Enroll MOK</b>,\nthen <b>Continue</b>, then <b>Yes</b>, type the password <b>universalblue</b>,\nthen choose <b>Reboot</b>. Steel OS then starts normally."
 %end
 EOF
 

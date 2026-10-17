@@ -89,6 +89,9 @@ install -D -m 0644 /ctx/packages/flatpaks-default.txt /usr/share/steel-os/flatpa
 chmod 0755 /usr/libexec/steel-os-flatpak-install
 systemctl enable steel-os-flatpak-install.service
 
+# The Steel Apps list also feeds the first-login setup's app checklist.
+install -D -m 0644 /ctx/packages/steel-apps.txt /usr/share/steel-os/steel-apps.txt
+
 ### 7. The OS calls itself Steel OS (STEEL-48)
 # Bazzite rewrites Fedora's /usr/lib/os-release in its build (see Bazzite's
 # build_files/image-info). We do the same on top, changing only the fields
@@ -321,10 +324,12 @@ install -D -m 0644 /ctx/branding/portal/steel-os-portal.svg \
 mkdir -p /usr/share/steel-os
 python3 /ctx/portal/make-portal.py /ctx/packages/steel-apps.txt /ctx/portal/base.yml \
     /usr/share/steel-os/portal.yml
-# It opens at a new user's first login (the switch at the bottom of the
-# portal turns that off) and is in the start menu and on the taskbar.
-mkdir -p /etc/skel/.config/autostart
-cp /usr/share/applications/steel-os-portal.desktop /etc/skel/.config/autostart/steel-os-portal.desktop
+# At a new user's first login the Steel OS Setup steps run first
+# (/usr/libexec/steel-os-setup, STEEL-35) and end by offering to open the
+# Portal. The Portal is in the start menu, the favourites and on the taskbar;
+# its "Launch at startup" switch makes it open at every login.
+chmod 0755 /usr/libexec/steel-os-setup /usr/libexec/steel-os-help
+rm -f /etc/skel/.config/autostart/steel-os-portal.desktop
 for f in /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/bazzite-pins.js \
          /usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js; do
     [[ -f "$f" ]] || continue

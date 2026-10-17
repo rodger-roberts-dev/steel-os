@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Steel OS Help
+GenericName=Help and how-to guides
+Comment=Plain-English help for Steel OS, available offline
+Exec=/usr/libexec/steel-os-help
+Icon=help-browser
+Terminal=false
+Type=Application
+Categories=Documentation;System;
+Keywords=help;guide;manual;how;docs;documentation;steel;

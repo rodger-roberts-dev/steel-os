@@ -1,0 +1,27 @@
+#!/usr/bin/bash
+# Steel OS (STEEL-54): open the offline Steel OS Help pages in the browser.
+#
+# Firefox runs in a sandbox and cannot read /usr/share directly, so the pages
+# are served by a tiny web server that only listens on this computer
+# (127.0.0.1) and stops by itself after four hours.
+# Usage: steel-os-help [page.html]
+
+set -euo pipefail
+
+PORT=48761
+DIR=/usr/share/steel-os/help
+PAGE="${1:-index.html}"
+
+listening() {
+    (exec 3<>"/dev/tcp/127.0.0.1/$PORT") 2>/dev/null
+}
+
+if ! listening; then
+    nohup setsid timeout 4h python3 -m http.server "$PORT" --bind 127.0.0.1 --directory "$DIR" >/dev/null 2>&1 &
+    for _ in $(seq 25); do
+        listening && break
+        sleep 0.2
+    done
+fi
+
+exec xdg-open "http://127.0.0.1:$PORT/$PAGE"
