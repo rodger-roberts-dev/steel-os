@@ -1,29 +1,27 @@
 # CLAUDE.md — steel-os
 
-This file is read by Claude Code at the start of every session. It describes the
-project, the team, and the rules Claude must follow when working in this repo.
+Rules for contributors and for any AI assistant working in this repository.
+Claude Code reads this file at the start of every session.
 
 ---
 
-## 1. What steel-os is
+## 1. What Steel OS is
 
 - A Linux distribution for everyday people, built as a **custom bootable image
   on a Fedora Atomic base, starting from Bazzite**, using the Universal Blue
-  image template. Decided 2026-10-15 (STEEL-28) by rodger-roberts-dev and T.
-- Before that date the project was built on Omarchy (Arch + Hyprland). The
-  research from that period (`docs/updates-and-rollback.md`,
-  `docs/printers-and-network.md`) is kept as background. The Omarchy-era files were removed in STEEL-16.
+  image template.
 - Steel OS is a **Steel & Code** (steelandcode.com) project, in partnership
   with **Blackbox Entertainment**. Say it that way on anything public.
-- Owner / lead developer: **rodger-roberts-dev** (has final say on all merges).
-  Also the author of Steel & Code Forge, an AI development platform that is an
-  optional one-click install on Steel OS (STEEL-25).
-- Product director: **T** (GitHub: `blackboxentertainment01-sys`). Not a coder —
-  writes Jira stories, tests builds, and reviews behavior, not code.
-- Repo: `github.com/steel-and-code/steel-os` (private). Default branch: **`master`**.
-- Jira site: `blackboxentertainment.atlassian.net`, project key **STEEL**.
-  Epics STEEL-8 to STEEL-15 group the stories. rodger-roberts-dev has no Jira
-  account yet, so his tickets carry "Owner:" in the text.
+- Roles:
+  - **Steel & Code (S&C)** is the project lead. S&C reviews every pull request
+    and has the final say on merges. S&C also makes Steel & Code Forge, an AI
+    development platform offered as an optional one-click install.
+  - **Blackbox Entertainment (BBE)** is the product director. BBE plans the
+    work, tests builds and reviews behaviour, not code.
+- Repo: `github.com/steel-and-code/steel-os` (public). Default branch:
+  **`master`**.
+- Work is planned in a private issue tracker. Outside contributors use GitHub
+  issues and pull requests.
 
 ### Product goals (in priority order)
 1. **Safe updates.** Users never get raw updates. The whole system updates as
@@ -31,136 +29,120 @@ project, the team, and the rules Claude must follow when working in this repo.
    the boot menu.
 2. **Easy like Windows.** A non-technical user must be able to install, update,
    connect a printer, find network computers, and install apps without a terminal.
-3. **Plays games.** Steam + Proton work out of the box; controllers just work.
-4. **One way to install apps.** One store (Discover) and one format (Flatpak).
+3. **Plays games.** Steam and Proton work out of the box; controllers just work.
+4. **One way to install apps.** One store (the App Store) and one format
+   (Flatpak), plus one-click Steel Apps in the Steel OS Portal.
 5. **Built-in security.** Protection is part of the OS, not a third-party add-on.
 
 ### Decisions already made (see `ARCHITECTURE.md` section 5)
-- Desktop: **KDE Plasma** with cascading windows. Terminal: **Konsole** (WezTerm one click).
-  rodger-roberts-dev's keyboard shortcuts ship as the defaults (STEEL-29).
-- Base: **Bazzite** (`ghcr.io/ublue-os/bazzite:stable`). Three image variants
-  for GPUs (standard, NVIDIA newer, NVIDIA older), one ISO, GPU detected at
-  first boot (STEEL-30).
-- Browser: Firefox default, Chrome one click (both decided 2026-10-16 by rodger-roberts-dev and T). Office suite: LibreOffice.
-- Hosting: T owns `steel-os.org` and `steelos.org`. Download page on
-  `steel-os.org`, files in T's Cloudflare R2 at `downloads.steel-os.org`
-  (STEEL-26). One ISO; GPU detected at first boot (STEEL-30). Plasma only.
+- Desktop: **KDE Plasma** with cascading windows. Terminal: **Konsole**
+  (WezTerm one click). Steel OS keyboard shortcuts ship as the defaults.
+- Base: **Bazzite** (`ghcr.io/ublue-os/bazzite:stable`). One ISO; the graphics
+  card is detected at first boot. Plasma only.
+- Browser: Firefox by default, Chrome one click. Office suite: LibreOffice.
+- Website and downloads: `steel-os.org`, with installer files at
+  `downloads.steel-os.org`.
 
 ---
 
 ## 2. How the repo is built
 
-### Layout (Universal Blue image template, since STEEL-16)
+### Layout (Universal Blue image template)
 ```
 Containerfile             FROM ghcr.io/ublue-os/bazzite:stable, runs build.sh
 image-template.env        image name, organisation, description
-build_files/build.sh      installs rpm packages into the image, enables units
+build_files/build.sh      adds packages, settings and branding to the image
+build_files/portal/       the Steel OS Portal tabs and the script that builds them
 system_files/             files copied verbatim into the image at /
-  etc/xdg/kglobalshortcutsrc     rodger's key bindings (Plasma defaults)
-  etc/xdg/kwinrc                 cascading window placement
-  etc/xdg/kdeglobals             Konsole pinned as the terminal
-  etc/containers/registries.d/   where our image signatures live
-  etc/systemd/system/uupd.timer.d/   Tuesday schedule for automatic updates (STEEL-27)
-  usr/share/...                  branding, wallpaper, Steel Apps catalogue
-disk_config/iso-kde.toml  ISO build settings
-packages/                 plain-text lists read by build.sh and first boot
-.github/workflows/        build the image; build the ISO and upload to R2
+packages/                 plain-text lists: rpm packages, default apps, Steel Apps
+branding/                 logos, icons and wallpapers (Steel & Code trademarks)
+installer/                the live installer ISO recipe (adapted from Bazzite)
+disk_config/              disk image settings
+.github/workflows/        build the image; build the ISO and upload it
 Justfile                  local build commands (Linux only)
 cosign.pub                image signing public key (the private key is a GitHub secret, never in the repo)
 ```
 
-- **Languages:** Containerfile; Bash for `build.sh` and first-boot scripts;
-  INI-style config files for Plasma; TOML for disk config; YAML for workflows.
-- **Build:** GitHub Actions builds the image on every push to `master` and on a
-  schedule, and builds the ISO on release. Nothing is built on T's Windows PC.
+- **Languages:** Containerfile; Bash for `build.sh` and helper scripts;
+  INI-style config files for Plasma; YAML for workflows and the Portal.
+- **Build:** GitHub Actions builds the image on every push to `master` and
+  every day, and builds the ISO on request. Nothing is built on a contributor's
+  own PC unless it runs Linux.
 - **Updates:** Bazzite's `uupd` updates the image and all Flatpaks in the
-  background; rollback is `rpm-ostree rollback` or picking the previous image at
-  boot. Steel OS only sets the schedule and the notification wording.
-- **Migrations:** mostly unnecessary. Settings live in the image under `/etc`,
-  so a change ships in the next image. A first-boot script handles the few
-  per-user things (Flatpak installs, default browser).
-- **Testing:** T installs the ISO in VirtualBox (VM "STEEL") or on the test
-  machine, following the PR's how-to-test list.
+  background; rollback is picking the previous image at boot. Steel OS sets the
+  schedule and the wording.
+- **Migrations:** mostly unnecessary. Settings live in the image under `/etc`
+  and `/usr`, so a change ships in the next image. A few per-user things run
+  once at login (shortcuts, taskbar pins, wallpaper).
+- **Testing:** the product director installs the image or ISO in a virtual
+  machine or on a test PC, following the PR's "How to test" list.
 
 ### Relationship to upstream
-- Steel OS tracks `bazzite:stable`. Pin each Steel OS release to the Bazzite
-  image digest it was tested on and record it in `ARCHITECTURE.md`.
-- Never fork or patch Bazzite's own files. Everything Steel OS does goes in
-  `build.sh`, `system_files/`, and `packages/`.
+- Steel OS tracks `bazzite:stable`.
+- Never fork or patch Bazzite's own files in place. Everything Steel OS does
+  goes in `build.sh`, `system_files/`, `packages/` and `installer/`.
+- Files copied from Bazzite or Universal Blue keep a header saying so, and
+  `NOTICE` lists them.
 
 ---
 
-## 3. Rules Claude must always follow
+## 3. Rules to always follow
 
 ### Git and GitHub
 - **Never commit or push to `master`.** Always work on a branch. (The default
   branch is `master`, not `main`.)
-- Branch names start with the Jira key: `STEEL-12-printer-wizard`.
-- Commit messages start with the Jira key: `STEEL-12: add printer setup wizard`.
-- Every change goes through a **pull request** for rodger-roberts-dev to review.
-  PR description must include: the Jira key, what changed, why, and how to test it.
-- One Jira story per branch / PR. Don't bundle unrelated changes.
-- `master` has no branch protection; the "never push to master" rule is
-  enforced by discipline.
+- Branch names and commit messages say what changed, for example
+  `printer-setup-wizard` and `Add printer setup wizard`. A tracking key may go
+  first when there is one.
+- Every change goes through a **pull request** that S&C reviews. The PR
+  description says what changed, why, and how to test it.
+- Bundle only changes that belong together.
+- Docs-only changes (under `docs/` or Markdown files at the top of the repo)
+  don't rebuild the image.
+
+### Public text
+- The repo is public. README, ARCHITECTURE, `docs/`, `branding/` and this file
+  carry no personal names, private account names or internal tracker numbers.
+  Refer to roles as Steel & Code (S&C) and Blackbox Entertainment (BBE).
+- Nothing user-facing says "Bazzite" except credits. A Bazzite mention in the
+  image, the installer or the Portal is a bug.
 
 ### Safety — this code builds operating systems
-- **Never run image, install, or update commands on the host machine.**
+- **Never run image, install or update commands on the host machine.**
   `bootc`, `rpm-ostree`, `dnf`, `podman build`, `just build`, partitioning
-  tools, and anything with `sudo` run only inside a VM, a container, or GitHub
-  Actions. T's Windows PC cannot run them anyway; do not try.
+  tools and anything with `sudo` run only inside a VM, a container or GitHub
+  Actions.
 - Never delete files outside the repo.
-- Never put secrets, passwords, or keys in the repo. The cosign private key,
-  R2 credentials, and any API keys live in GitHub Actions secrets only.
+- Never put secrets, passwords or keys in the repo. The cosign private key,
+  storage credentials and any API keys live in GitHub Actions secrets only.
 
 ### Code standards
 - Bash scripts: `set -euo pipefail` (the template's `build.sh` uses
   `set -ouex pipefail`; match it there), quote variables, pass **shellcheck**.
 - Config files under `system_files/` are plain text; keep a comment at the top
-  of each saying what it does and which STEEL story added it.
-- Anything that changes a per-user setting on existing machines needs a
-  first-boot or post-update step that is safe to run twice.
+  of each saying what it does.
+- Anything that changes a per-user setting on existing machines needs a step
+  that is safe to run twice.
 - Match the existing style of the file you're editing.
 
 ### Testing before a PR
-1. Run `shellcheck` on every changed script. On T's Windows machine WSL is not
-   installed and shellcheck is not on PATH; the GitHub Action runs it.
-2. The image must build in GitHub Actions (the Action is the test).
-3. Write a short **"How to test"** checklist in the PR that T can follow in the
-   VM, in plain English, step by step.
+1. Run `shellcheck` on every changed script, or let the GitHub Action run it.
+2. The image must build in GitHub Actions. The Action is the test.
+3. Write a short **"How to test"** checklist in the PR, in plain English, step
+   by step, that someone who doesn't code can follow in a virtual machine.
 
 ---
 
-## 4. Working with T
+## 4. Working with the product director
 
-- T is a **non-coder product director**. Explain what you did in plain English,
-  short and clear. No jargon without a one-line explanation.
-- T works on **Windows 11** with VS Code. WSL is **not** installed. Testing
-  happens in VirtualBox (VM named STEEL) or on the test machine. Say which.
-- T prefers **complete files** over partial snippets when handing off work.
-- When a Jira story is unclear, ask T before coding. When it's clear, just do it.
-- At the end of a task, give T:
-  1. One-paragraph summary of what changed
-  2. The branch / PR link
+- BBE is not a coder. Explain what you did in plain English, short and clear.
+  No jargon without a one-line explanation.
+- BBE works on Windows 11. Testing happens in a virtual machine or on a test
+  PC. Say which.
+- Hand over complete files, not partial snippets.
+- When a task is unclear, ask before coding. When it's clear, just do it.
+- At the end of a task, give:
+  1. A one-paragraph summary of what changed
+  2. The branch or PR link
   3. The "How to test" checklist
-  4. Anything that needs rodger-roberts-dev's decision
-
----
-
-## 5. Jira workflow
-
-- Story keys look like `STEEL-12`.
-- When starting a story: read it, confirm the acceptance criteria, create the branch.
-- When opening the PR: add a comment to the Jira story with the PR link.
-- Don't move stories to Done — rodger-roberts-dev or T does that after merge.
-- If you find a bug or missing piece that's out of scope, don't fix it silently —
-  suggest a new Jira story instead.
-
-### Epics
-- STEEL-8 Foundations and documentation
-- STEEL-9 Updates and Rollback
-- STEEL-10 App Store and Installs
-- STEEL-11 Printers and Networking
-- STEEL-12 Security
-- STEEL-13 First-Boot Setup and Install
-- STEEL-14 Gaming
-- STEEL-15 Desktop: KDE Plasma
+  4. Anything that needs a decision from S&C

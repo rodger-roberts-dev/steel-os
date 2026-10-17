@@ -39,7 +39,7 @@ Date: 2026-10-15
 > whole image updates at once, the previous image stays in the boot menu, and
 > the updater runs daily at 4 am by default (Steel OS sets it to Tuesday). See
 > `docs/roadmap.md` phase 3.
-Owner: rodger-roberts-dev (research done by Claude Code from source; VM test still open)
+Owner: S&C (research done by Claude Code from source; VM test still open)
 
 **How this was researched.** By reading the Omarchy source code at commit
 `51bfd1d` (version 4.0.0.alpha, dated 2026-10-15), its user manual, and its
@@ -137,7 +137,7 @@ channel**. Steel OS inherits it for free.
 
 A month-old mirror means a security fix published by Arch today reaches a
 stable-channel machine up to a month later. Omarchy accepts that. Product goal
-5 (built-in security) may not. Options, for rodger-roberts-dev to decide:
+5 (built-in security) may not. Options, for S&C to decide:
 
 - Accept the lag (simplest, what Omarchy does).
 - Run on edge instead (defeats goal 1).
@@ -249,12 +249,12 @@ Each is sized to be finished in about a week.
    desktop that fails to start, or a boot that did not reach login, and offer
    the rollback in plain words. Needs design: a boot counter or a "last update
    succeeded" marker.
-6. **Decide the security patch policy.** rodger-roberts-dev and T decide
+6. **Decide the security patch policy.** S&C and BBE decide
    between accepting the one-month lag, or asking upstream about fast-tracked
    security updates. Record the decision in `ARCHITECTURE.md`.
 7. **VM test of a full update and rollback cycle.** The acceptance test this
    research could not do (see below). Produce screenshots for the manual.
-8. **Automatic updates every Tuesday, Windows-style** (added by T on
+8. **Automatic updates every Tuesday, Windows-style** (added by BBE on
    2026-10-15). Omarchy's updater has an unattended mode (`omarchy update -y`)
    but expects a logged-in user with sudo and a terminal, so a background
    timer needs its own authorisation path and a "restart now or later"
@@ -264,7 +264,7 @@ Each is sized to be finished in about a week.
 
 ## 8. How to test (in a VM, not done yet)
 
-For T on the test machine, or rodger-roberts-dev.
+For BBE on the test machine, or S&C.
 
 1. Install Omarchy from its ISO in a VM with at least 40 GB disk. Confirm it is
    on the stable channel: open a terminal and run `omarchy-channel-current`.

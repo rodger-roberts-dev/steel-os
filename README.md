@@ -72,9 +72,10 @@ with what you did, what you expected and what happened.
 
 ## Contributing
 
-Work is planned in Jira (project STEEL). Every change goes through a pull
-request and is reviewed by the project lead before it is merged. Rules for
-contributors and for the AI assistant used on this project are in
+Every change goes through a pull request and is reviewed by the project lead
+before it is merged. Found a bug or have an idea?
+[Open an issue](https://github.com/steel-and-code/steel-os/issues). Rules for
+contributors and for any AI assistant used on the project are in
 [CLAUDE.md](CLAUDE.md).
 
 ## Credits and licence

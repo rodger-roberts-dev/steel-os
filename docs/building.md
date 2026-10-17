@@ -1,6 +1,6 @@
 # How Steel OS is built
 
-Written for: T and rodger-roberts-dev
+Written for: Blackbox Entertainment (BBE) and Steel & Code (S&C)
 
 Steel OS is not installed piece by piece. It is built as one image, the way a
 phone's operating system is, and that image is what every machine runs and
@@ -33,12 +33,12 @@ Bazzite's fixes reach us without anyone doing anything.
 
 **Build disk images** (`build-disk.yml`). Started by hand from the Actions tab
 with the Run workflow button. Pick `amd64`, and tick "Upload to S3" to send
-the result to T's Cloudflare R2 bucket `steel-os-downloads`, which is public
+the result to BBE's Cloudflare R2 bucket `steel-os-downloads`, which is public
 at `downloads.steel-os.org`. Leave it unticked to get the files as a download
 on the workflow page instead. It makes two things: an installer ISO and a
 `qcow2` virtual machine disk.
 
-Neither workflow runs on T's Windows PC. GitHub does the building.
+Neither workflow runs on BBE's Windows PC. GitHub does the building.
 
 ## One-time setup already done (2026-10-16)
 
@@ -63,7 +63,7 @@ built image, not the repo.
 4. Install, log in, open Konsole, run `sudo bootc status`. The image name must
    be `ghcr.io/steel-and-code/steel-os:latest`.
 
-## On a Linux PC (optional, rodger-roberts-dev)
+## On a Linux PC (optional, S&C)
 
 `just build` builds the image with podman. `just build-iso` makes the ISO.
 `just run-vm-qcow2` boots the result in a local virtual machine. Needs

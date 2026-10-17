@@ -13,7 +13,7 @@ overviewEnabled=true
 # Screen zoom for Meta+Ctrl+Z.
 zoomEnabled=true
 
-# Steel OS (STEEL-29): four virtual desktops in one row, for rodger-roberts-dev's
+# Steel OS (STEEL-29): four virtual desktops in one row, for S&C's
 # Super+1..4 (switch) and Super+Shift+1..4 (move window) shortcuts.
 [Desktops]
 Number=4

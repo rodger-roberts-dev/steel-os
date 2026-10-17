@@ -1,7 +1,7 @@
 # Steel OS: Flatpaks installed on every machine at first boot (from Flathub)
 # All IDs verified on Flathub 2026-10-15.
 
-# Office suite (T's "Open Office"). Opens Word, Excel, PowerPoint.
+# Office suite (BBE's "Open Office"). Opens Word, Excel, PowerPoint.
 org.libreoffice.LibreOffice
 # Default browser (decided 2026-10-16). Bazzite already installs it; this pins it.
 org.mozilla.firefox

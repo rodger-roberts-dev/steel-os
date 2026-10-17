@@ -1,9 +1,9 @@
 # Application Installation Plan
 
 Date: 2026-10-15 (rewritten the same day for the Bazzite decision)
-Owners: T (which apps, what the user sees) and rodger-roberts-dev (how each is installed)
+Owners: BBE (which apps, what the user sees) and S&C (how each is installed)
 
-**How this was researched.** Every app on T's list was checked against Flathub,
+**How this was researched.** Every app on BBE's list was checked against Flathub,
 the Flatpak app store, on 2026-10-15. The earlier Omarchy-era version of this
 plan checked the same apps against the Arch repositories; that work confirmed
 the apps exist for Linux and is superseded by this version.
@@ -27,7 +27,7 @@ A Windows user wants the dozen they know. Steel OS ships a short curated list
 button each. Installing is a Flatpak install from Flathub; nothing is hosted
 by us.
 
-**Found on first boot (T, 2026-10-16): Bazzite Portal already is that
+**Found on first boot (BBE, 2026-10-16): Bazzite Portal already is that
 screen.** Bazzite ships a "Bazzite Portal" window at first login with tabs for
 Install Applications, Get Media Apps, Manage Bazzite, Tweak Systems and
 Troubleshoot, each row with a one-line description and an install action, plus
@@ -35,7 +35,7 @@ its own store called Bazaar. So Steel OS does not build a Steel Apps screen.
 It keeps Bazzite Portal, renames it, and adds a **Steel Apps** section at the
 top with the must-haves from `steel-apps.txt`. Bazzite's own catalogue (DaVinci
 Resolve, Antigravity, CoolerControl, ASUS tools, and the media web apps such as
-Prime Video, Apple TV, Disney Plus and HBO Max, which T asked to keep) stays
+Prime Video, Apple TV, Disney Plus and HBO Max, which BBE asked to keep) stays
 below it. How the Portal's list is defined in the image, and whether a section
 can be added without patching Bazzite, is checked when the Steel Apps screen
 is built.
@@ -62,8 +62,8 @@ Three tiers. All Flatpak IDs below were confirmed on Flathub on 2026-10-15.
 
 | App | How | ID or package | Note |
 |---|---|---|---|
-| Konsole (terminal) | Part of Plasma on Bazzite | rpm, already present | Steel OS default terminal (decided 2026-10-16 by rodger-roberts-dev and T). Alt+C / Alt+V copy and paste set by Steel OS. |
-| LibreOffice (office) | Flatpak, first boot | `org.libreoffice.LibreOffice` | T's "Open Office". Opens Word, Excel, PowerPoint. |
+| Konsole (terminal) | Part of Plasma on Bazzite | rpm, already present | Steel OS default terminal (decided 2026-10-16 by S&C and BBE). Alt+C / Alt+V copy and paste set by Steel OS. |
+| LibreOffice (office) | Flatpak, first boot | `org.libreoffice.LibreOffice` | BBE's "Open Office". Opens Word, Excel, PowerPoint. |
 | Firefox (default browser) | Flatpak, first boot | `org.mozilla.firefox` | Default browser (decided 2026-10-16). Bazzite already ships it. |
 | Files (Dolphin), Ark (zip), Kate (editor), Okular (PDF, EPUB), Skanpage (scanner), Spectacle (screenshots), Gwenview (images) | Part of Plasma on Bazzite | rpm, already present | Confirm on first boot which are present; add missing ones to `packages/image.txt`. |
 | Steam | Already in Bazzite | native | Bazzite's reason to exist. |
@@ -80,17 +80,17 @@ Three tiers. All Flatpak IDs below were confirmed on Flathub on 2026-10-15.
 |---|---|---|
 | Google Chrome | `com.google.Chrome` | One click; Firefox is the default (decided 2026-10-16). |
 | WezTerm | `org.wezfurlong.wezterm` | One click; Konsole is the default (decided 2026-10-16). |
-| Slack | `com.slack.Slack` | T's must-have |
-| Zoom | `us.zoom.Zoom` | T's must-have. The full desktop client, no web-app workaround needed. |
-| Dropbox | `com.dropbox.Client` | T's must-have. Tray icon works on Plasma. |
-| Discord | `com.discordapp.Discord` | T's must-have |
-| Thunderbird (email, the Outlook equivalent) | `org.mozilla.Thunderbird` | T's request (2026-10-16). Email, calendar, contacts in one app; connects to Outlook.com, Microsoft 365 and Gmail accounts. Outlook itself has no Linux version; its web version can also be added as a Chrome app. |
+| Slack | `com.slack.Slack` | BBE's must-have |
+| Zoom | `us.zoom.Zoom` | BBE's must-have. The full desktop client, no web-app workaround needed. |
+| Dropbox | `com.dropbox.Client` | BBE's must-have. Tray icon works on Plasma. |
+| Discord | `com.discordapp.Discord` | BBE's must-have |
+| Thunderbird (email, the Outlook equivalent) | `org.mozilla.Thunderbird` | BBE's request (2026-10-16). Email, calendar, contacts in one app; connects to Outlook.com, Microsoft 365 and Gmail accounts. Outlook itself has no Linux version; its web version can also be added as a Chrome app. |
 | GIMP (Photoshop equivalent) | `org.gimp.GIMP` | |
 | Krita (painting; the Artweaver equivalent) | `org.kde.krita` | |
 | Inkscape (vector drawing) | `org.inkscape.Inkscape` | |
 | KolourPaint (MS Paint equivalent) | `org.kde.kolourpaint` | |
 | Audacity (audio) | `org.audacityteam.Audacity` | |
-| VS Code | `com.visualstudio.code` | The Flatpak works for most people. Developers who hit sandbox limits can use rodger-roberts-dev's Distrobox route instead; note in the dev guide. |
+| VS Code | `com.visualstudio.code` | The Flatpak works for most people. Developers who hit sandbox limits can use S&C's Distrobox route instead; note in the dev guide. |
 | NotepadNext (Notepad++ remake) | `com.github.dail8859.NotepadNext` | Notepad++ itself is Windows-only. Kate is built in. |
 | Shotcut (simple video editor) | `org.shotcut.Shotcut` | |
 | Calibre (ebook library) | `com.calibre_ebook.calibre` | |
@@ -98,7 +98,7 @@ Three tiers. All Flatpak IDs below were confirmed on Flathub on 2026-10-15.
 | Lutris (EA app, Ubisoft, other Windows stores) | `net.lutris.Lutris` | How the EA app and Battle.net are installed. Bazzite documents this path. |
 | Heroic (Epic, GOG, Amazon) | `com.heroicgameslauncher.hgl` | |
 | GeForce NOW (cloud gaming) | `io.github.hmlendea.geforcenow-electron` | |
-| Steel & Code Forge | not packaged yet | rodger-roberts-dev's AI development platform. His story. Ships with Python runtimes inside; wants a container runtime (Bazzite has Podman) and NVIDIA support (the NVIDIA image). |
+| Steel & Code Forge | not packaged yet | S&C's AI development platform, packaged by S&C. Ships with Python runtimes inside; wants a container runtime (Bazzite has Podman) and NVIDIA support (the NVIDIA image). |
 | Ollama (local AI models) | to decide: Flatpak, Homebrew, or container | Optional, like Forge. |
 
 ### Web apps (no Linux program exists)
@@ -116,14 +116,14 @@ Three tiers. All Flatpak IDs below were confirmed on Flathub on 2026-10-15.
 | Notepad++ | NotepadNext (one click) or Kate (built in) |
 | Artweaver | Krita |
 | CapCut | Web editor, or Kdenlive |
-| NAPS2 | No Flatpak exists. Skanpage is built in and covers scanning. NAPS2 publishes an rpm that could be layered into the image if T insists; not recommended. |
+| NAPS2 | No Flatpak exists. Skanpage is built in and covers scanning. NAPS2 publishes an rpm that could be layered into the image if BBE insists; not recommended. |
 | Local Xbox Game Pass | Cloud streaming only |
 
 ---
 
 ### Blackbox Entertainment's own apps: Crew and Voxlore
 
-T plans to ship Crew and Voxlore as Electron apps with a local AI stack, sold
+BBE plans to ship Crew and Voxlore as Electron apps with a local AI stack, sold
 on Steam. They will run on Steel OS if two things are true, and both are in
 Blackbox's hands, not Steel OS's:
 
@@ -138,14 +138,14 @@ Blackbox's hands, not Steel OS's:
    three. A CUDA-only stack would work only on NVIDIA machines.
 
 Steel OS adds nothing special for them; they are Steam games as far as the OS
-is concerned. The VM T is setting up is a good first test bed for the Linux
+is concerned. The VM BBE is setting up is a good first test bed for the Linux
 builds, and the physical test machine for GPU acceleration.
 
 ## 3. Developer tools
 
 Bazzite's system image is read-only, so developer tools do not go in the
 image either. Bazzite ships Homebrew and Distrobox for this, which is how
-rodger-roberts-dev would work:
+S&C would work:
 
 - `packages/brew.txt`: tools installed through Homebrew on request (git, jq,
   ripgrep, fd, lazygit, lazydocker, github-cli, mise for Python and Node
@@ -181,7 +181,7 @@ unusual.
 
 - Browser and terminal defaults reversed on 2026-10-16: Firefox and Konsole are the defaults; Chrome and WezTerm are one click. LibreOffice kept.
 - The old chromium, xournalpp, foot, HEY, Basecamp removals no longer apply;
-  those were Omarchy packages. `remove.txt` starts empty and is filled after T
+  those were Omarchy packages. `remove.txt` starts empty and is filled after BBE
   boots the first image and lists what Bazzite preinstalls that we do not want.
 - Zoom: the desktop client is a proper Flatpak now, so no web-app workaround.
 - Slack, Dropbox, Firefox, office suite, NAPS2 (as Skanpage), zip, Notepad++
