@@ -32,14 +32,8 @@ io.github.hmlendea.geforcenow-electron | GeForce NOW | Cloud gaming
 # Not yet packaged; added when STEEL-25 lands:
 # steel-forge | Steel & Code Forge | AI development platform (optional)
 
-# Also offered, below the Steel Apps section (T, 2026-10-16). These are already
-# in Bazzite Portal's own catalogue, so they stay as Bazzite provides them
-# (some install through Brew or Distrobox rather than Flatpak):
-#   DaVinci Resolve       video editor, installed by Bazzite's davincibox
-#   Antigravity           Google's AI IDE, installed through Brew
-#   CoolerControl         fan and thermal profiles
-#   asusctl / ROG Control Center   ASUS laptop and board utilities
-#   Media web apps: Amazon Prime Video, Apple TV, Disney Plus, HBO Max
-
-# Not on Flathub yet. Installed by a Steel Apps script from Google's tar.gz (see Jira for the story):
-#   Google Antigravity | Antigravity | Google's agent-first coding app and IDE (https://antigravity.google/download)
+# The Steel OS Portal also shows, on its "More Apps and Tools" tab, the tools
+# Bazzite offers (DaVinci Resolve, CoolerControl, ASUS utilities and more),
+# and streaming web apps on its "Media Apps" tab (build_files/portal/base.yml).
+# Antigravity, which is not on Flathub, is added to the Steel Apps tab by
+# build_files/portal/make-portal.py and installed with Brew.

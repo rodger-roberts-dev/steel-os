@@ -26,7 +26,8 @@ at the top saying so.
 * Bazzite, by Universal Blue
   https://github.com/ublue-os/bazzite
   installer/ (the live installer recipe, its hooks and system files),
-  adapted and rebranded for Steel OS.
+  adapted and rebranded for Steel OS; build_files/portal/base.yml (the
+  Steel OS Portal tabs after Steel Apps), adapted from Bazzite Portal.
 
 * Titanoboa, by Universal Blue
   https://github.com/ublue-os/titanoboa
@@ -44,6 +45,11 @@ available from:
 * Fedora:  https://src.fedoraproject.org  (package sources)
 * Bazzite: https://github.com/ublue-os/bazzite
 * Steel OS: https://github.com/steel-and-code/steel-os
+
+The Steel OS Portal app is yafti-gtk (https://github.com/ublue-os/yafti-gtk),
+licensed under the GNU General Public License, version 3. The Steel OS build
+changes its name, colour, icon and settings file; build_files/build.sh
+section 16 lists every change.
 
 Fedora is a trademark of Red Hat, Inc. Bazzite is a project of Universal
 Blue. Steel OS is not affiliated with or endorsed by either. Steel OS uses

@@ -60,9 +60,9 @@ install -D -m 0644 /ctx/branding/icon/png/steel-os-icon-dark-256.png /usr/share/
 
 ### 5b. No Bazzite name on the desktop (STEEL-31, STEEL-40)
 # Bazzite Portal opens at every first login and says "Bazzite" throughout.
-# Steel OS replaces it with the Steel Apps screen (STEEL-40); until then it
-# does not start by itself, is hidden from the start menu and is taken off
-# the taskbar. Bazzite's announcement pop-up is switched off too.
+# Bazzite's version does not start, is hidden and is taken off the taskbar;
+# section 16 puts the Steel OS Portal in its place. Bazzite's announcement
+# pop-up is switched off too.
 rm -f /etc/skel/.config/autostart/bazzite-portal.desktop
 rm -f /etc/xdg/autostart/bazzite-announcement.desktop
 for f in /usr/share/applications/*yafti*.desktop; do
@@ -237,7 +237,7 @@ cp -f /usr/share/ublue-os/motd/template.md /usr/share/ublue-os/motd/template.sv.
 chmod 0755 /usr/libexec/steel-os-hostname
 systemctl enable steel-os-hostname.service
 
-### 14. Shortcuts as built-in defaults; no Bazzite Portal at all (STEEL-29, STEEL-18, STEEL-31)
+### 14. Shortcuts as built-in defaults; Bazzite's portal removed (STEEL-29, STEEL-18, STEEL-31)
 # Konsole's own launcher file sets its default shortcut (Ctrl+Alt+T), and
 # Plasma uses that for every user who has not changed it. Put Super+Enter and
 # Alt+Enter there too, so they work with no per-user step at all.
@@ -257,20 +257,19 @@ fi
 rm -f /etc/xdg/autostart/steel-os-shortcuts.desktop
 systemctl --global enable steel-os-shortcuts.service
 
-# Bazzite Portal: remove it entirely. Steel Apps replaces it.
+# Bazzite Portal: Bazzite's version goes entirely. Its engine stays, and
+# section 16 turns it into the Steel OS Portal. The search plugins read
+# Bazzite's list and are removed.
 PORTAL_PKGS=()
-for p in yafti yafti-gtk krunner-yafti; do
+for p in krunner-yafti gnome-search-yafti; do
     rpm -q "$p" >/dev/null 2>&1 && PORTAL_PKGS+=("$p")
 done
-for f in /usr/bin/yafti_gtk.py /usr/bin/yafti; do
-    [[ -e "$f" ]] && owner="$(rpm -qf --qf '%{NAME}\n' "$f" 2>/dev/null)" && [[ -n "$owner" ]] && PORTAL_PKGS+=("$owner")
-done
 if [[ ${#PORTAL_PKGS[@]} -gt 0 ]]; then
-    mapfile -t PORTAL_PKGS < <(printf '%s\n' "${PORTAL_PKGS[@]}" | sort -u)
-    dnf5 remove -y "${PORTAL_PKGS[@]}" || echo "Portal packages could not be removed: ${PORTAL_PKGS[*]}"
+    dnf5 remove -y "${PORTAL_PKGS[@]}" || echo "Portal search plugins could not be removed: ${PORTAL_PKGS[*]}"
 fi
 rm -rf /usr/share/yafti
 rm -f /usr/share/applications/*yafti*.desktop /etc/skel/.config/autostart/bazzite-portal.desktop
+rm -f /usr/share/metainfo/*yafti*.xml
 
 ### 15. Virtual machines work out of the box (STEEL-40)
 # Bazzite does not ship the libvirt virtual machine service; its
@@ -290,6 +289,47 @@ if [[ -f /etc/libvirt/qemu/networks/default.xml ]]; then
     mkdir -p /etc/libvirt/qemu/networks/autostart
     ln -sf ../default.xml /etc/libvirt/qemu/networks/autostart/default.xml
 fi
+
+### 16. Steel OS Portal: welcome, one-click Steel Apps, system tools (STEEL-40)
+# Bazzite Portal's engine (yafti-gtk, GPL-3.0, github.com/ublue-os/yafti-gtk)
+# shows whatever its settings file lists. Steel OS gives it its own file,
+# built from packages/steel-apps.txt, and its own name, colour and icon.
+PORTAL_ENGINE=/usr/bin/yafti_gtk.py
+if [[ ! -f "$PORTAL_ENGINE" ]]; then
+    echo "Steel OS Portal: the portal engine is missing from the base image" >&2
+    exit 1
+fi
+sed -i \
+    -e 's/Bazzite Portal/Steel OS Portal/g' \
+    -e "s|^AUTOSTART_FILE = .*|AUTOSTART_FILE = os.path.join(AUTOSTART_DIR, 'steel-os-portal.desktop')|" \
+    -e 's|^Comment=Helps you setup Bazzite$|Comment=Set up Steel OS and install apps in one click|' \
+    -e 's|^Exec=yafti_gtk.py /usr/share/yafti/yafti.yml$|Exec=yafti_gtk.py /usr/share/steel-os/portal.yml|' \
+    -e 's|^Icon=io.github.ublue_os.yafti_gtk$|Icon=steel-os|' \
+    -e 's|^DEFAULT_ACCENT = .*|DEFAULT_ACCENT = "#F2641E"|' \
+    "$PORTAL_ENGINE"
+if grep -qi bazzite "$PORTAL_ENGINE"; then
+    echo "Steel OS Portal: the engine still mentions Bazzite:" >&2
+    grep -ni bazzite "$PORTAL_ENGINE" >&2
+    exit 1
+fi
+# The engine's window icon: the Steel OS hexagon.
+install -D -m 0644 /usr/share/icons/hicolor/scalable/apps/steel-os.svg \
+    /usr/share/icons/hicolor/scalable/apps/io.github.ublue_os.yafti_gtk.svg
+mkdir -p /usr/share/steel-os
+python3 /ctx/portal/make-portal.py /ctx/packages/steel-apps.txt /ctx/portal/base.yml \
+    /usr/share/steel-os/portal.yml
+# It opens at a new user's first login (the switch at the bottom of the
+# portal turns that off) and is in the start menu and on the taskbar.
+mkdir -p /etc/skel/.config/autostart
+cp /usr/share/applications/steel-os-portal.desktop /etc/skel/.config/autostart/steel-os-portal.desktop
+for f in /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/bazzite-pins.js \
+         /usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js; do
+    [[ -f "$f" ]] || continue
+    if grep -q 'steel-os-portal\.desktop' "$f"; then continue; fi
+    sed -i 's|"applications:org.kde.konsole.desktop",|"applications:org.kde.konsole.desktop",\n                    "applications:steel-os-portal.desktop",|' "$f"
+    grep -q 'steel-os-portal.desktop' "$f" && echo "Steel OS Portal pinned in $f" || echo "Steel OS Portal: no Konsole pin found in $f"
+done
+gtk-update-icon-cache -f /usr/share/icons/hicolor 2>/dev/null || true
 
 ### 9. Rebuild the boot image so the boot splash shows Steel OS (STEEL-31)
 # The logo shown while the machine starts is read from the initramfs, a small
