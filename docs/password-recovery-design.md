@@ -1,48 +1,52 @@
-# Forgotten password: design for review
+# Forgotten password: design
 
-Updated: 2026-10-17. Status: **proposal, waiting for S&C's approval.** Nothing
-here is built yet.
+Updated: 2026-10-17. Status: **decisions made by BBE on 2026-10-17** (see the end).
+S&C reviews the security details in the pull request that builds it.
 
-Windows users expect a password hint, security questions and a reset. On Linux
-a forgotten password means a terminal procedure at the boot menu or a
+Windows users expect security questions and a reset from the login screen. On
+Linux a forgotten password means a terminal procedure at the boot menu or a
 reinstall, and a non-technical user would conclude the PC is broken. This is
-how Steel OS proposes to close that gap without weakening the system.
+how Steel OS closes that gap without weakening the system, and as close to
+Windows as Linux allows.
 
 ---
 
 ## What the user sees
 
-1. **Setting it up.** One extra page in Steel OS Setup at first login, which
-   can be skipped:
+1. **Setting it up.** One optional page in Steel OS Setup at first login:
    - Choose three questions from a list (first pet, city you were born in,
      favourite teacher and so on) and type the answers.
-   - Optionally, type a password hint.
    - Confirm with your password.
 
-   It can be changed later from a "Password recovery" entry in System Settings
-   or the Portal.
-2. **At the login screen.** After a wrong password, the hint appears under the
-   password box, along with a **Forgot your password?** button.
-3. **Resetting.** **Forgot your password?** explains that the PC will restart
-   into password reset, with **Restart** and **Cancel** buttons. After the
-   restart, a full-screen Steel OS page asks for the user name and the three
-   answers, then a new password, twice. The PC continues to the login screen.
-4. **No questions set up?** The reset page says so plainly and explains the
+   It can be changed later from "Security questions" in the Steel OS Portal.
+2. **At the login screen.** A **Forgot your password?** link sits under the
+   password box, like Windows' "Reset password".
+3. **Resetting.** Clicking it explains that the PC will restart into password
+   reset, with **Restart** and **Cancel** buttons. After the restart:
+   - a full-screen Steel OS window, in the same style as Steel OS Setup, asks
+     for the user name and the three answers;
+   - then it asks for a new password, twice;
+   - then the PC continues to the login screen.
+4. **No questions set up?** The reset window says so plainly and explains the
    other way back in: another administrator on the PC can set a new password
    in System Settings, Users.
 
+Windows can do the reset without a restart, because its login screen can run
+privileged programs. On Linux the login screen deliberately can't, which is a
+security boundary worth keeping, so Steel OS does the reset during a short
+restart instead.
+
 ## How it works
 
-| Part | Proposal |
+| Part | Design |
 |---|---|
 | Storing the answers | Answers are trimmed and lower-cased, then hashed with yescrypt, the same scheme as `/etc/shadow`, each with its own salt. They are stored in `/var/lib/steel-os/recovery/<user>`, owned by root, mode 0600. The answers themselves are never stored. |
-| Writing them | A small helper, `steel-os-recovery-enrol`, run through pkexec. Its polkit action is `auth_self`: the user must type their own password, which proves they are who they say. |
-| The hint | Stored in `/var/lib/steel-os/recovery/hints/<user>`, readable by the login screen. The setup page warns: "Anyone at this PC can see the hint. Don't put your password in it." |
-| Login screen | A Steel OS version of the Plasma login theme (Breeze, SDDM) that shows the hint after a failed attempt and adds **Forgot your password?** |
-| Starting the reset | The login screen can't run privileged programs, and it shouldn't. The button calls one narrow helper, allowed by a polkit rule for the `sddm` user only. That helper does two things: it writes a "reset requested" flag and restarts the PC. Nothing else is possible through it. |
-| The reset itself | At the next boot a system service runs before the login screen. It runs only when the flag is set, and deletes the flag straight away. It shows a full-screen text wizard on the console as root, checks the answers against the hashes, and sets the new password with `chpasswd`. Then the login screen starts. |
+| Writing them | A small helper, `steel-os-recovery-enrol`, run through pkexec. Its polkit action is `auth_self`: the user must type their own password. |
+| Login screen | A Steel OS version of the Plasma login theme (Breeze, SDDM) with a **Forgot your password?** link and a confirmation. |
+| Starting the reset | The login screen can only do two things here. It writes a "reset requested" note into a folder that only the login screen and root can use, then restarts the PC with the login screen's built-in restart. It cannot run programs or read any recovery data. |
+| The reset itself | At the next boot a system service runs before the login screen. It runs only when the note is present, and deletes the note straight away. As root, it shows the reset window in a minimal full-screen session on the PC's own screen. It checks the answers against the hashes and sets the new password with `chpasswd`. Then the login screen starts. If the graphical window can't start, the same steps run in text mode. |
 | Guessing limits | Three wrong attempts lock the reset for 15 minutes, counted per user in a root-only file. Each attempt also waits two seconds. |
-| Encrypted disks | The reset changes only the login password. The disk-encryption password is typed before Steel OS starts and **cannot be recovered by anyone**. The setup page, the reset page and the install guide all say so. |
+| Encrypted disks | The reset changes only the login password. The disk-encryption password is typed before Steel OS starts and **cannot be recovered by anyone**. The setup page, the reset window and the install guide all say so. |
 
 ## Security notes
 
@@ -53,25 +57,18 @@ how Steel OS proposes to close that gap without weakening the system.
   convenience, not new exposure. With encryption, the reset only runs after
   the disk has been unlocked.
 - **No remote path.** The reset can only be started from the login screen on
-  the PC itself, and it only runs on the local console. It never runs over SSH
-  or remote desktop.
+  the PC itself, and it only runs on the PC's own screen. It never runs over
+  SSH or remote desktop.
+- **The login screen gets no new powers.** It can request a reset and restart,
+  which it can already do. It never sees the answers or the hashes.
 - **Small code.** Three small, reviewable pieces: the enrol helper, the
-  "request reset and restart" helper, and the boot-time wizard. Plus one polkit
-  rule and a theme change.
-- **Administrators.** The reset works for any account that has questions set
-  up. An administrator account stays an administrator; nothing is added or
-  removed.
+  boot-time reset service and the theme change.
 
-## Questions for S&C
+## Decisions (BBE, 2026-10-17)
 
-1. **Hashing.** Is yescrypt via libxcrypt (the same library that `/etc/shadow`
-   uses) acceptable for hashing the answers?
-2. **The login-screen button.** Is this mechanism acceptable: flag, restart,
-   then a wizard before the login screen? The alternative is a GRUB menu entry,
-   which is harder to add on an image-based system.
-3. **Who can use it.** Should the reset be allowed for administrator accounts,
-   or only for standard accounts?
-4. **Hints.** Keep the hint, or drop it as too easy to misuse?
-
-Once approved, this becomes one pull request, tested on a virtual machine with
-a deliberate lock-out.
+| Question | Decision |
+|---|---|
+| Hash the answers with yescrypt, as `/etc/shadow` does | Yes |
+| Start the reset from the login screen with a restart, rather than an extra entry in the boot menu | Yes, and make it as close to Windows as possible: a link on the login screen and a graphical reset window |
+| Allow the reset for administrator accounts | Yes |
+| Password hint on the login screen | Dropped |
