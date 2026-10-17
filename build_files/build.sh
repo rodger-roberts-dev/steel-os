@@ -304,7 +304,7 @@ sed -i \
     -e "s|^AUTOSTART_FILE = .*|AUTOSTART_FILE = os.path.join(AUTOSTART_DIR, 'steel-os-portal.desktop')|" \
     -e 's|^Comment=Helps you setup Bazzite$|Comment=Set up Steel OS and install apps in one click|' \
     -e 's|^Exec=yafti_gtk.py /usr/share/yafti/yafti.yml$|Exec=yafti_gtk.py /usr/share/steel-os/portal.yml|' \
-    -e 's|^Icon=io.github.ublue_os.yafti_gtk$|Icon=steel-os|' \
+    -e 's|^Icon=io.github.ublue_os.yafti_gtk$|Icon=steel-os-portal|' \
     -e 's|^DEFAULT_ACCENT = .*|DEFAULT_ACCENT = "#F2641E"|' \
     "$PORTAL_ENGINE"
 if grep -qi bazzite "$PORTAL_ENGINE"; then
@@ -312,8 +312,11 @@ if grep -qi bazzite "$PORTAL_ENGINE"; then
     grep -ni bazzite "$PORTAL_ENGINE" >&2
     exit 1
 fi
-# The engine's window icon: the Steel OS hexagon.
-install -D -m 0644 /usr/share/icons/hicolor/scalable/apps/steel-os.svg \
+# The Portal's own icon (branding/portal), used by its launcher and, under
+# the engine's name, for its window.
+install -D -m 0644 /ctx/branding/portal/steel-os-portal.svg \
+    /usr/share/icons/hicolor/scalable/apps/steel-os-portal.svg
+install -D -m 0644 /ctx/branding/portal/steel-os-portal.svg \
     /usr/share/icons/hicolor/scalable/apps/io.github.ublue_os.yafti_gtk.svg
 mkdir -p /usr/share/steel-os
 python3 /ctx/portal/make-portal.py /ctx/packages/steel-apps.txt /ctx/portal/base.yml \
