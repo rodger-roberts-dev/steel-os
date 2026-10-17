@@ -1,6 +1,6 @@
 # Updates and rollback
 
-## Steel OS today (Bazzite base, STEEL-27)
+## Steel OS today (Bazzite base)
 
 Steel OS inherits Bazzite's updater. Every Steel OS machine runs one image;
 an update is the next image, downloaded in the background and applied at the
@@ -14,12 +14,12 @@ next restart. The previous image stays in the boot menu.
 - **Applying it:** the new image takes effect at the next restart. Nothing
   changes under a running session.
 - **Going back:** at the boot menu pick the previous entry, or run
-  `sudo bootc rollback` in Konsole. Tested in the VM on 2026-10-16 (STEEL-24).
+  `sudo bootc rollback` in Konsole. Tested in the VM on 2026-10-16.
 - **Checking by hand:** `systemctl list-timers uupd.timer` shows the next run;
   `sudo uupd` runs an update now.
 
-Still to come: plain-English restart notification (STEEL-27), daily Flatpak
-updates between Tuesdays (STEEL-49), the security patch policy (STEEL-23).
+Still to come: plain-English restart notification, daily Flatpak
+updates between Tuesdays, the security patch policy.
 
 ---
 
@@ -29,11 +29,10 @@ The rest of this page was written when Steel OS was planned on Omarchy (Arch
 Linux). It is kept because the user-facing requirements still apply.
 
 
-Jira: STEEL-2
 Date: 2026-10-15
 
 > **Status: background.** Later the same day the team chose a Fedora Atomic
-> base via Bazzite (STEEL-28). This document describes Omarchy's update system
+> base via Bazzite. This document describes Omarchy's update system
 > and is kept because it shaped the requirements: a snapshot before every
 > update, rollback from the boot menu, a visible boot menu, and automatic
 > Tuesday updates. On Bazzite those come from `uupd` and `rpm-ostree`: the
@@ -277,7 +276,7 @@ For T on the test machine, or rodger-roberts-dev.
 4. Pick the newest snapshot, boot it, click the notification, restore. Confirm
    the machine comes back and personal files in the home folder are intact.
 5. In a terminal, run `sudo pacman -Syu`. Expect the "Woah partner" refusal.
-6. Once STEEL-7 (KDE Plasma) exists: log in to the Plasma session and run
+6. Once KDE Plasma exists: log in to the Plasma session and run
    `omarchy update` from a terminal. Note any errors about the shell or
    Hyprland. The update must still finish and the snapshot must still exist.
 7. Write down anything that confused you. That list becomes the wording for

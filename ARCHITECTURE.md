@@ -4,7 +4,6 @@ This document describes Steel OS as it actually exists in this repository on
 2026-10-15. It is written for everyone on the project, including people who do
 not write code. Where something does not exist yet, it says so plainly.
 
-Jira: STEEL-1
 
 ---
 
@@ -56,13 +55,13 @@ top, built as one image.
 
 | Bazzite provides | Steel OS adds (today, version 0.2) | Steel OS will add (planned) |
 |---|---|---|
-| Fedora Atomic base: the whole system is one image, updated as one, previous version always in the boot menu | The image recipe: `Containerfile`, `build_files/build.sh`, `system_files/` | Tuesday update schedule and plain-English update messages (STEEL-27) |
-| KDE Plasma desktop | rodger-roberts-dev's keyboard shortcuts, cascading windows, Konsole as the terminal (STEEL-29) | Steel OS wallpaper, login screen, boot splash, name in About (STEEL-31) |
-| Automatic updates (`uupd`) for the system, Flatpaks and more | Extra rpm packages: printer drivers and Windows network discovery (`packages/image.txt`) | Guided install and a first-login wizard with Skip (STEEL-35) |
-| Steam, Proton, controller support, Lutris, Waydroid | Our signing key in the image | Steel Apps one-click list built on Bazzite Portal (STEEL-40) |
-| Discover app store with Flatpak | GitHub workflows that build the image daily and the ISO on demand | Printers, scanners and folder sharing without a terminal (STEEL-38, 39) |
-| Bazzite Portal first-login installer | Installer ISO settings (`disk_config/iso.toml`) | One ISO with graphics card detection (STEEL-30) |
-| Secure Boot support, firewall, sandboxed apps | | Security policy and emergency fix path (STEEL-23) |
+| Fedora Atomic base: the whole system is one image, updated as one, previous version always in the boot menu | The image recipe: `Containerfile`, `build_files/build.sh`, `system_files/` | Tuesday update schedule and plain-English update messages |
+| KDE Plasma desktop | rodger-roberts-dev's keyboard shortcuts, cascading windows, Konsole as the terminal | Steel OS wallpaper, login screen, boot splash, name in About |
+| Automatic updates (`uupd`) for the system, Flatpaks and more | Extra rpm packages: printer drivers and Windows network discovery (`packages/image.txt`) | Guided install and a first-login wizard with Skip |
+| Steam, Proton, controller support, Lutris, Waydroid | Our signing key in the image | Steel Apps one-click list built on Bazzite Portal |
+| Discover app store with Flatpak | GitHub workflows that build the image daily and the ISO on demand | Printers, scanners and folder sharing without a terminal |
+| Bazzite Portal first-login installer | Installer ISO settings (`disk_config/iso.toml`) | One ISO with graphics card detection |
+| Secure Boot support, firewall, sandboxed apps | | Security policy and emergency fix path |
 
 The honest summary: **today Steel OS is Bazzite plus our settings files, a
 few packages and a signing key, built into an image by GitHub.** That is on
@@ -79,14 +78,14 @@ steel-os/
 │   └── build.sh              Copies system_files in, installs packages/image.txt, adds the signing key
 ├── system_files/             Files copied to / in the image, same paths
 │   └── etc/
-│       ├── xdg/              Plasma defaults: kglobalshortcutsrc, kwinrc, kdeglobals (STEEL-29)
+│       ├── xdg/              Plasma defaults: kglobalshortcutsrc, kwinrc, kdeglobals
 │       └── containers/registries.d/steel-os.yaml   Where our image signatures live
 ├── packages/
 │   ├── image.txt             rpm packages built into the image
-│   ├── flatpaks-default.txt  Apps installed for everyone at first boot (STEEL-17)
-│   ├── steel-apps.txt        The one-click list (STEEL-40)
+│   ├── flatpaks-default.txt  Apps installed for everyone at first boot
+│   ├── steel-apps.txt        The one-click list
 │   ├── brew.txt              Command-line tools for developers
-│   └── remove.txt            Bazzite things Steel OS leaves out (STEEL-20)
+│   └── remove.txt            Bazzite things Steel OS leaves out
 ├── disk_config/
 │   ├── iso.toml              Installer settings; points installed machines at our image
 │   └── disk.toml             Virtual machine disk settings
@@ -96,7 +95,7 @@ steel-os/
 ├── Justfile                  The build commands the workflows call; also works on a Linux PC
 ├── image-template.env        Image name, owner, description
 ├── cosign.pub                Public signing key (private half is a GitHub secret, never here)
-├── branding/                 Logo, icon, wallpapers and the brand guide (STEEL-31)
+├── branding/                 Logo, icon, wallpapers and the brand guide
 ├── docs/                     Plans and research, including docs/building.md
 ├── README.md, ARCHITECTURE.md, CLAUDE.md, .claude/agents/steel-dev.md
 └── .gitignore                Ignores cosign.key and local build output
@@ -111,13 +110,13 @@ every package named in `packages/image.txt`, and places our public signing
 key. Nothing in Bazzite is edited; our files are added next to theirs.
 
 **`system_files/`: our settings.** Laid out exactly as they land on a machine.
-Each file starts with a comment saying what it does and which STEEL story
-added it. Today: the Plasma shortcut defaults from STEEL-29 and the
-signature location file.
+Each file starts with a comment saying what it does. Examples: the Plasma
+shortcut defaults, the wallpaper and lock screen settings, the update
+schedule and the signature location file.
 
 **`packages/*.txt`: the lists.** One name per line, `#` for comments.
 `image.txt` is the only one the build reads today. The Flatpak and Steel Apps
-lists are read at first boot and by the Steel Apps screen (STEEL-17, 40).
+lists are read at first boot and by the Steel Apps screen.
 
 **`disk_config/`: how the ISO is made.** `iso.toml` holds the installer
 settings and the one command that, after install, points the machine at our
@@ -137,15 +136,13 @@ Not part of the OS. They tell Claude Code how this team works.
 
 ### What is not here yet
 
-- No first-boot script: default Flatpaks are not installed automatically
-  (STEEL-17).
-- No Steel OS look: wallpaper, login screen, name in About still say Bazzite
-  (STEEL-31).
-- No Tuesday schedule: updates run on Bazzite's daily timer (STEEL-27).
-- No guided installer or first-login wizard (STEEL-35).
+- No first-boot script: default Flatpaks are not installed automatically.
+- No Steel OS look: wallpaper, login screen, name in About still say Bazzite.
+- No Tuesday schedule: updates run on Bazzite's daily timer.
+- No guided installer or first-login wizard.
 - Signature checking of updates is not enforced yet; the key is in the image
   but `/etc/containers/policy.json` does not require it.
-- No release workflow: the ISO upload is a manual button (STEEL-41).
+- No release workflow: the ISO upload is a manual button.
 
 ---
 
@@ -164,7 +161,7 @@ Jira story  →  branch  →  pull request (GitHub builds the image as the test)
 ```
 
 1. A story is written in Jira (project STEEL).
-2. A branch is created named after it, for example `STEEL-27-tuesday-updates`.
+2. A branch is created for the change.
 3. The change is made and a pull request is opened. GitHub builds the image;
    a pull request whose image does not build does not merge. The PR says what
    changed, why, and how to test it in plain English.
@@ -197,9 +194,7 @@ is **both**:
   people who prefer tiling and keyboard-only work. Plasma itself supports every
   keyboard shortcut a power user wants.
 
-This is tracked in STEEL-7 and needs rodger-roberts-dev's technical review
-before it is built. **Until STEEL-7 is merged, the default desktop stays
-Hyprland.**
+KDE Plasma is now the default desktop in the Steel OS image.
 
 What the switch changes, for rodger-roberts-dev to confirm:
 
@@ -233,8 +228,7 @@ a machine.
 
 T's decision (2026-10-15): Forge is **a one-click optional install, not part
 of the default Steel OS**. A non-developer never sees it; a developer picks it
-from the Steel Apps list. Packaging it is rodger-roberts-dev's story
-(STEEL-25), since Forge is his code. See `docs/app-install-plan.md`.
+from the Steel Apps list. Packaging it is rodger-roberts-dev's story, since Forge is his code. See `docs/app-install-plan.md`.
 
 ### 5.3 Where does the repo live? Decided: here, for now
 
@@ -261,8 +255,8 @@ T's list, checked against the Arch and Omarchy package databases on 2026-10-15:
 | Firefox | `firefox` | Arch extra |
 | Google Chrome | `google-chrome` | AUR, and also Omarchy's own package repository, so no AUR is needed |
 
-The full lists, including the optional and review entries, were corrected in
-STEEL-4.
+The full lists, including the optional and review entries, were corrected
+later in the app install plan.
 
 ---
 
@@ -270,7 +264,7 @@ STEEL-4.
 
 Proposed by rodger-roberts-dev and agreed by T on 2026-10-15, with T adding
 Bazzite as the starting image. rodger-roberts-dev's one condition: he keeps his
-keyboard shortcuts (STEEL-29). Tracked in STEEL-28.
+keyboard shortcuts.
 
 Steel OS becomes a custom bootable image built with the Universal Blue
 template: a `Containerfile` that starts from `ghcr.io/ublue-os/bazzite:stable`,
@@ -285,9 +279,8 @@ and rollback, gaming preinstalled, a Flatpak store, automatic background
 updates, Secure Boot support, and security fixes days rather than a month
 behind. The cost is that Bazzite does not ship a Hyprland session.
 
-**Sections 2 and 3 of this document describe the Omarchy-era repo.** They stay
-until STEEL-16 lands the image recipe, then get rewritten. `docs/roadmap.md`
-already reflects the new base.
+Sections 2 and 3 of this document describe the image layout that replaced
+the Omarchy-era repo.
 
 ## 6. Glossary
 

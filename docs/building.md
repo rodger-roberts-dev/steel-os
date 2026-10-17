@@ -1,6 +1,5 @@
 # How Steel OS is built
 
-Jira: STEEL-16
 Written for: T and rodger-roberts-dev
 
 Steel OS is not installed piece by piece. It is built as one image, the way a

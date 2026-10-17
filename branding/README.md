@@ -1,10 +1,8 @@
 # Steel OS branding
 
-Jira: STEEL-31
 Steel OS is a Steel & Code (steelandcode.com) project in partnership with
 Blackbox Entertainment. The marks belong to Steel & Code; Blackbox
-Entertainment uses them under that partnership. Chosen by T on 2026-10-16 from
-the "Steel & Code" concept (concept E).
+Entertainment uses them under that partnership.
 
 ## The mark
 
@@ -50,35 +48,25 @@ Font License, free for commercial use).
 
 ## Where each file goes in the image
 
-Done by `build_files/build.sh` section 5 and `system_files/` (STEEL-31):
-
 | Surface | File in the image |
 |---|---|
-| Desktop wallpaper, default | `/usr/share/backgrounds/default.jxl` links to the waves wallpaper (Bazzite's mechanism) |
-| Wallpaper chooser | `/usr/share/wallpapers/steel-os-waves/` and `steel-os-room/` as Plasma wallpaper packages |
+| Desktop wallpaper | Set to the waves wallpaper for every user by a Plasma layout script (`steel-os-wallpaper.js`) |
+| Lock screen | `/etc/xdg/kscreenlockerrc` points at the waves wallpaper |
 | Login screen | `/usr/share/sddm/themes/breeze/theme.conf.user` points at the waves wallpaper |
+| Wallpaper chooser | `/usr/share/wallpapers/steel-os-waves/` and `steel-os-room/` as Plasma wallpaper packages |
 | Boot splash | `/usr/share/plymouth/themes/spinner/watermark.png`, the logo at 220 px wide |
-| About this System | `/etc/xdg/kcm-about-distrorc` and `/usr/share/pixmaps/steel-os.png` |
-
-Still to do: start-menu button icon (STEEL-7), OS name in `/etc/os-release`
-and the icon in the hicolor theme (STEEL-48), installer product name
-(STEEL-35), terminal banner.
+| Start button | The Steel OS icon, set by a Plasma layout script (`steel-os-panel.js`) |
+| About this System | `/etc/xdg/kcm-about-distrorc`, `/usr/lib/os-release` and the `steel-os` icon in the hicolor theme |
+| Installer | `installer/system_files/overrides/usr/share/cockpit/branding/fedora/` (logo and colours) |
 
 ## Wallpapers
 
-Decided 2026-10-16 by rodger-roberts-dev and T. Steel OS ships exactly two
-wallpapers; the first-kit grey hexagon wallpaper was retired the same day
-(still in git history if ever needed).
+Steel OS ships two wallpapers, both 3840x2160.
 
-- **Default desktop wallpaper:** `wallpaper/steel-os-wallpaper-waves-3840x2160.png`
-  (3840x2160, final size). Dark navy with blue and orange light waves, the hex
-  mark and `STEEL OS_` centred. Clean, no stray text, matches the brand
-  colours. Also the candidate for the login screen and the website hero.
-- **Second wallpaper, shipped as a choice:** `wallpaper/steel-os-wallpaper-room-3840x2160.png`
-  (3840x2160, final size). Isometric gaming studio: person on
-  the couch with a controller, space game on the TV, Steel OS on the monitors
-  and a neon sign. rodger-roberts-dev's favourite; appears in Plasma's
-  wallpaper settings as the alternative.
-
-Both are final size. Before the image ships, check in the VM that Plasma's
-bottom panel does not cover the logo on either wallpaper.
+- **Default:** `wallpaper/steel-os-wallpaper-waves-3840x2160.png`. Dark navy
+  with blue and orange light waves, the hex mark and `STEEL OS_` centred. Used
+  on the desktop, the lock screen and the login screen.
+- **Alternative:** `wallpaper/steel-os-wallpaper-room-3840x2160.png`. An
+  isometric gaming room: someone on the couch with a controller, a space game
+  on the TV, Steel OS on the monitors and a neon sign. Available in Plasma's
+  wallpaper settings.
