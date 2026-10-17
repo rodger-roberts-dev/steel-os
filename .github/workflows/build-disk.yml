@@ -24,7 +24,7 @@ on:
         type: string
 
 env:
-  IMAGE_REF: "ghcr.io/rodger-roberts-dev/steel-os:latest"
+  IMAGE_REF: "ghcr.io/steel-and-code/steel-os:latest"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}

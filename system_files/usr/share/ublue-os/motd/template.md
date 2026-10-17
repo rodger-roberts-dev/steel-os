@@ -10,4 +10,4 @@
 
 ${MOTD_TIP}
 - **Website** [steel-os.org](https://steel-os.org)
-- **Report a problem** [github.com/rodger-roberts-dev/steel-os/issues](https://github.com/rodger-roberts-dev/steel-os/issues)
+- **Report a problem** [steel-os.org/report](https://steel-os.org/report)

@@ -3,4 +3,4 @@
 Steel OS updates itself every **Tuesday at 4 am**. The previous version is always in the boot menu if you need it.
 *Update break something?* Restart, and pick the second Steel OS entry in the boot menu.
 Apps install from the **App Store** in the start menu. Most come as sandboxed Flatpaks.
-Built on Bazzite and Fedora; source code at github.com/rodger-roberts-dev/steel-os
+Built on Bazzite and Fedora; source code at steel-os.org/source

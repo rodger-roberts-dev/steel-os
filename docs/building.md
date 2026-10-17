@@ -27,7 +27,7 @@ Two workflows under `.github/workflows/`.
 
 **Build container image** (`build.yml`). Runs on every pull request, on every
 push to `master`, and every day at 10:05 UTC. It builds the image, and on
-`master` only, pushes it to `ghcr.io/rodger-roberts-dev/steel-os:latest` and
+`master` only, pushes it to `ghcr.io/steel-and-code/steel-os:latest` and
 signs it with the key in the `SIGNING_SECRET` secret. The daily run is how
 Bazzite's fixes reach us without anyone doing anything.
 
@@ -50,7 +50,7 @@ Neither workflow runs on T's Windows PC. GitHub does the building.
 The image lands in GitHub's container registry as a **private** package,
 because the repo is private. An installed machine cannot pull updates from a
 private package, and the ISO's install step would fail. Make the package
-public once: on GitHub go to rodger-roberts-dev's profile, Packages,
+public once: on GitHub go to the steel-and-code organization, Packages,
 `steel-os`, Package settings, Change visibility, Public. This exposes only the
 built image, not the repo.
 
@@ -61,7 +61,7 @@ built image, not the repo.
 2. Download the ISO from the Artifacts box at the bottom of the run page.
 3. In VirtualBox, attach it to the STEEL VM as the optical drive and start.
 4. Install, log in, open Konsole, run `sudo bootc status`. The image name must
-   be `ghcr.io/rodger-roberts-dev/steel-os:latest`.
+   be `ghcr.io/steel-and-code/steel-os:latest`.
 
 ## On a Linux PC (optional, rodger-roberts-dev)
 

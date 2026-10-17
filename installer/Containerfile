@@ -1,8 +1,8 @@
 # Based on Bazzite (github.com/ublue-os/bazzite), Apache-2.0. Modified for Steel OS by Steel & Code (STEEL-35).
 # run with --cap-add sys_admin --security-opt label=disable
 
-ARG BASE_IMAGE=${BASE_IMAGE:-ghcr.io/rodger-roberts-dev/steel-os:latest}
-ARG INSTALL_IMAGE_PAYLOAD=${INSTALL_IMAGE_PAYLOAD:-ghcr.io/rodger-roberts-dev/steel-os:latest}
+ARG BASE_IMAGE=${BASE_IMAGE:-ghcr.io/steel-and-code/steel-os:latest}
+ARG INSTALL_IMAGE_PAYLOAD=${INSTALL_IMAGE_PAYLOAD:-ghcr.io/steel-and-code/steel-os:latest}
 
 
 FROM $BASE_IMAGE
