@@ -143,13 +143,17 @@ jobs:
             cosign sign-blob -y --key env://COSIGN_PRIVATE_KEY "$iso" --output-signature "${iso}.sig"
           done
 
+      # Every installer, automatic or by hand, is also kept on GitHub for 90
+      # days (the run's Artifacts), so steel-os.org/download can point to older
+      # builds. downloads.steel-os.org keeps only the newest and the one before.
       - name: Upload to job artifacts
-        if: github.event_name != 'workflow_run' && inputs.upload-to-s3 != true
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
+          name: steel-os-installer
           path: ${{ steps.files.outputs.dir }}
           if-no-files-found: error
           compression-level: 0
+          retention-days: 90
           overwrite: true
 
       - name: Upload to S3
