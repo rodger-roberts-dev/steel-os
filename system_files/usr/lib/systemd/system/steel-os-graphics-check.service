@@ -1,0 +1,19 @@
+# Steel OS (STEEL-30): move the PC to the Steel OS edition that matches its
+# graphics card. Does nothing when it already matches.
+[Unit]
+Description=Steel OS edition for this PC's graphics card
+Wants=network-online.target
+After=network-online.target
+# Wait for any first-boot app installs, so both downloads don't compete.
+After=steel-os-flatpak-install.service
+ConditionPathExists=!/etc/steel-os/graphics-edition-locked
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/steel-os-graphics-check
+# A failed download (no network yet) tries again in ten minutes.
+Restart=on-failure
+RestartSec=600
+
+[Install]
+WantedBy=multi-user.target

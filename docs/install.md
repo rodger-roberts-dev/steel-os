@@ -57,8 +57,9 @@ welcome window offers **Install Steel OS**, **Try Steel OS first** and
 **Repair the startup menu**. Click **Install Steel OS**. If you chose to try it
 first, the installer is also on the desktop.
 
-A PC with an NVIDIA graphics card shows a short note first: this edition uses
-the open-source NVIDIA driver. Click **Continue**.
+A PC with an NVIDIA graphics card shows a short note first. Click **Continue**.
+After installation, Steel OS fetches NVIDIA's own driver by itself and asks you
+to restart once.
 
 ## 5. The installer
 

@@ -77,7 +77,7 @@ nvidia_notice() {
     lspci -nn 2>/dev/null | grep -E '\[03[0-9]{2}\]' | grep -qi 'nvidia' || return 0
     yad --info --buttons-layout=center --text-align=center --title="NVIDIA graphics card found" \
         --button="Continue:0" --button="Shut down:1" \
-        --text="This PC has an <b>NVIDIA graphics card</b>.\n\nThis edition of Steel OS uses the open-source NVIDIA driver. The desktop and many\ngames work, but games may run slower than on Windows. An edition with NVIDIA's\nown driver comes before Steel OS 1.0.\n\nYou can install now and switch later without reinstalling."
+        --text="This PC has an <b>NVIDIA graphics card</b>.\n\nInstall as normal. After the first start, with the internet connected, Steel OS\ndownloads the edition with NVIDIA's own driver by itself and asks you to restart once.\n\nVery old NVIDIA cards (before the GTX 900 series) keep the open-source driver."
     [[ $? -eq 1 ]] && shutdown_now
     return 0
 }

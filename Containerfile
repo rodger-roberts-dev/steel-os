@@ -7,6 +7,10 @@
 #
 # Steel OS is a Steel & Code project in partnership with Blackbox Entertainment.
 
+# The base image for the final stage (see below). Declared before the first
+# FROM so that it applies to every stage.
+ARG BASE_IMAGE=ghcr.io/ublue-os/bazzite:stable
+
 # Stage "ctx": files the build script may read, without copying them into the
 # final image. Keeps the image clean.
 FROM scratch AS ctx
@@ -16,10 +20,13 @@ COPY packages /packages
 COPY cosign.pub /cosign.pub
 COPY branding /branding
 
-# Base image: Bazzite stable, KDE Plasma, AMD and Intel graphics.
-# The NVIDIA variants (bazzite-nvidia-open, bazzite-nvidia) are handled by
-# STEEL-30, which detects the graphics card at first boot.
-FROM ghcr.io/ublue-os/bazzite:stable
+# Base image (STEEL-30). Steel OS is built in three editions from this one
+# recipe; the build workflow passes BASE_IMAGE:
+#   steel-os                bazzite:stable              AMD and Intel graphics
+#   steel-os-nvidia         bazzite-nvidia-open:stable  NVIDIA RTX and GTX 16 series
+#   steel-os-nvidia-legacy  bazzite-nvidia:stable       NVIDIA GTX 900 and 1000 series
+# A PC is moved to the right edition at first boot (steel-os-graphics-check).
+FROM ${BASE_IMAGE}
 
 # Run the build script. The mounts give it the ctx stage at /ctx and scratch
 # space for package caches and logs that must not end up in the image.

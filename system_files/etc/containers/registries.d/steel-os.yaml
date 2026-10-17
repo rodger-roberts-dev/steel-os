@@ -4,3 +4,7 @@
 docker:
   ghcr.io/steel-and-code/steel-os:
     use-sigstore-attachments: true
+  ghcr.io/steel-and-code/steel-os-nvidia:
+    use-sigstore-attachments: true
+  ghcr.io/steel-and-code/steel-os-nvidia-legacy:
+    use-sigstore-attachments: true

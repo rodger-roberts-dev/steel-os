@@ -1,0 +1,76 @@
+#!/usr/bin/bash
+# Steel OS (STEEL-30): one installer for every PC. Move this PC to the Steel
+# OS edition that matches its graphics card.
+#
+#   AMD or Intel graphics, or no NVIDIA card   ->  steel-os
+#   NVIDIA RTX, GTX 16 series (Turing+)        ->  steel-os-nvidia
+#   NVIDIA GTX 900 and 1000 series             ->  steel-os-nvidia-legacy
+#   Older or unknown NVIDIA cards              ->  stays on steel-os (open driver)
+#
+# Runs as a system service at every boot, after the network is up. It does
+# nothing when the PC is already on the right edition. When it is not, it
+# switches the PC to the right edition (a normal, signed image download, the
+# same as an update) and leaves a note so the desktop can ask for a restart.
+# The previous edition stays in the boot menu, like after any update.
+#
+# To stop it switching (for example on a PC with two graphics cards), create
+# /etc/steel-os/graphics-edition-locked.
+
+set -euo pipefail
+
+REGISTRY=ghcr.io/steel-and-code
+STATE_DIR=/var/lib/steel-os
+READY="$STATE_DIR/graphics-switch-ready"
+LOCK=/etc/steel-os/graphics-edition-locked
+
+[[ -e "$LOCK" ]] && { echo "Steel OS graphics: edition locked by $LOCK"; exit 0; }
+
+# Which edition is this PC following now?
+current_ref="$(bootc status --format json 2>/dev/null | jq -r '.spec.image.image // empty')"
+if [[ -z "$current_ref" ]]; then
+    echo "Steel OS graphics: could not read the current image; nothing to do."
+    exit 0
+fi
+case "$current_ref" in
+    "$REGISTRY"/steel-os-nvidia-legacy*) current=steel-os-nvidia-legacy ;;
+    "$REGISTRY"/steel-os-nvidia*)        current=steel-os-nvidia ;;
+    "$REGISTRY"/steel-os*)               current=steel-os ;;
+    *)
+        echo "Steel OS graphics: following $current_ref, which is not a Steel OS edition; leaving it alone."
+        exit 0
+        ;;
+esac
+tag="${current_ref##*:}"
+[[ "$tag" == "$current_ref" || "$tag" == */* ]] && tag=latest
+
+# Which edition does the graphics card need?
+support=""
+if [[ -x /usr/libexec/bazzite-detect-nvidia-support-status ]]; then
+    support="$(/usr/libexec/bazzite-detect-nvidia-support-status || true)"
+fi
+case "$support" in
+    supported) wanted=steel-os-nvidia ;;
+    legacy)    wanted=steel-os-nvidia-legacy ;;
+    "")        wanted=steel-os ;;   # no NVIDIA card
+    *)
+        # Unsupported or unknown NVIDIA card: the open driver in steel-os is
+        # the best option. Don't move anyone off an NVIDIA edition they chose.
+        echo "Steel OS graphics: NVIDIA support status '$support'; keeping $current."
+        exit 0
+        ;;
+esac
+
+if [[ "$current" == "$wanted" ]]; then
+    rm -f "$READY"
+    echo "Steel OS graphics: already on $current."
+    exit 0
+fi
+
+target="$REGISTRY/$wanted:$tag"
+echo "Steel OS graphics: this PC needs $wanted; switching from $current to $target."
+bootc switch --enforce-container-sigpolicy "$target"
+
+mkdir -p "$STATE_DIR"
+printf '%s\n' "$wanted" > "$READY"
+chmod 0644 "$READY"
+echo "Steel OS graphics: $wanted is ready and starts at the next restart."

@@ -31,8 +31,23 @@ concurrency:
 
 jobs:
   build_push:
-    name: Build and push image
+    name: Build and push ${{ matrix.image_name }}
     runs-on: ubuntu-26.04
+    # Three editions from one recipe (STEEL-30). A PC is moved to the right one
+    # at first boot by /usr/libexec/steel-os-graphics-check.
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image_name: steel-os                # AMD and Intel graphics
+            base_image: ghcr.io/ublue-os/bazzite:stable
+          - image_name: steel-os-nvidia         # NVIDIA RTX and GTX 16 series, open driver
+            base_image: ghcr.io/ublue-os/bazzite-nvidia-open:stable
+          - image_name: steel-os-nvidia-legacy  # NVIDIA GTX 900 and 1000 series
+            base_image: ghcr.io/ublue-os/bazzite-nvidia:stable
+    env:
+      IMAGE_NAME: ${{ matrix.image_name }}
+      BASE_IMAGE: ${{ matrix.base_image }}
 
     permissions:
       contents: read
