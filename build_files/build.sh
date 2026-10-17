@@ -96,7 +96,8 @@ install -D -m 0644 /ctx/packages/steel-apps.txt /usr/share/steel-os/steel-apps.t
 # Build number (STEEL-57): date and commit of this image, from the Containerfile.
 mkdir -p /usr/share/steel-os
 echo "${STEEL_OS_BUILD:-local}" > /usr/share/steel-os/build
-echo "Steel OS build: $(cat /usr/share/steel-os/build)"
+echo "${STEEL_OS_VERSION:-0.0.0}" > /usr/share/steel-os/version
+echo "Steel OS version $(cat /usr/share/steel-os/version), build $(cat /usr/share/steel-os/build)"
 # Bazzite rewrites Fedora's /usr/lib/os-release in its build (see Bazzite's
 # build_files/image-info). We do the same on top, changing only the fields
 # that name the OS. ID stays "bazzite" and image-info.json stays untouched,
@@ -106,7 +107,9 @@ echo "Steel OS build: $(cat /usr/share/steel-os/build)"
 # how Steel OS machines are counted (STEEL-33).
 OS_RELEASE="/usr/lib/os-release"
 sed -i 's/^NAME=.*/NAME="Steel OS"/' "$OS_RELEASE"
-sed -i 's/^PRETTY_NAME=.*/PRETTY_NAME="Steel OS"/' "$OS_RELEASE"
+# The version shows in About this System: "Steel OS 0.4.12".
+sed -i "s/^PRETTY_NAME=.*/PRETTY_NAME=\"Steel OS ${STEEL_OS_VERSION:-}\"/" "$OS_RELEASE"
+grep -q '^STEEL_OS_VERSION=' "$OS_RELEASE" || echo "STEEL_OS_VERSION=${STEEL_OS_VERSION:-0.0.0}" >> "$OS_RELEASE"
 sed -i 's/^VARIANT_ID=.*/VARIANT_ID=steel-os/' "$OS_RELEASE"
 sed -i 's|^HOME_URL=.*|HOME_URL="https://steel-os.org"|' "$OS_RELEASE"
 sed -i 's|^DOCUMENTATION_URL=.*|DOCUMENTATION_URL="https://steel-os.org"|' "$OS_RELEASE"

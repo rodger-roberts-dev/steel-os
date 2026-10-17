@@ -31,6 +31,8 @@ FROM ${BASE_IMAGE}
 # Build number written into the image (date and commit), shown on the live
 # installer's information panel and in /usr/share/steel-os/build.
 ARG STEEL_OS_BUILD=local
+# Version number, e.g. 0.4.12 (see VERSION and the Justfile build recipe).
+ARG STEEL_OS_VERSION=0.0.0
 
 # Run the build script. The mounts give it the ctx stage at /ctx and scratch
 # space for package caches and logs that must not end up in the image.

@@ -27,9 +27,9 @@ on:
         default: false
         type: boolean
       version:
-        description: "Version used in the file name, e.g. 0.2.0-preview"
+        description: "Name used in the file name (the version is inside the installer and in its record)"
         required: false
-        default: "0.2.0-preview"
+        default: "preview"
         type: string
 
 env:
@@ -101,7 +101,7 @@ jobs:
         uses: Zeglius/titanoboa@7737f4748458252ac827dca14b3d6dd09298472a # revamp-pr, as used by Bazzite
         with:
           image-ref: localhost/payload:latest
-          iso-dest: steel-os-${{ inputs.version || '0.2.0-preview' }}-x86_64.iso
+          iso-dest: steel-os-${{ inputs.version || 'preview' }}-x86_64.iso
 
       - name: Checksum
         id: files
@@ -122,8 +122,10 @@ jobs:
           # The build number lives inside the image (/usr/share/steel-os/build);
           # labels don't survive rechunking. The image is already pulled.
           build="$(sudo podman run --rm --entrypoint cat "${IMAGE_REF}" /usr/share/steel-os/build 2>/dev/null || echo unknown)"
-          printf 'installer: %s\nimage: %s\nimage digest: %s\nimage version: %s\nbuilt: %s\ncommit: %s\n' \
-            "$name" "${IMAGE_REF}" "$digest" "$build" "$(date -u +%Y-%m-%dT%H:%MZ)" "${GITHUB_SHA}" > "$OUT/$name.image.txt"
+          version="$(sudo podman run --rm --entrypoint cat "${IMAGE_REF}" /usr/share/steel-os/version 2>/dev/null || echo unknown)"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          printf 'installer: %s\nversion: %s\nimage: %s\nimage digest: %s\nbuild: %s\nbuilt: %s\ncommit: %s\n' \
+            "$name" "$version" "${IMAGE_REF}" "$digest" "$build" "$(date -u +%Y-%m-%dT%H:%MZ)" "${GITHUB_SHA}" > "$OUT/$name.image.txt"
           cat "$OUT/$name.image.txt"
           cat "$OUT/$name.image.txt" >> "$GITHUB_STEP_SUMMARY"
           ls -la "$OUT"
@@ -151,7 +153,8 @@ jobs:
       - name: Upload to job artifacts
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: steel-os-installer
+          # The version is in the name, so steel-os.org/download can list it.
+          name: steel-os-installer-${{ steps.files.outputs.version }}
           path: ${{ steps.files.outputs.dir }}
           if-no-files-found: error
           compression-level: 0
