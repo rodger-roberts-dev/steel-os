@@ -189,6 +189,11 @@ qrencode -o "$SECUREBOOT_DOC_URL_QR" "$SECUREBOOT_DOC_URL"
     set +e
     for s in \
         rpm-ostree-countme.service \
+        steel-os-flatpak-install.service \
+        steel-os-signed-updates.service \
+        steel-os-graphics-check.service \
+        steel-os-urgent-update.timer \
+        steel-os-app-updates.timer \
         tailscaled.service \
         bazzite-hardware-setup.service \
         ublue-hardware-setup.service \
@@ -216,6 +221,9 @@ qrencode -o "$SECUREBOOT_DOC_URL_QR" "$SECUREBOOT_DOC_URL"
 
     for s in \
         podman-auto-update.timer \
+        steel-os-app-updates.timer \
+        steel-os-update-notice.timer \
+        steel-shield-weekly.timer \
         bazzite-user-setup.service \
         ublue-user-setup.service; do
         if systemctl --global list-unit-files "$s" >/dev/null 2>&1; then
