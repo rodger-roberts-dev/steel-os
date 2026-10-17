@@ -169,9 +169,15 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y rclone
-          # Only the latest installer is kept (T): sync makes the bucket match
-          # this build exactly. Old files are deleted only after the new ones
-          # have uploaded completely, so the download never disappears.
-          rclone sync --delete-after --s3-no-check-bucket --retries 5 "$SOURCE_DIR" "S3:${{ secrets.S3_BUCKET_NAME }}"
+          # Two builds at most (T): the newest at the top of the bucket and the
+          # one before in previous/. First the current top files move into
+          # previous/ (replacing what was there), then this build replaces
+          # the top. Old files go only after the new ones uploaded completely,
+          # so the download link never breaks.
+          B="${{ secrets.S3_BUCKET_NAME }}"
+          rclone sync --s3-no-check-bucket --retries 5 --exclude "previous/**" "S3:$B" "S3:$B/previous"
+          rclone sync --delete-after --s3-no-check-bucket --retries 5 --exclude "previous/**" "$SOURCE_DIR" "S3:$B"
+          echo "Kept: newest at the top, the build before in previous/"
+          rclone lsl "S3:$B"
           echo "Uploaded:"
           ls -la "$SOURCE_DIR"
