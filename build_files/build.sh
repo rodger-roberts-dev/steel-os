@@ -116,3 +116,16 @@ for repo in /etc/yum.repos.d/*.repo; do
     fi
 done
 grep -l '^enabled=1' /etc/yum.repos.d/*.repo || true
+
+### 9. Rebuild the boot image so the boot splash shows Steel OS (STEEL-31)
+# The logo shown while the machine starts is read from the initramfs, a small
+# boot image Bazzite generated before our files were added. Our watermark in
+# /usr/share/plymouth/themes/spinner/ only appears once the initramfs is
+# rebuilt. Same command Bazzite uses (its build_files/build-initramfs).
+# Keep this the LAST section: anything copied in after it would not reach
+# the boot screen.
+QUALIFIED_KERNEL="$(rpm -q --queryformat='%{evr}.%{arch}' kernel-core | tail -n 1)"
+export DRACUT_NO_XATTR=1
+/usr/bin/dracut --no-hostonly --kver "$QUALIFIED_KERNEL" --reproducible --zstd -v \
+    --add ostree --add fido2 -f "/usr/lib/modules/$QUALIFIED_KERNEL/initramfs.img"
+chmod 0600 "/usr/lib/modules/$QUALIFIED_KERNEL/initramfs.img"
