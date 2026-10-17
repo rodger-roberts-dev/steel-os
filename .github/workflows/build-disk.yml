@@ -169,6 +169,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y rclone
-          rclone copy --s3-no-check-bucket --retries 5 "$SOURCE_DIR" "S3:${{ secrets.S3_BUCKET_NAME }}"
+          # Only the latest installer is kept (T): sync makes the bucket match
+          # this build exactly. Old files are deleted only after the new ones
+          # have uploaded completely, so the download never disappears.
+          rclone sync --delete-after --s3-no-check-bucket --retries 5 "$SOURCE_DIR" "S3:${{ secrets.S3_BUCKET_NAME }}"
           echo "Uploaded:"
           ls -la "$SOURCE_DIR"
