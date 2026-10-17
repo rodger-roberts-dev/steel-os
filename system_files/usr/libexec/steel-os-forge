@@ -1,116 +1,127 @@
 #!/usr/bin/bash
-# Steel OS: one-click install of Steel & Code Forge, the terminal-first agent
-# platform (STEEL-25). Optional, never installed by default.
+# Steel OS: one-click install of Steel & Code Forge (STEEL-25), the
+# terminal-first AI agent platform from Steel & Code. Optional, never
+# installed by default.
 #
-#   steel-os-forge install     install or update Forge for this user
+#   steel-os-forge install     download Forge and run its own installer
 #   steel-os-forge uninstall   remove Forge (asks before removing the saved key)
-#   steel-os-forge update      update Forge if it is installed (quiet; daily)
-#   steel-os-forge launch      open Forge in a terminal (asks for the key once)
-#   steel-os-forge set-key     save or change the OpenRouter key
+#   steel-os-forge update      reinstall the newest Forge quietly, if installed
+#   steel-os-forge launch      open the Forge terminal interface
 #   steel-os-forge status      prints "installed" or "not-installed"
 #
-# Forge is pure Python (3.11 or newer, no outside dependencies), so it goes in
-# its own private Python environment in this user's home. Nothing is added to
-# the system. Its OpenRouter key is kept in the desktop's password store
-# (KWallet, through the Secret Service), never in a file.
+# Steel OS doesn't install Forge its own way: it downloads Forge's source from
+# the address in /usr/share/steel-os/forge-source and runs Forge's installer
+# (scripts/install-forge.sh), which sets up a private Python environment, the
+# forge command in ~/.local/bin, the OpenRouter key (a private file only this
+# user can read) and, if wanted, the separate Hermes agent.
 
 set -euo pipefail
 
 SOURCE_FILE=/usr/share/steel-os/forge-source
-HOME_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/steel-and-code-forge"
-VENV="$HOME_DIR/venv"
+DATA="${XDG_DATA_HOME:-$HOME/.local/share}"
+CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}"
+CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/steel-os-forge"
+FORGE_DIR="$DATA/steel-and-code/forge"
+FORGE_CONFIG="$CONFIG/steel-and-code/forge"
 BIN="$HOME/.local/bin/forge"
-DESKTOP="${XDG_DATA_HOME:-$HOME/.local/share}/applications/steel-and-code-forge.desktop"
-KEY_ATTRS=(service steel-and-code-forge key openrouter)
+DESKTOP="$DATA/applications/steel-and-code-forge.desktop"
+WORKSPACE="$HOME/Projects"
 
-say() { kdialog --title "Steel & Code Forge" "$@" 2>/dev/null || true; }
-
-source_spec() {
-    local spec=""
-    [[ -r "$SOURCE_FILE" ]] && spec="$(grep -Ev '^\s*(#|$)' "$SOURCE_FILE" | head -1 | tr -d '[:space:]')"
-    if [[ -z "$spec" ]]; then
-        echo "Steel & Code Forge isn't published yet. Check back after the next Steel OS update." >&2
+source_url() {
+    local url=""
+    [[ -r "$SOURCE_FILE" ]] && url="$(grep -Ev '^\s*(#|$)' "$SOURCE_FILE" | head -1 | tr -d '[:space:]')"
+    if [[ -z "$url" ]]; then
+        echo "Steel & Code Forge isn't available yet. Check back after the next Steel OS update." >&2
         exit 1
     fi
-    echo "$spec"
+    echo "$url"
 }
 
-get_key() { secret-tool lookup "${KEY_ATTRS[@]}" 2>/dev/null || true; }
-
-set_key() {
-    local key
-    key="$(kdialog --title "Steel & Code Forge" --password \
-        "Forge talks to AI models through OpenRouter.\n\nPaste your OpenRouter API key (from openrouter.ai, Keys).\nIt is kept in your password store, not in a file." 2>/dev/null)" || return 1
-    key="$(printf '%s' "$key" | tr -d '[:space:]')"
-    [[ -n "$key" ]] || return 1
-    printf '%s' "$key" | secret-tool store --label "Steel & Code Forge: OpenRouter key" "${KEY_ATTRS[@]}"
-    say --passivepopup "OpenRouter key saved." 4
+fetch_source() {
+    local url
+    url="$(source_url)"
+    rm -rf "$CACHE"
+    mkdir -p "$CACHE/src"
+    echo "Downloading Steel & Code Forge..."
+    curl --proto '=https' --tlsv1.2 -fsSL "$url" | tar -xz -C "$CACHE/src" --strip-components=1
 }
 
-install_forge() {
-    local spec
-    spec="$(source_spec)"
-    echo "Installing Steel & Code Forge from: $spec"
-    mkdir -p "$HOME_DIR" "$(dirname "$BIN")" "$(dirname "$DESKTOP")"
-    [[ -x "$VENV/bin/python" ]] || python3 -m venv "$VENV"
-    "$VENV/bin/python" -m pip install --quiet --upgrade pip
-    "$VENV/bin/python" -m pip install --upgrade "$spec"
-
-    # The forge command: reads the key from the password store for each run,
-    # so it is never left in the shell's environment.
-    cat > "$BIN" <<EOF
-#!/usr/bin/bash
-# Steel OS wrapper for Steel & Code Forge (installed by steel-os-forge).
-if [[ -z "\${FORGE_OPENROUTER_API_KEY:-}" ]]; then
-    FORGE_OPENROUTER_API_KEY="\$(secret-tool lookup ${KEY_ATTRS[*]} 2>/dev/null || true)"
-    [[ -n "\$FORGE_OPENROUTER_API_KEY" ]] && export FORGE_OPENROUTER_API_KEY
-fi
-exec "$VENV/bin/forge" "\$@"
-EOF
-    chmod 0755 "$BIN"
-
+write_desktop() {
+    mkdir -p "$(dirname "$DESKTOP")"
     cat > "$DESKTOP" <<EOF
 [Desktop Entry]
 Type=Application
 Name=Steel & Code Forge
-GenericName=AI agent platform
-Comment=Terminal-first AI agents from Steel & Code
+GenericName=AI agents
+Comment=Byte, Neighbor and the Forge terminal interface from Steel & Code
 Exec=/usr/libexec/steel-os-forge launch
 Icon=utilities-terminal
 Terminal=false
 Categories=Development;
-Keywords=forge;ai;agent;byte;steel;code;
+Keywords=forge;ai;agent;byte;neighbor;hermes;steel;code;
 EOF
+}
+
+install_forge() {
+    fetch_source
+    # Forge's own installer: asks for the OpenRouter key and offers Hermes.
+    bash "$CACHE/src/scripts/install-forge.sh"
+    write_desktop
+    mkdir -p "$WORKSPACE"
+    rm -rf "$CACHE"
     echo
-    echo "Forge is installed. Open it from the start menu (Steel & Code Forge) or type: forge"
+    echo "Open it from the start menu: Steel & Code Forge."
+}
+
+update_forge() {
+    [[ -x "$FORGE_DIR/venv/bin/python" ]] || return 0
+    fetch_source
+    # No terminal attached, so Forge's installer keeps the saved key and
+    # doesn't ask about Hermes.
+    bash "$CACHE/src/scripts/install-forge.sh" </dev/null >/dev/null
+    rm -rf "$CACHE"
 }
 
 uninstall_forge() {
-    rm -rf "$VENV" "$BIN" "$DESKTOP"
-    rmdir "$HOME_DIR" 2>/dev/null || true
-    if [[ -n "$(get_key)" ]] && kdialog --title "Steel & Code Forge" \
-        --yesno "Forge is removed.\n\nAlso remove your saved OpenRouter key?" 2>/dev/null; then
-        secret-tool clear "${KEY_ATTRS[@]}" || true
+    rm -rf "$FORGE_DIR" "$DESKTOP" "$CACHE"
+    # Only remove ~/.local/bin/forge if it is Forge's launcher.
+    if [[ -f "$BIN" ]] && grep -q 'steel-and-code/forge' "$BIN"; then
+        rm -f "$BIN"
     fi
-    echo "Steel & Code Forge is removed."
+    if [[ -d "$FORGE_CONFIG" ]]; then
+        read -r -p "Also remove your saved OpenRouter key? [y/N]: " answer || answer=""
+        if [[ "$answer" =~ ^[Yy] ]]; then
+            rm -rf "$FORGE_CONFIG"
+            echo "Key removed."
+        else
+            echo "Key kept in $FORGE_CONFIG"
+        fi
+    fi
+    echo "Steel & Code Forge is removed. Hermes, if you installed it, is a separate program and stays."
 }
 
 launch() {
     if [[ ! -x "$BIN" ]]; then
-        say --sorry "Steel & Code Forge isn't installed. Install it from the Steel OS Portal, Steel Apps, Developer."
+        kdialog --title "Steel & Code Forge" --sorry \
+            "Steel & Code Forge isn't installed. Install it from the Steel OS Portal: Steel Apps, Developer." 2>/dev/null || true
         exit 1
     fi
-    [[ -n "$(get_key)" ]] || set_key || true
-    exec konsole --workdir "$HOME" -e bash -c \
-        'echo "Steel & Code Forge"; echo; "$HOME/.local/bin/forge"; echo; echo "Type forge --help to see what it can do."; exec bash -l'
+    mkdir -p "$WORKSPACE"
+    exec konsole --workdir "$WORKSPACE" -e bash -c '
+        if [[ ! -s "${XDG_CONFIG_HOME:-$HOME/.config}/steel-and-code/forge/openrouter.key" ]]; then
+            echo "Forge needs your OpenRouter key (from openrouter.ai, Keys)."
+            "$HOME/.local/bin/forge" setup-key || true
+        fi
+        "$HOME/.local/bin/forge" tui --workspace "$HOME/Projects"
+        echo; echo "Forge closed. Type forge --help for more, or close this window."
+        exec bash -l'
 }
 
 case "${1:-}" in
     install) install_forge ;;
     uninstall) uninstall_forge ;;
-    update) [[ -x "$VENV/bin/python" ]] && "$VENV/bin/python" -m pip install --quiet --upgrade "$(source_spec)" || true ;;
+    update) update_forge ;;
     launch) launch ;;
-    set-key) set_key ;;
-    status) [[ -x "$BIN" ]] && echo installed || echo not-installed ;;
-    *) echo "usage: steel-os-forge install|uninstall|update|launch|set-key|status" >&2; exit 2 ;;
+    status) [[ -x "$FORGE_DIR/venv/bin/forge" ]] && echo installed || echo not-installed ;;
+    *) echo "usage: steel-os-forge install|uninstall|update|launch|status" >&2; exit 2 ;;
 esac
