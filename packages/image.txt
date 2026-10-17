@@ -14,3 +14,10 @@ wsdd
 # Verify after the first boot whether Bazzite already includes these KDE apps.
 # Add any that are missing:
 #   ark kate okular skanpage spectacle gwenview kolourpaint print-manager
+
+# Virtual machines out of the box: the libvirt service, QEMU/KVM, the default
+# NAT network and a software TPM (for Windows 11 guests). Bazzite does not
+# ship these. Virtual Machine Manager itself is a Steel Apps one-click Flatpak.
+libvirt-daemon-kvm
+libvirt-daemon-config-network
+swtpm
