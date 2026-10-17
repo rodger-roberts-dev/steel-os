@@ -93,3 +93,6 @@ zenity
 clamav
 clamav-freshclam
 inotify-tools
+
+# Developer tools built in (Katana test, Rodger): Neovim, with the nvim command.
+neovim

@@ -588,6 +588,14 @@ fi
 rm -rf "$st"
 echo "Steel Shield self-test passed: test file detected and quarantined"
 
+### Developer tools (Katana test): nvim from the image, zeditor opens the Zed
+# Flatpak installed at first boot. The build fails if either command is missing.
+chmod 0755 /usr/bin/zeditor
+for c in nvim zeditor; do
+    command -v "$c" >/dev/null || { echo "Steel OS: developer command $c is missing" >&2; exit 1; }
+done
+echo "Steel OS developer commands: $(command -v nvim) $(command -v zeditor)"
+
 ### 9. Rebuild the boot image so the boot splash shows Steel OS (STEEL-31)
 # The logo shown while the machine starts is read from the initramfs, a small
 # boot image Bazzite generated before our files were added. Our watermark in
