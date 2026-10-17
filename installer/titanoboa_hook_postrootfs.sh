@@ -282,7 +282,9 @@ fi
 rm -vf /etc/skel/.config/autostart/steam*.desktop
 
 # Remove packages that shouldn't be used in a live session
-dnf -yq remove steam lutris bazaar waydroid || :
+# Steel OS: the App Store (bazaar) stays, so people can look around before
+# installing; anything installed in the live session is gone after restarting.
+dnf -yq remove steam lutris waydroid || :
 
 # Don't check for verified image
 rm -vf /etc/profile.d/verify_motd.sh

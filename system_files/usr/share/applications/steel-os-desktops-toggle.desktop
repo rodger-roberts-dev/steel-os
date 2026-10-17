@@ -1,0 +1,19 @@
+[Desktop Entry]
+Name=Virtual Desktops On or Off
+GenericName=Virtual desktops
+Comment=Switch between four virtual desktops and just one (Super+Shift+D)
+Exec=/usr/libexec/steel-os-desktops toggle
+Icon=preferences-desktop-virtual
+Terminal=false
+Type=Application
+Categories=Settings;DesktopSettings;
+Keywords=virtual;desktops;workspaces;pager;switcher;
+Actions=off;on;
+
+[Desktop Action off]
+Name=Turn virtual desktops off
+Exec=/usr/libexec/steel-os-desktops off
+
+[Desktop Action on]
+Name=Turn virtual desktops on
+Exec=/usr/libexec/steel-os-desktops on

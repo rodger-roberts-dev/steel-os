@@ -109,6 +109,11 @@ _launch=Meta+Shift+Return	Meta+Shift+B,Meta+Shift+Return	Meta+Shift+B,Firefox
 [services][org.kde.dolphin.desktop]
 _launch=Meta+F	Meta+Shift+F,Meta+F	Meta+Shift+F,Dolphin
 
+# Virtual desktops: Meta+Shift+D switches them off (one desktop, no boxes on
+# the taskbar) and on (four desktops)
+[services][steel-os-desktops-toggle.desktop]
+_launch=Meta+Shift+D,Meta+Shift+D,Virtual desktops on or off
+
 # Taskbar: Meta+T switches between always visible and auto-hide
 [services][steel-os-taskbar-toggle.desktop]
 _launch=Meta+T,Meta+T,Show or auto-hide the taskbar
