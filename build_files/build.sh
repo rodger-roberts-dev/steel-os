@@ -413,6 +413,12 @@ if python3 /ctx/sddm/make-login-theme.py | tee /dev/stderr | grep -qx OK; then
     systemctl enable steel-os-recovery-reset.service
 else
     echo "Steel OS recovery: WARNING login theme not changed; reset service not enabled"
+    # What login manager and themes does the base image have?
+    rpm -q sddm plasma-login-manager plasmalogin sddm-breeze 2>&1 || true
+    ls -la /usr/share/sddm/themes /usr/share/plasma/look-and-feel 2>&1 | head -30 || true
+    readlink -f /etc/systemd/system/display-manager.service || true
+    find / -xdev -name Main.qml -path "*login*" 2>/dev/null | head || true
+    find /usr/share -maxdepth 3 -iname "*plasmalogin*" 2>/dev/null | head || true
 fi
 
 ### 9. Rebuild the boot image so the boot splash shows Steel OS (STEEL-31)
