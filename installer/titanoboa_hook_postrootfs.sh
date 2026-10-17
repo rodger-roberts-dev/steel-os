@@ -326,6 +326,11 @@ dnf -yq install gparted
 
 ###############################
 
+# Steel OS: the first-login setup ("Welcome to Steel OS", security questions,
+# apps) is for the installed system. In the live session it popped up on top
+# of the installer.
+rm -f /etc/skel/.config/autostart/steel-os-setup.desktop
+
 # Steel OS: log the live user straight in. The installed system uses SDDM, but
 # the Plasma Login Manager package is still present, so livesys-kde writes its
 # autologin to /etc/plasmalogin.conf. With SDDM running the live session never

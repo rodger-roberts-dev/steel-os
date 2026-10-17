@@ -13,9 +13,13 @@ while pgrep -x anaconda >/dev/null 2>&1 || pgrep -f '/usr/sbin/anaconda' >/dev/n
     sleep 3
 done
 
+# The install is done: take the installer off the desktop and the start menu
+# so it can't be started again by mistake.
+rm -f "$HOME/Desktop/liveinst.desktop" "$HOME/.local/share/applications/liveinst.desktop"
+
 yad --on-top --center --buttons-layout=center --text-align=center \
     --title="Steel OS is installed" --image=steel-os \
-    --text="<big><b>Steel OS is installed</b></big>\n\nRemove the USB stick, then click <b>Restart now</b>.\nSteel OS starts from the disk." \
+    --text="<big><b>Steel OS is installed</b></big>\n\nRemove the USB stick or disc you installed from,\nthen click <b>Restart now</b>. Steel OS starts from the disk,\nand its welcome appears after you log in." \
     --button="Restart now:0" --button="Stay in the live desktop:1"
 if [[ $? -eq 0 ]]; then
     systemctl reboot || sudo systemctl reboot
