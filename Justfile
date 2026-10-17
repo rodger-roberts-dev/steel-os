@@ -104,6 +104,12 @@ build $target_image=image_name $tag=default_tag:
     if [[ -n "${BASE_IMAGE:-}" ]]; then
         BUILD_ARGS+=("--build-arg" "BASE_IMAGE=${BASE_IMAGE}")
     fi
+    # Build number: date and commit, e.g. 20261017-ab12cd3 (STEEL-57).
+    STEEL_OS_BUILD="$(date +%Y%m%d)"
+    if [[ -z "$(git status -s)" ]]; then
+        STEEL_OS_BUILD="${STEEL_OS_BUILD}-$(git rev-parse --short HEAD)"
+    fi
+    BUILD_ARGS+=("--build-arg" "STEEL_OS_BUILD=${STEEL_OS_BUILD}")
     if [[ -z "$(git status -s)" ]]; then
         GIT_SHA=$(git rev-parse --short HEAD)
         LABELS+=("--label" "io.artifacthub.package.readme-url=https://raw.githubusercontent.com/{{ repo_organization }}/{{ image_name }}/${GIT_SHA}/README.md")

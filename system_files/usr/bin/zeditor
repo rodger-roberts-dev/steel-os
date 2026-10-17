@@ -1,0 +1,10 @@
+#!/usr/bin/bash
+# Steel OS: the "zeditor" command opens the Zed code editor, which Steel OS
+# installs as a Flatpak (dev.zed.Zed) after the first boot. Same name and
+# behaviour as Zed's command on other Linux systems: zeditor [PATH...]
+if flatpak info dev.zed.Zed >/dev/null 2>&1 || flatpak info --user dev.zed.Zed >/dev/null 2>&1; then
+    exec flatpak run dev.zed.Zed "$@"
+fi
+echo "Zed isn't installed yet. Steel OS installs it a few minutes after the first start with an internet connection," >&2
+echo "or install it now from the Steel OS Portal (Steel Apps, Developer) or with: flatpak install flathub dev.zed.Zed" >&2
+exit 1

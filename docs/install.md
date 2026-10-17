@@ -11,6 +11,9 @@ point. It takes about 30 minutes.
 
 - A 64-bit PC from the last ten years, with 8 GB of memory (4 GB at least) and
   64 GB of free disk space.
+- A PC that starts in **UEFI** mode, which is every PC from roughly 2012 on.
+  PCs that only have old BIOS (Legacy or CSM) can't start the Steel OS
+  installer. If yours has a choice, set it to UEFI in the firmware settings.
 - A USB stick of 16 GB or more (the installer is about 8.5 GB). Everything on it
   will be erased.
 - **A backup of everything on the PC you are installing to.** Installing
@@ -102,3 +105,19 @@ That's it. Steel OS updates itself every Tuesday from now on.
 | The default apps never appear | Check the internet connection, then restart. They retry by themselves. |
 
 Still stuck? Report it at **steel-os.org/report** with a photo of the screen.
+
+---
+
+## Privacy: the weekly device count
+
+Like Fedora and Bazzite, Steel OS takes part in Fedora's anonymous weekly
+device count (DNF Count Me). Once a week, one update check carries a flag
+saying "a Steel OS machine of this version". The totals Fedora publishes
+contain no names, serial numbers or IP addresses, and steel-os.org shows the
+Steel OS line.
+
+To switch it off, open a terminal and run:
+
+```
+sudo systemctl mask --now rpm-ostree-countme.timer
+```

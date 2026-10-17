@@ -93,6 +93,10 @@ systemctl enable steel-os-flatpak-install.service
 install -D -m 0644 /ctx/packages/steel-apps.txt /usr/share/steel-os/steel-apps.txt
 
 ### 7. The OS calls itself Steel OS (STEEL-48)
+# Build number (STEEL-57): date and commit of this image, from the Containerfile.
+mkdir -p /usr/share/steel-os
+echo "${STEEL_OS_BUILD:-local}" > /usr/share/steel-os/build
+echo "Steel OS build: $(cat /usr/share/steel-os/build)"
 # Bazzite rewrites Fedora's /usr/lib/os-release in its build (see Bazzite's
 # build_files/image-info). We do the same on top, changing only the fields
 # that name the OS. ID stays "bazzite" and image-info.json stays untouched,
@@ -201,7 +205,7 @@ awk '
     { print }
 ' "$SHORTCUTS" > "$SHORTCUTS.new" && mv "$SHORTCUTS.new" "$SHORTCUTS"
 install -D -m 0644 "$SHORTCUTS" /etc/skel/.config/kglobalshortcutsrc
-chmod 0755 /usr/libexec/steel-os-shortcuts
+chmod 0755 /usr/libexec/steel-os-shortcuts /usr/libexec/steel-os-taskbar
 grep -A1 'org.kde.konsole.desktop' "$SHORTCUTS"
 
 ### 12. No Fedora logo presented as ours (STEEL-51)
@@ -587,6 +591,14 @@ fi
 /usr/bin/steel-shield explain Win.Trojan.Agent-12345
 rm -rf "$st"
 echo "Steel Shield self-test passed: test file detected and quarantined"
+
+### Developer tools (Katana test): nvim from the image, zeditor opens the Zed
+# Flatpak installed at first boot. The build fails if either command is missing.
+chmod 0755 /usr/bin/zeditor
+for c in nvim zeditor; do
+    command -v "$c" >/dev/null || { echo "Steel OS: developer command $c is missing" >&2; exit 1; }
+done
+echo "Steel OS developer commands: $(command -v nvim) $(command -v zeditor)"
 
 ### 9. Rebuild the boot image so the boot splash shows Steel OS (STEEL-31)
 # The logo shown while the machine starts is read from the initramfs, a small

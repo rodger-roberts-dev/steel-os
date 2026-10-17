@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 # Based on Bazzite (github.com/ublue-os/bazzite), Apache-2.0. Modified for Steel OS by Steel & Code (STEEL-35).
 #
-# Runs when the live desktop starts from the USB stick. In order:
+# Runs when the live session desktop starts. In order:
 #   1. Refuse to continue on an old BIOS (CSM/Legacy) start; Steel OS needs UEFI.
 #   2. Warn and stop if the PC has too little memory to install.
 #   3. Warn if another Linux boot loader is on the disk (dual boot with another
@@ -90,7 +90,7 @@ welcome_dialog() {
         yad --no-escape --on-top --buttons-layout=center --text-align=center \
             --title="Welcome to Steel OS" \
             --image=steel-os \
-            --text="<big><b>Welcome to Steel OS</b></big>\n\n<b>Nothing on this computer has been changed yet.</b>\nSteel OS is running from the USB stick.\n\nInstall it now, or look around first. The installer is also on the desktop." \
+            --text="<big><b>Welcome to Steel OS</b></big>\n\n<b>Nothing on this computer has been changed yet.</b>\nSteel OS is running in a live session.\n\nInstall it now, or look around first. The installer is also on the desktop." \
             --button="Install Steel OS:10" \
             --button="Try Steel OS first:0" \
             --button="Repair the startup menu:20"

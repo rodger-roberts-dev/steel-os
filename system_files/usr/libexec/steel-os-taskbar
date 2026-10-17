@@ -1,0 +1,27 @@
+#!/usr/bin/bash
+# Steel OS: switch the taskbar between always visible and auto-hide.
+#   steel-os-taskbar toggle     visible <-> auto-hide (Super+T)
+#   steel-os-taskbar autohide   auto-hide
+#   steel-os-taskbar show       always visible
+# Auto-hide slides the taskbar away until the mouse touches the bottom edge,
+# for a clean, keyboard-first desktop. The choice is saved with the desktop
+# and kept after restarting.
+
+set -euo pipefail
+
+mode="${1:-toggle}"
+case "$mode" in
+    toggle)   js='var v = (panels()[0].hiding == "none") ? "autohide" : "none";' ;;
+    autohide) js='var v = "autohide";' ;;
+    show)     js='var v = "none";' ;;
+    *) echo "usage: steel-os-taskbar [toggle|autohide|show]" >&2; exit 2 ;;
+esac
+js="$js for (var i = 0; i < panels().length; ++i) { panels()[i].hiding = v; }"
+
+QDBUS="$(command -v qdbus6 || command -v qdbus-qt6 || command -v qdbus || true)"
+if [[ -n "$QDBUS" ]]; then
+    "$QDBUS" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$js"
+else
+    gdbus call --session --dest org.kde.plasmashell --object-path /PlasmaShell \
+        --method org.kde.PlasmaShell.evaluateScript "$js" >/dev/null
+fi
