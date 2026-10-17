@@ -1,0 +1,30 @@
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
+/* Steel OS (STEEL-35): installer colours and logo match steel-os.org.
+   Anvil #14171C, panels #1C2026, Forge Orange #F2641E, Steel Blue #4A90D9. */
+#badge {
+    inline-size: 225px;
+    block-size: 80px;
+    background-image: url("logo.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.anaconda {
+    /* Brand palette: header strip and primary buttons */
+    --brand-default-light: #1C2026;
+    --brand-default: #F2641E;
+    --brand-default-dark: #14171C;
+
+    .logo {
+        background-image: url("logo.png");
+        filter: unset;
+    }
+
+    /* No "Enable root account" question; the user created here is the admin.
+     * Same rule as Bazzite until Anaconda WebUI has a proper option.
+     * https://bugzilla.redhat.com/show_bug.cgi?id=2464088
+     */
+    .pf-v6-c-form__section:has(#anaconda-screen-accounts-root-account-enable-root-account) {
+        display: none;
+    }
+}
