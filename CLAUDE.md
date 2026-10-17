@@ -55,7 +55,7 @@ build_files/build.sh      adds packages, settings and branding to the image
 build_files/portal/       the Steel OS Portal tabs and the script that builds them
 system_files/             files copied verbatim into the image at /
 packages/                 plain-text lists: rpm packages, default apps, Steel Apps
-branding/                 logos, icons and wallpapers (Steel & Code trademarks)
+branding/                 logos, icons and wallpapers (trademarks of Steel & Code and Blackbox Entertainment)
 installer/                the live installer ISO recipe (adapted from Bazzite)
 disk_config/              disk image settings
 .github/workflows/        build the image; build the ISO and upload it
