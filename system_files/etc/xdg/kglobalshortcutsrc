@@ -14,7 +14,8 @@ _k_friendly_name=KWin
 # Closing and quitting
 Window Close=Meta+W	Meta+Q	Alt+F4,Meta+W	Meta+Q	Alt+F4,Close Window
 # Window state
-Window Fullscreen=Meta+F,Meta+F,Make Window Fullscreen
+# Super+F11 (T, 2026-10-17); Super+F opens the file manager instead
+Window Fullscreen=Meta+F11,Meta+F11,Make Window Fullscreen
 Window Maximize=Meta+Alt+F,Meta+Alt+F,Maximize Window
 Window Minimize=Meta+M,Meta+M,Minimize Window
 Window Keep Above Others=Meta+O,Meta+O,Keep Window Above Others
@@ -104,9 +105,13 @@ _launch=Meta+Return	Alt+Return,Meta+Return	Alt+Return,Konsole
 [services][org.mozilla.firefox.desktop]
 _launch=Meta+Shift+Return	Meta+Shift+B,Meta+Shift+Return	Meta+Shift+B,Firefox
 
-# File manager: Dolphin on Meta+Shift+F
+# File manager: Dolphin on Meta+F (keyboard-first request) and Meta+Shift+F
 [services][org.kde.dolphin.desktop]
-_launch=Meta+Shift+F,Meta+Shift+F,Dolphin
+_launch=Meta+F	Meta+Shift+F,Meta+F	Meta+Shift+F,Dolphin
+
+# Taskbar: Meta+T switches between always visible and auto-hide
+[services][steel-os-taskbar-toggle.desktop]
+_launch=Meta+T,Meta+T,Show or auto-hide the taskbar
 
 # Editor: Kate on Meta+Shift+N
 [services][org.kde.kate.desktop]

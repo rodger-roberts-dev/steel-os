@@ -1,0 +1,19 @@
+[Desktop Entry]
+Name=Show or Auto-hide the Taskbar
+GenericName=Taskbar
+Comment=Switch the taskbar between always visible and auto-hide (Super+T)
+Exec=/usr/libexec/steel-os-taskbar toggle
+Icon=preferences-desktop
+Terminal=false
+Type=Application
+Categories=Settings;DesktopSettings;
+Keywords=taskbar;panel;hide;autohide;auto-hide;show;
+Actions=autohide;show;
+
+[Desktop Action autohide]
+Name=Auto-hide the taskbar
+Exec=/usr/libexec/steel-os-taskbar autohide
+
+[Desktop Action show]
+Name=Always show the taskbar
+Exec=/usr/libexec/steel-os-taskbar show
