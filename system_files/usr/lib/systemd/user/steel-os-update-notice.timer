@@ -1,0 +1,11 @@
+# Steel OS (STEEL-27): check for a waiting update at login and every hour.
+[Unit]
+Description=Steel OS update restart notice
+PartOf=graphical-session.target
+
+[Timer]
+OnStartupSec=3min
+OnUnitActiveSec=1h
+
+[Install]
+WantedBy=graphical-session.target

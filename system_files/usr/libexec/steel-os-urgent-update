@@ -1,0 +1,33 @@
+#!/usr/bin/bash
+# Steel OS (STEEL-23): same-day emergency updates.
+#
+# Normally the system updates on Tuesday. When a critical security fix can't
+# wait, Steel & Code publishes https://steel-os.org/releases/urgent.json:
+#   {"id": "2026-11-03-example", "message": "One sentence for users."}
+# Every few hours each PC checks that file. A new id makes it download the
+# update now (signed, like any update) and show "Important update: please
+# restart soon". Each id is acted on once. No file, no network: nothing happens.
+
+set -uo pipefail
+
+URL=https://steel-os.org/releases/urgent.json
+STATE=/var/lib/steel-os
+DONE="$STATE/urgent-done"
+MESSAGE="$STATE/urgent-message"
+
+json="$(curl -fsS --max-time 20 "$URL" 2>/dev/null)" || exit 0
+id="$(jq -r '.id // empty' <<< "$json" 2>/dev/null)"
+message="$(jq -r '.message // empty' <<< "$json" 2>/dev/null)"
+[[ "$id" =~ ^[A-Za-z0-9._-]{1,80}$ ]] || exit 0
+[[ -r "$DONE" && "$(cat "$DONE")" == "$id" ]] && exit 0
+
+echo "Steel OS: urgent update '$id' announced; downloading it now."
+if bootc upgrade; then
+    mkdir -p "$STATE"
+    printf '%s\n' "$id" > "$DONE"
+    printf '%s\n' "${message:0:400}" > "$MESSAGE"
+    chmod 0644 "$MESSAGE"
+else
+    echo "Steel OS: urgent update download failed; will try again." >&2
+    exit 1
+fi

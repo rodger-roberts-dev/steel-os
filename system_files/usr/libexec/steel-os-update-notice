@@ -1,0 +1,43 @@
+#!/usr/bin/bash
+# Steel OS (STEEL-27): after an update has been downloaded, say so in plain
+# English and offer "Restart now" or "Later".
+#
+# Runs at login and every hour (steel-os-update-notice.timer, user). It looks
+# for a staged update (downloaded, starts at the next restart). It asks at
+# most once a day for the same update, and never interrupts: it is a normal
+# notification, not a window that takes focus.
+
+set -uo pipefail
+
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/steel-os"
+STAMP="$STATE_DIR/update-notice"
+URGENT=/var/lib/steel-os/urgent-message
+
+staged="$(rpm-ostree status --json 2>/dev/null \
+    | jq -r '[.deployments[] | select(.staged == true) | .checksum][0] // empty')"
+[[ -n "$staged" ]] || exit 0
+
+now=$(date +%s)
+if [[ -r "$STAMP" ]]; then
+    read -r last_id last_time < "$STAMP" || true
+    if [[ "${last_id:-}" == "$staged" ]] && (( now - ${last_time:-0} < 86400 )); then
+        exit 0
+    fi
+fi
+mkdir -p "$STATE_DIR"
+printf '%s %s\n' "$staged" "$now" > "$STAMP"
+
+title="Restart to finish updating"
+body="Steel OS has downloaded an update. It takes effect the next time you restart. Your files and apps stay as they are."
+urgency=normal
+if [[ -s "$URGENT" ]]; then
+    title="Important update: please restart soon"
+    body="$(head -c 400 "$URGENT") Restart to finish installing it."
+    urgency=critical
+fi
+
+choice="$(notify-send --app-name="Steel OS" --icon=steel-os --urgency="$urgency" --wait \
+    --action=restart="Restart now" --action=later="Later" "$title" "$body" 2>/dev/null || true)"
+if [[ "$choice" == "restart" ]]; then
+    systemctl reboot
+fi

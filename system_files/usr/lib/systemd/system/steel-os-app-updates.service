@@ -1,0 +1,15 @@
+# Steel OS (STEEL-49): update apps (system-wide Flatpaks) every day, quietly.
+# The system itself still updates only on Tuesday (uupd.timer). Apps don't
+# need a restart, so their fixes, above all Firefox's, shouldn't wait a week.
+[Unit]
+Description=Steel OS daily app updates (Flatpak, system-wide)
+Wants=network-online.target
+After=network-online.target
+# Laptops: only on mains power.
+ConditionACPower=true
+
+[Service]
+Type=oneshot
+Nice=19
+IOSchedulingClass=idle
+ExecStart=/usr/bin/flatpak update --system --noninteractive --assumeyes

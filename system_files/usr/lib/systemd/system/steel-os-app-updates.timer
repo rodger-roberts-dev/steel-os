@@ -1,0 +1,13 @@
+# Steel OS (STEEL-49): daily app updates. A machine that was off catches up
+# shortly after it starts.
+[Unit]
+Description=Steel OS daily app updates
+
+[Timer]
+OnCalendar=daily
+RandomizedDelaySec=3h
+Persistent=true
+OnBootSec=20min
+
+[Install]
+WantedBy=timers.target

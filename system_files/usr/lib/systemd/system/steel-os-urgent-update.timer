@@ -1,0 +1,12 @@
+# Steel OS (STEEL-23): check for an urgent update every six hours.
+[Unit]
+Description=Steel OS urgent update check
+
+[Timer]
+OnBootSec=15min
+OnUnitActiveSec=6h
+RandomizedDelaySec=30min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

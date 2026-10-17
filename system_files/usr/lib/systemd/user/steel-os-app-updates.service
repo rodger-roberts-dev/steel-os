@@ -1,0 +1,9 @@
+# Steel OS (STEEL-49): update this user's own Flatpak apps every day, quietly.
+[Unit]
+Description=Steel OS daily app updates (this user's Flatpaks)
+ConditionACPower=true
+
+[Service]
+Type=oneshot
+Nice=19
+ExecStart=/usr/bin/flatpak update --user --noninteractive --assumeyes

@@ -189,3 +189,15 @@ jobs:
           # use old bundle format, so we can use newer cosign 3.X.X instead of 2.X.X
           cosign sign -y --new-bundle-format=false --use-signing-config=false --key env://COSIGN_PRIVATE_KEY ${IMAGE_REGISTRY}/${IMAGE_NAME}@${DIGEST}
 
+
+      # Steel OS (STEEL-47): PCs refuse any image not signed with this key, so
+      # check the signature just made with the public key they use. A failure
+      # here means installed PCs would refuse this update.
+      - name: Verify the signature
+        if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        env:
+          DIGEST: ${{ steps.push-image.outputs.digest }}
+        run: |
+          cosign verify --key cosign.pub --insecure-ignore-tlog=true \
+            ${IMAGE_REGISTRY}/${IMAGE_NAME}@${DIGEST} > /dev/null
+          echo "Signature verified with cosign.pub for ${IMAGE_NAME}@${DIGEST}"
