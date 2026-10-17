@@ -578,6 +578,14 @@ fi
 systemctl enable clamav-freshclam.service
 systemctl --global enable steel-shield-downloads.service steel-shield-usb.path steel-shield-weekly.timer
 
+# Behaviour watching (STEEL-60): startup changes, file scrambling, hidden
+# miners and newly runnable downloads, for every user; the extra threat list
+# from abuse.ch, daily; and the optional "block dangerous websites" switch.
+chmod 0755 /usr/libexec/steel-shield-guard /usr/libexec/steel-shield-dns /usr/libexec/steel-shield-extra
+systemctl --global enable steel-shield-guard.service
+systemctl enable steel-shield-extra.timer
+/usr/libexec/steel-shield-guard selftest
+
 # Self-test with the EICAR test file and a one-line definition, so the build
 # proves scanning, detection and quarantine work without downloading the
 # real definitions. Fails the build if anything is off.
