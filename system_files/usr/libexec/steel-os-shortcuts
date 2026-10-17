@@ -1,0 +1,48 @@
+#!/usr/bin/bash
+# Steel OS (STEEL-29): apply the Steel OS keyboard shortcuts to this user.
+#
+# Plasma does not read shortcut defaults from /etc/xdg, so new users get
+# them from /etc/skel/.config/kglobalshortcutsrc, and this script brings
+# existing users up to date once per shortcut-file version. It writes only
+# the keys Steel OS defines; anything else the user set is left alone.
+# Safe to run more than once.
+
+set -euo pipefail
+
+SRC=/usr/share/steel-os/kglobalshortcutsrc
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/steel-os"
+STAMP="$STATE_DIR/shortcuts.done"
+[[ -r "$SRC" ]] || exit 0
+
+VERSION="$(sha256sum "$SRC" | cut -d ' ' -f 1)"
+if [[ -f "$STAMP" && "$(cat "$STAMP")" == "$VERSION" ]]; then
+    exit 0
+fi
+
+KWRITE="$(command -v kwriteconfig6 || command -v kwriteconfig5 || true)"
+[[ -n "$KWRITE" ]] || exit 0
+
+groups=()
+while IFS= read -r line; do
+    [[ -z "$line" || "$line" == \#* ]] && continue
+    if [[ "$line" == \[* ]]; then
+        # "[services][org.kde.konsole.desktop]" -> ("services" "org.kde.konsole.desktop")
+        inner="${line#[}"
+        inner="${inner%]}"
+        IFS=$'\x1f' read -r -a groups <<< "${inner//][/$'\x1f'}"
+        continue
+    fi
+    key="${line%%=*}"
+    value="${line#*=}"
+    args=()
+    for g in "${groups[@]}"; do
+        args+=(--group "$g")
+    done
+    "$KWRITE" --file kglobalshortcutsrc "${args[@]}" --key "$key" -- "$value"
+done < "$SRC"
+
+# Make the running session pick the new shortcuts up.
+systemctl --user restart plasma-kglobalaccel.service 2>/dev/null || true
+
+mkdir -p "$STATE_DIR"
+printf '%s\n' "$VERSION" > "$STAMP"
