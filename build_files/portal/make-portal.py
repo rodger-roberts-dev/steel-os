@@ -82,31 +82,68 @@ welcome = screen("Welcome", "Get started with Steel OS", [
            script="xdg-open https://steel-os.org/report"),
 ])
 
+CATEGORIES = ["Everyday", "Work", "Creative", "Games and Streaming", "Developer"]
+
+
+def read_steel_apps(path):
+    """Return {category: [(id, name, description), ...]} in file order."""
+    found = {c: [] for c in CATEGORIES}
+    with open(path, encoding="utf-8") as f:
+        for raw in f:
+            line = raw.strip()
+            if not line or line.startswith("#"):
+                continue
+            parts = [p.strip() for p in line.split("|")]
+            if len(parts) != 4:
+                sys.exit(f"steel-apps.txt: expected 'id | name | description | category': {line}")
+            app_id, name, description, category = parts
+            if category not in found:
+                sys.exit(f"steel-apps.txt: unknown category '{category}' for {app_id}")
+            found[category].append((app_id, name, description))
+    return found
+
+
+TWITCH_DESKTOP = "$HOME/.local/share/applications/steel-os-twitch.desktop"
+TWITCH_INSTALL = (
+    'mkdir -p "$HOME/.local/share/applications" && printf "%s\n" '
+    '"[Desktop Entry]" "Type=Application" "Name=Twitch" '
+    '"Comment=Watch live streams on twitch.tv" '
+    '"Exec=xdg-open https://www.twitch.tv" "Icon=applications-multimedia" '
+    '"Categories=AudioVideo;Video;" > "' + TWITCH_DESKTOP + '" && '
+    'echo "Twitch is now in your start menu."' + PAUSE
+)
+
+# Extra one-click entries that are not Flatpaks, added to a category.
+EXTRAS = {
+    "Games and Streaming": [action(
+        "twitch", "Twitch",
+        "Games and Streaming · Watch live streams. Twitch has no Linux app, so this adds a Twitch launcher that opens it in your browser.",
+        status_script=f'test -f "{TWITCH_DESKTOP}" && echo install || echo uninstall',
+        options=[
+            ("install", "Add Twitch to the start menu", TWITCH_INSTALL),
+            ("uninstall", "Remove Twitch from the start menu", f'rm -f "{TWITCH_DESKTOP}"' + PAUSE),
+        ],
+    )],
+    "Developer": [action(
+        "antigravity", "Antigravity",
+        "Developer · Google's AI coding app and IDE. One click, installed with Brew.",
+        status_script="test -d /home/linuxbrew/.linuxbrew/Caskroom/antigravity-linux && echo install || echo uninstall",
+        options=[
+            ("install", "Install Antigravity",
+             BREW + "brew trust ublue-os/tap && brew tap ublue-os/tap && brew install --cask antigravity-linux" + PAUSE),
+            ("uninstall", "Uninstall Antigravity",
+             BREW + "brew uninstall --cask antigravity-linux" + PAUSE),
+        ],
+    )],
+}
+
 apps = []
-with open(APPS_FILE, encoding="utf-8") as f:
-    for raw in f:
-        line = raw.strip()
-        if not line or line.startswith("#"):
-            continue
-        parts = [p.strip() for p in line.split("|")]
-        if len(parts) != 3:
-            sys.exit(f"steel-apps.txt: expected 'id | name | description': {line}")
-        apps.append(flatpak_action(*parts))
+for category, entries in read_steel_apps(APPS_FILE).items():
+    for app_id, name, description in entries:
+        apps.append(flatpak_action(app_id, name, f"{category} · {description}"))
+    apps.extend(EXTRAS.get(category, []))
 
-# Apps that are not on Flathub: installed the way Bazzite Portal does it.
-apps.append(action(
-    "antigravity", "Antigravity",
-    "Google's AI coding app and IDE. One click, installed with Brew.",
-    status_script="test -d /home/linuxbrew/.linuxbrew/Caskroom/antigravity-linux && echo install || echo uninstall",
-    options=[
-        ("install", "Install Antigravity",
-         BREW + "brew trust ublue-os/tap && brew tap ublue-os/tap && brew install --cask antigravity-linux" + PAUSE),
-        ("uninstall", "Uninstall Antigravity",
-         BREW + "brew uninstall --cask antigravity-linux" + PAUSE),
-    ],
-))
-
-steel_apps = screen("Steel Apps", "Popular apps, one click each", apps)
+steel_apps = screen("Steel Apps", "Popular apps by category, one click each", apps)
 
 with open(BASE_FILE, encoding="utf-8") as f:
     base = "".join(l for l in f if not l.startswith("#"))

@@ -13,6 +13,21 @@ set -euo pipefail
 # copy of its autostart entry; remove it (STEEL-31). Harmless if absent.
 rm -f "$HOME/.config/autostart/bazzite-portal.desktop"
 
+# Pin the Steel OS Portal on the taskbar, once, for people whose desktop
+# existed before the portal arrived (STEEL-40). This runs before Plasma starts,
+# so Plasma reads the change at login. It only adds the pin, next to the
+# terminal, and never removes anything. New users get the pin from the
+# default layout.
+APPLETS="$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc"
+PIN_STAMP="${XDG_STATE_HOME:-$HOME/.local/state}/steel-os/portal-pin.done"
+if [[ -f "$APPLETS" && ! -f "$PIN_STAMP" ]]; then
+    if ! grep -q "steel-os-portal\.desktop" "$APPLETS"; then
+        sed -i -E '/^launchers=./{ s#(applications:org\.kde\.konsole\.desktop)#\1,applications:steel-os-portal.desktop#; t; s#$#,applications:steel-os-portal.desktop# }' "$APPLETS"
+    fi
+    mkdir -p "$(dirname "$PIN_STAMP")"
+    : > "$PIN_STAMP"
+fi
+
 SRC=/usr/share/steel-os/kglobalshortcutsrc
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/steel-os"
 STAMP="$STATE_DIR/shortcuts.done"

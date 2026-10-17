@@ -37,8 +37,31 @@ fi
 # Make sure Flathub exists even if Bazzite's manager has not run yet.
 flatpak remote-add --if-not-exists --system flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
-echo "Steel OS: installing ${#WANTED[@]} default apps from Flathub."
-flatpak install --system --noninteractive --or-update flathub "${WANTED[@]}"
+# Firefox first: it is the default browser, and links open nowhere without
+# it. Then each app on its own, so one failed download never blocks the rest.
+ORDERED=()
+for app in "${WANTED[@]}"; do
+    [[ "$app" == org.mozilla.firefox ]] && ORDERED=("$app" "${ORDERED[@]}") || ORDERED+=("$app")
+done
+
+echo "Steel OS: installing ${#ORDERED[@]} default apps from Flathub."
+FAILED=()
+for app in "${ORDERED[@]}"; do
+    if flatpak info --system "$app" >/dev/null 2>&1; then
+        continue
+    fi
+    if ! flatpak install --system --noninteractive flathub "$app"; then
+        echo "Steel OS: could not install $app this time; will retry." >&2
+        FAILED+=("$app")
+    fi
+done
+
+# Leave the stamp unwritten if anything failed, so the service runs again
+# (it retries every two minutes, and at every boot).
+if [[ ${#FAILED[@]} -gt 0 ]]; then
+    echo "Steel OS: still to install: ${FAILED[*]}" >&2
+    exit 1
+fi
 
 mkdir -p "$STAMP_DIR"
 printf '%s\n' "$FINGERPRINT" > "$STAMP"
