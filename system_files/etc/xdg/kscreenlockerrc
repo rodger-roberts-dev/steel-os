@@ -1,0 +1,9 @@
+# Steel OS (STEEL-31): the lock screen shows the same waves wallpaper as the
+# desktop and the login screen. Users can change it in System Settings >
+# Screen Locking > Appearance.
+[Greeter]
+WallpaperPlugin=org.kde.image
+
+[Greeter][Wallpaper][org.kde.image][General]
+Image=file:///usr/share/wallpapers/steel-os-waves/
+PreviewImage=file:///usr/share/wallpapers/steel-os-waves/
