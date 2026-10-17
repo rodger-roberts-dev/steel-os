@@ -178,7 +178,7 @@ done < <(grep -Ev '^\s*(#|$)' /ctx/packages/hide.txt || true)
 
 ### 11. Keyboard shortcuts actually applied (STEEL-29)
 # Plasma 6 does not read shortcut defaults from /etc/xdg/kglobalshortcutsrc
-# (found in T's VM test, 2026-10-17: Super+Enter did nothing). The same file
+# (found in VM testing, 2026-10-17: Super+Enter did nothing). The same file
 # is now (a) copied into /etc/skel so every new user starts with it, and
 # (b) applied once to existing users at login by steel-os-shortcuts.
 # Plasma 6 stores app-launch shortcuts as the plain key list, so the

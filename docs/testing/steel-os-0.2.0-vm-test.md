@@ -85,7 +85,7 @@ After restart, `rpm-ostree status` showed `LayeredPackages: libvirt qemu-kvm`, a
 The first virt-manager launch failed because system QEMU could not read the ISO under Downloads:
 
 ```text
-Could not open '/var/home/cybon/Downloads/artifact/steel-os-0.2.0-preview-x86_64.iso': Permission denied
+Could not open '/var/home/<user>/Downloads/artifact/steel-os-0.2.0-preview-x86_64.iso': Permission denied
 ```
 
 Copied ISO into system libvirt image storage and set permissions/SELinux label:
@@ -103,7 +103,7 @@ Refreshed the virt-manager `default` storage pool, selected the ISO, and configu
 Screenshots showed:
 
 1. Steel OS logo during graphical boot.
-2. Steel OS-themed graphical login screen, displaying user `cybon`.
+2. Steel OS-themed graphical login screen, displaying the test user.
 3. KDE Plasma desktop with Steel OS blue/orange wallpaper.
 4. Branded Steel OS application launcher icon and visible panel.
 

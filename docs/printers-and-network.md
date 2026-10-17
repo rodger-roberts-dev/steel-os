@@ -8,14 +8,14 @@ Date: 2026-10-15
 > missing scanner and printer drivers, Windows PCs not appearing, and the need
 > for a sharing wizard all carry over. On Bazzite the front doors are Plasma's
 > System Settings Printers page and Dolphin. See `docs/roadmap.md` phase 4.
-Owner: rodger-roberts-dev (code reading by Claude Code; the hands-on VM test is still open)
+Owner: S&C (code reading by Claude Code; the hands-on VM test is still open)
 
 **How this was researched.** By reading Omarchy's source at commit `51bfd1d`
 (version 4.0.0.alpha), its package lists, its firewall setup, its user manual,
 and its migration history, and by checking which extra packages exist in the
 Arch repositories. **Nothing has been tried on a real machine yet.** The
 acceptance criteria for this ticket require that, so section 6 is the test plan
-for T on the test machine or for rodger-roberts-dev.
+for BBE on the test machine or for S&C.
 
 ---
 

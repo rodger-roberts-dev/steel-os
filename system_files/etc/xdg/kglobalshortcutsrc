@@ -1,5 +1,5 @@
 # Steel OS default keyboard shortcuts for KDE Plasma (STEEL-29).
-# Translated from Omarchy's default Hyprland bindings plus rodger-roberts-dev's
+# Translated from Omarchy's default Hyprland bindings plus S&C's
 # own override (ALT+Return opens Konsole). Meta is the Super / Windows key.
 #
 # Format: action=shortcut,default shortcut,friendly name
@@ -80,7 +80,7 @@ _k_friendly_name=plasmashell
 clipboard_action=Meta+Ctrl+V,Meta+Ctrl+V,Show Clipboard Items at Mouse Position
 # Do not disturb (Omarchy "silence notifications" on Meta+Ctrl+comma)
 toggle do not disturb=Meta+Ctrl+Comma,Meta+Ctrl+Comma,Toggle do not disturb
-# Super+1..0 switch virtual desktops (rodger-roberts-dev), so the taskbar
+# Super+1..0 switch virtual desktops (S&C), so the taskbar
 # entry shortcuts that also use them are switched off.
 activate task manager entry 1=none,Meta+1,Activate Task Manager Entry 1
 activate task manager entry 2=none,Meta+2,Activate Task Manager Entry 2
@@ -97,7 +97,7 @@ activate task manager entry 10=none,Meta+0,Activate Task Manager Entry 10
 [services][org.kde.krunner.desktop]
 _launch=Meta+Space	Alt+Space	Alt+F2,Meta+Space	Alt+Space	Alt+F2,KRunner
 
-# Terminal: Konsole on Meta+Return and ALT+Return (rodger-roberts-dev, confirmed working 2026-10-16)
+# Terminal: Konsole on Meta+Return and ALT+Return (S&C, confirmed working 2026-10-16)
 [services][org.kde.konsole.desktop]
 _launch=Meta+Return	Alt+Return,Meta+Return	Alt+Return,Konsole
 
