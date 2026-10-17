@@ -1,0 +1,10 @@
+#!/usr/bin/bash
+# Steel OS (STEEL-48): machines installed from an early image were named
+# "bazzite" by default. Rename only that exact default name to "steel-os";
+# a name the owner chose is never touched. Safe to run on every boot.
+set -euo pipefail
+current="$(hostnamectl hostname 2>/dev/null || hostname)"
+if [[ "$current" == "bazzite" ]]; then
+    hostnamectl set-hostname steel-os
+    echo "Steel OS: renamed this computer from bazzite to steel-os."
+fi

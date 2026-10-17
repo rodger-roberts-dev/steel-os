@@ -201,6 +201,42 @@ install -D -m 0644 "$SHORTCUTS" /etc/skel/.config/kglobalshortcutsrc
 chmod 0755 /usr/libexec/steel-os-shortcuts
 grep -A1 'org.kde.konsole.desktop' "$SHORTCUTS"
 
+### 12. No Fedora logo presented as ours (STEEL-51)
+# Fedora's trademark guidelines: a system built on Fedora must not use the
+# Fedora logo as its own. Bazzite keeps Fedora's logo files, which Plasma and
+# other tools show as "the system logo". Replace those files with the
+# Steel OS icon. Saying "built on Fedora" stays, in About and the docs.
+for f in $(find /usr/share/icons/hicolor -path '*/apps/*' \( -name 'fedora-logo-icon.*' -o -name 'start-here*.*' -o -name 'distributor-logo*.*' \) 2>/dev/null); do
+    case "$f" in
+        *.svg) install -m 0644 /ctx/branding/icon/steel-os-icon-dark.svg "$f" ;;
+        *.png)
+            size="$(basename "$(dirname "$(dirname "$f")")")"   # e.g. 48x48
+            px="${size%%x*}"
+            src="/ctx/branding/icon/png/steel-os-icon-dark-${px}.png"
+            [[ -f "$src" ]] || src=/ctx/branding/icon/png/steel-os-icon-dark-256.png
+            install -m 0644 "$src" "$f"
+            ;;
+    esac
+done
+for f in /usr/share/pixmaps/fedora-logo*.png /usr/share/pixmaps/system-logo*.png /usr/share/pixmaps/fedora-gdm-logo.png; do
+    [[ -f "$f" ]] && install -m 0644 /ctx/branding/icon/png/steel-os-icon-dark-256.png "$f"
+done
+for f in /usr/share/pixmaps/fedora-logo*.svg /usr/share/pixmaps/system-logo*.svg; do
+    [[ -f "$f" ]] && install -m 0644 /ctx/branding/icon/steel-os-icon-dark.svg "$f"
+done
+gtk-update-icon-cache -f /usr/share/icons/hicolor 2>/dev/null || true
+
+### 13. No Bazzite left in the terminal or for older users (STEEL-48, STEEL-31)
+# Terminal welcome message: Steel OS text and tips instead of Bazzite's
+# (template in system_files/usr/share/ublue-os/motd/). Bazzite's own tips
+# and Swedish template link to Bazzite's docs and Discord; remove them.
+rm -f /usr/share/ublue-os/motd/tips/10-ublue.md /usr/share/ublue-os/motd/tips/20-bazzite.md
+rm -rf /usr/share/ublue-os/motd/tips/sv
+cp -f /usr/share/ublue-os/motd/template.md /usr/share/ublue-os/motd/template.sv.md
+# Computers named "bazzite" by an early image get renamed at boot.
+chmod 0755 /usr/libexec/steel-os-hostname
+systemctl enable steel-os-hostname.service
+
 ### 9. Rebuild the boot image so the boot splash shows Steel OS (STEEL-31)
 # The logo shown while the machine starts is read from the initramfs, a small
 # boot image Bazzite generated before our files were added. Our watermark in

@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="branding/logo/png/steel-os-logo-color-on-dark-2000w.png" alt="Steel OS" width="480">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="branding/logo/png/steel-os-logo-color-on-dark-2000w.png">
+    <img src="branding/logo/png/steel-os-logo-color-on-light-2000w.png" alt="Steel OS" width="480">
+  </picture>
 </p>
 
 <p align="center"><strong>Built solid. Plays everything.</strong></p>
@@ -27,7 +30,7 @@ Website and downloads: **[steel-os.org](https://steel-os.org)**.
 | **Plays games** | Steam, Proton, Lutris and controller support built in. |
 | **Apps that just install** | LibreOffice, Firefox, OBS Studio, Kdenlive, Obsidian, Moonlight and Zed come pre-installed. Chrome, Slack, Zoom, Discord and more are one click away. |
 | **Keyboard-first if you want it** | Super+Enter opens the terminal (Konsole), Super+Shift+Enter opens Firefox, Alt+C and Alt+V copy and paste. Full list in [docs/keyboard-shortcuts.md](docs/keyboard-shortcuts.md). |
-| **Built-in security** | Read-only system files, sandboxed apps, a firewall, Secure Boot support, and updates signed by us. |
+| **Built-in security** | Read-only system files, sandboxed apps, a firewall and Secure Boot support. Every Steel OS update is signed by us; making installed machines refuse unsigned updates is in progress. |
 
 ## How it is built
 
@@ -78,8 +81,25 @@ contributors and for the AI assistant used on this project are in
 
 Built on [Bazzite](https://github.com/ublue-os/bazzite) and the
 [Universal Blue image template](https://github.com/ublue-os/image-template),
-both Apache-2.0, on top of [Fedora](https://fedoraproject.org).
+both Apache-2.0, on top of [Fedora](https://fedoraproject.org). The installer
+recipe in `installer/` is adapted from Bazzite's. Steel OS is not affiliated
+with or endorsed by Fedora or Universal Blue.
 
 The Steel OS build recipe is licensed under the [Apache License 2.0](LICENSE).
 The Steel OS name, logo and artwork belong to Steel & Code and are not covered
 by that licence; see [NOTICE](NOTICE) and [branding/README.md](branding/README.md).
+
+## Source code
+
+Steel OS contains free and open-source software under its own licences,
+including the GNU GPL. The source is available here:
+
+| Part | Source |
+|---|---|
+| Steel OS recipe | this repository |
+| Bazzite | [github.com/ublue-os/bazzite](https://github.com/ublue-os/bazzite) |
+| Fedora packages | [src.fedoraproject.org](https://src.fedoraproject.org) |
+
+Proprietary apps such as Obsidian are never copied onto the Steel OS
+installer; they are downloaded from Flathub after installation under their
+own licences.

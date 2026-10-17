@@ -1,4 +1,5 @@
 [Desktop Entry]
+# Based on Bazzite (github.com/ublue-os/bazzite), Apache-2.0. Modified for Steel OS by Steel & Code (STEEL-35).
 Type=Application
 Icon=tools-wizard-symbolic
 Name=Steel OS Bootloader Restoring Tool BETA

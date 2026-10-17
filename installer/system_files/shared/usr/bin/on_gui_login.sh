@@ -1,4 +1,5 @@
 #!/usr/bin/bash
+# Based on Bazzite (github.com/ublue-os/bazzite), Apache-2.0. Modified for Steel OS by Steel & Code (STEEL-35).
 conky -c /usr/share/conky/conky.conf &
 is_swedish_locale() {
     [[ "${LC_MESSAGES:-${LANG:-C}}" == sv* ]]
