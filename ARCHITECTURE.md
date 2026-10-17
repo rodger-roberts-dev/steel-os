@@ -153,7 +153,7 @@ Jira story  →  branch  →  pull request (GitHub builds the image as the test)
                                 │
                      rodger-roberts-dev reviews, merges to master
                                 │
-            GitHub builds again, pushes ghcr.io/rodger-roberts-dev/steel-os:latest, signs it
+            GitHub builds again, pushes ghcr.io/steel-and-code/steel-os:latest, signs it
                                 │
         every Steel OS machine fetches it on the next update run and applies it on restart
                                 │
@@ -232,10 +232,7 @@ from the Steel Apps list. Packaging it is rodger-roberts-dev's story, since Forg
 
 ### 5.3 Where does the repo live? Decided: here, for now
 
-The repo stays at `github.com/rodger-roberts-dev/steel-os`. Work happens on
-branches there. T is an admin of the `blackbox-entertainment` GitHub
-organisation, and because no fork was made, the repo can be transferred there
-later with no cleanup. Only rodger-roberts-dev can do the transfer.
+The repo lives in the Steel & Code GitHub organization, `github.com/steel-and-code/steel-os` (moved from a personal account on 2026-10-17), so the image and links carry the organization name.
 
 ### 5.4 What are the real package names? Confirmed
 

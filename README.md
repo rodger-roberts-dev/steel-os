@@ -41,7 +41,7 @@ desktop by [Universal Blue](https://universal-blue.org):
 1. `Containerfile` starts from `ghcr.io/ublue-os/bazzite:stable`.
 2. `build_files/build.sh` adds our settings, packages, branding and signing key.
 3. GitHub Actions builds the image every day and publishes it, signed, to
-   `ghcr.io/rodger-roberts-dev/steel-os:latest`. Installed machines update from there.
+   `ghcr.io/steel-and-code/steel-os:latest`. Installed machines update from there.
 4. The installer ISO is built from the same image on demand, the same way
    Bazzite builds its own (live desktop plus Fedora's web installer), in Steel OS colours.
 
@@ -67,7 +67,7 @@ The 0.2.0 Preview is for testers, in a virtual machine or on a spare PC.
 Download it from [steel-os.org](https://steel-os.org) when the preview link is
 live, or build the ISO yourself from the Actions tab ("Build disk images").
 
-Found a problem? [Open an issue](https://github.com/rodger-roberts-dev/steel-os/issues)
+Found a problem? [Open an issue](https://github.com/steel-and-code/steel-os/issues)
 with what you did, what you expected and what happened.
 
 ## Contributing

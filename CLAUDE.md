@@ -20,7 +20,7 @@ project, the team, and the rules Claude must follow when working in this repo.
   optional one-click install on Steel OS (STEEL-25).
 - Product director: **T** (GitHub: `blackboxentertainment01-sys`). Not a coder —
   writes Jira stories, tests builds, and reviews behavior, not code.
-- Repo: `github.com/rodger-roberts-dev/steel-os` (private). Default branch: **`master`**.
+- Repo: `github.com/steel-and-code/steel-os` (private). Default branch: **`master`**.
 - Jira site: `blackboxentertainment.atlassian.net`, project key **STEEL**.
   Epics STEEL-8 to STEEL-15 group the stories. rodger-roberts-dev has no Jira
   account yet, so his tickets carry "Owner:" in the text.
