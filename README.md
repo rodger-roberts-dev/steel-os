@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="branding/logo/png/steel-os-logo-color-on-dark-2000w.png" alt="Steel OS" width="480">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="branding/logo/png/steel-os-logo-color-on-dark-2000w.png">
+    <img src="branding/logo/png/steel-os-logo-color-on-light-2000w.png" alt="Steel OS" width="480">
+  </picture>
 </p>
 
 <p align="center"><strong>Built solid. Plays everything.</strong></p>
