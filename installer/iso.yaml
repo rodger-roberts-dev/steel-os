@@ -1,0 +1,10 @@
+label: "Steel-OS-Live"
+grub2:
+  timeout: 3
+  entries:
+    - name: "Install Steel OS"
+      linux: "/images/pxeboot/vmlinuz quiet rhgb root=live:CDLABEL=Steel-OS-Live enforcing=0 rd.live.image"
+      initrd: "/images/pxeboot/initrd.img"
+    - name: "Install Steel OS (Basic Graphics Mode)"
+      linux: "/images/pxeboot/vmlinuz quiet rhgb root=live:CDLABEL=Steel-OS-Live enforcing=0 rd.live.image nomodeset"
+      initrd: "/images/pxeboot/initrd.img"
