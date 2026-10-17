@@ -1,0 +1,41 @@
+#!/usr/bin/bash
+# Steel OS (STEEL-45): install or update the Star Citizen LUG Helper, the
+# community tool (github.com/starcitizen-lug/lug-helper) that installs Star
+# Citizen, keeps its Wine runner and DXVK current, and fixes common problems.
+# Installs into ~/.local/share/lug-helper and adds it to the start menu.
+set -euo pipefail
+
+DEST="$HOME/.local/share/lug-helper"
+APPS="$HOME/.local/share/applications"
+API=https://api.github.com/repos/starcitizen-lug/lug-helper/releases/latest
+
+echo "Finding the newest LUG Helper..."
+json="$(curl -fsSL "$API")"
+version="$(jq -r .tag_name <<< "$json")"
+url="$(jq -r .tarball_url <<< "$json")"
+[[ -n "$url" && "$url" != null ]] || { echo "Could not find a LUG Helper release." >&2; exit 1; }
+
+tmp="$(mktemp -d)"
+trap 'rm -rf "$tmp"' EXIT
+curl -fsSL "$url" -o "$tmp/lug.tar.gz"
+mkdir -p "$tmp/x"
+tar -xzf "$tmp/lug.tar.gz" -C "$tmp/x" --strip-components=1
+[[ -f "$tmp/x/lug-helper.sh" ]] || { echo "Unexpected download; nothing changed." >&2; exit 1; }
+
+rm -rf "$DEST"
+mkdir -p "$(dirname "$DEST")"
+mv "$tmp/x" "$DEST"
+chmod +x "$DEST/lug-helper.sh"
+
+mkdir -p "$APPS"
+cat > "$APPS/steel-os-lug-helper.desktop" <<DESKTOP
+[Desktop Entry]
+Type=Application
+Name=Star Citizen LUG Helper
+GenericName=Install and maintain Star Citizen
+Comment=Install Star Citizen, keep it working after patches, fix common problems
+Exec=$DEST/lug-helper.sh
+Icon=applications-games
+Categories=Game;
+DESKTOP
+echo "LUG Helper $version is installed. Open \"Star Citizen LUG Helper\" from the start menu."
