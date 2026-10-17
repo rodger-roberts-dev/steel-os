@@ -176,6 +176,31 @@ while IFS= read -r launcher; do
         || sed -i '/^\[Desktop Entry\]/a NoDisplay=true' "$f"
 done < <(grep -Ev '^\s*(#|$)' /ctx/packages/hide.txt || true)
 
+### 11. Keyboard shortcuts actually applied (STEEL-29)
+# Plasma 6 does not read shortcut defaults from /etc/xdg/kglobalshortcutsrc
+# (found in T's VM test, 2026-10-17: Super+Enter did nothing). The same file
+# is now (a) copied into /etc/skel so every new user starts with it, and
+# (b) applied once to existing users at login by steel-os-shortcuts.
+# Plasma 6 stores app-launch shortcuts as the plain key list, so the
+# "[services]" entries are rewritten from the old "active,default,name" form.
+SHORTCUTS=/usr/share/steel-os/kglobalshortcutsrc
+install -D -m 0644 /etc/xdg/kglobalshortcutsrc "$SHORTCUTS"
+awk '
+    /^\[services\]/ { svc = 1; print; next }
+    /^\[/           { svc = 0; print; next }
+    svc && /^[^#=]+=/ {
+        key = substr($0, 1, index($0, "=") - 1)
+        val = substr($0, index($0, "=") + 1)
+        n = split(val, parts, ",")
+        print key "=" parts[1]
+        next
+    }
+    { print }
+' "$SHORTCUTS" > "$SHORTCUTS.new" && mv "$SHORTCUTS.new" "$SHORTCUTS"
+install -D -m 0644 "$SHORTCUTS" /etc/skel/.config/kglobalshortcutsrc
+chmod 0755 /usr/libexec/steel-os-shortcuts
+grep -A1 'org.kde.konsole.desktop' "$SHORTCUTS"
+
 ### 9. Rebuild the boot image so the boot splash shows Steel OS (STEEL-31)
 # The logo shown while the machine starts is read from the initramfs, a small
 # boot image Bazzite generated before our files were added. Our watermark in
