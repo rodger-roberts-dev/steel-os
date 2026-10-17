@@ -236,6 +236,19 @@ cp -f /usr/share/ublue-os/motd/template.md /usr/share/ublue-os/motd/template.sv.
 # Computers named "bazzite" by an early image get renamed at boot.
 chmod 0755 /usr/libexec/steel-os-hostname
 systemctl enable steel-os-hostname.service
+# Bazzite's own wallpapers (its gaming room with "b" logos, convergence,
+# giants, VGUI2, ublue, bazzite-*) show up as fallbacks on the lock screen and
+# in the wallpaper chooser. Point every one of them at the Steel OS waves
+# image and drop Bazzite's wallpaper package from the chooser.
+WAVES=/usr/share/wallpapers/steel-os-waves/contents/images/3840x2160.png
+for f in /usr/share/wallpapers/convergence.* /usr/share/wallpapers/giants.* \
+         /usr/share/wallpapers/VGUI2.* /usr/share/wallpapers/ublue.* \
+         /usr/share/wallpapers/bazzite-*.* /usr/share/backgrounds/convergence* \
+         /usr/share/backgrounds/bazzite* /usr/share/backgrounds/giants*; do
+    [[ -e "$f" ]] || continue
+    if [[ -d "$f" ]]; then rm -rf "$f"; else ln -sf "$WAVES" "$f"; fi
+done
+rm -rf /usr/share/wallpapers/bazzite
 
 ### 9. Rebuild the boot image so the boot splash shows Steel OS (STEEL-31)
 # The logo shown while the machine starts is read from the initramfs, a small
