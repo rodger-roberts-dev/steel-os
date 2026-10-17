@@ -485,6 +485,40 @@ if command -v firewall-offline-cmd >/dev/null 2>&1; then
 fi
 rpm -q hplip gutenprint-cups printer-driver-brlaser ipp-usb sane-airscan skanpage samba-usershares kdenetwork-filesharing wsdd || true
 
+### 20. Gaming devices and game fixes (STEEL-32, STEEL-45, STEEL-46)
+# Drivers for the Xbox wireless adapter, Razer devices and racing wheels come
+# with Bazzite. Steel OS adds the tools (packages/image.txt, Steel Apps), the
+# flight-stick access rules (system_files/usr/lib/udev/rules.d), the Portal's
+# Gaming tab, and one-click repairs for Star Citizen and Battle.net.
+# Star Citizen's memory setting (vm.max_map_count) is already set higher than
+# it needs by Bazzite (70-gaming.conf), so nothing is added for it.
+chmod 0755 /usr/libexec/steel-os-lug-helper /usr/libexec/steel-os-repair-game
+
+# Input Remapper (macros for keyboards, mice, keypads and controllers): Bazzite
+# installs it but hides it and leaves it off. Steel OS shows it and turns it on,
+# so saved macros load at every login.
+for f in /usr/share/applications/input-remapper-gtk.desktop /etc/xdg/autostart/input-remapper-autoload.desktop; do
+    [[ -f "$f" ]] || continue
+    sed -i '/^NoDisplay=true$/d; /^Hidden=true$/d' "$f"
+done
+if [[ -f /usr/share/applications/input-remapper-gtk.desktop ]]; then
+    sed -i 's/^GenericName=.*$//' /usr/share/applications/input-remapper-gtk.desktop
+    sed -i '/^\[Desktop Entry\]/a GenericName=Keyboard, mouse and controller macros' /usr/share/applications/input-remapper-gtk.desktop
+fi
+systemctl enable input-remapper.service 2>/dev/null || echo "Steel OS: input-remapper.service not found"
+
+# Plain-English names in the start menu.
+for pair in "jstest-gtk.desktop|Controller and flight stick tester" \
+            "io.github.antimicrox.antimicrox.desktop|Use a controller as keyboard and mouse" \
+            "solaar.desktop|Logitech wireless devices"; do
+    f="/usr/share/applications/${pair%%|*}"
+    [[ -f "$f" ]] || continue
+    sed -i '/^GenericName=/d' "$f"
+    sed -i "/^\[Desktop Entry\]/a GenericName=${pair#*|}" "$f"
+done
+rpm -q input-remapper solaar libratbag-ratbagd antimicrox jstest-gtk steam-devices zenity || true
+ls /usr/share/applications | grep -i -E "jstest|antimicro|solaar|input-remapper" || true
+
 ### 9. Rebuild the boot image so the boot splash shows Steel OS (STEEL-31)
 # The logo shown while the machine starts is read from the initramfs, a small
 # boot image Bazzite generated before our files were added. Our watermark in

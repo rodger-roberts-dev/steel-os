@@ -1,0 +1,44 @@
+#!/usr/bin/bash
+# Steel OS (STEEL-45, STEEL-46): one-click repairs for games that stop working
+# after a patch. Only caches are removed; games, accounts and settings stay.
+#
+#   steel-os-repair-game star-citizen   shader and DXVK caches
+#   steel-os-repair-game battlenet      Battle.net agent and caches, WoW cache
+set -uo pipefail
+
+ask() { kdialog --title "Repair" --icon applications-games --yes-label "Repair" --no-label "Cancel" --yesno "$1"; }
+say() { kdialog --title "Repair" --icon applications-games --msgbox "$1"; }
+
+case "${1:-}" in
+star-citizen)
+    prefix="${SC_PREFIX:-$HOME/Games/star-citizen}"
+    if [[ ! -d "$prefix/drive_c" ]]; then
+        say "Star Citizen wasn't found in $prefix.<br>Install it with the Star Citizen LUG Helper first."
+        exit 0
+    fi
+    ask "<h3>Repair Star Citizen</h3><p>This clears Star Citizen's shader caches and the DXVK cache, the usual fix for crashes and stutter after a patch. The game, your account and your settings are kept. The first launch afterwards takes a little longer.</p><p>Close Star Citizen and the RSI Launcher first.</p>" || exit 0
+    pkill -f 'RSI Launcher' 2>/dev/null || true
+    removed=0
+    while IFS= read -r -d '' d; do rm -rf "$d"; removed=$((removed + 1)); done < <(
+        find "$prefix/drive_c/users" -maxdepth 6 -type d \( -path '*/AppData/Local/Star Citizen/*/shaders' -o -path '*/AppData/Local/star citizen/*/shaders' \) -print0 2>/dev/null)
+    find "$prefix" -maxdepth 6 \( -name '*.dxvk-cache' -o -name 'dxvk_state_cache' \) -exec rm -rf {} + 2>/dev/null
+    say "<h3>Done</h3><p>Cleared $removed shader cache folder(s) and the DXVK cache. Start Star Citizen again.</p><p>Still not working? Open the Star Citizen LUG Helper and update the Wine runner and DXVK.</p>"
+    ;;
+battlenet)
+    prefix="${BNET_PREFIX:-$HOME/Games/battlenet}"
+    if [[ ! -d "$prefix/drive_c" ]]; then
+        say "Battle.net wasn't found in $prefix.<br>Install it from Lutris first (search Lutris for Battle.net)."
+        exit 0
+    fi
+    ask "<h3>Repair Battle.net and World of Warcraft</h3><p>This clears the Battle.net app's own files and caches (it downloads them again by itself) and World of Warcraft's cache folder, the usual fix when Battle.net won't open or WoW won't start after a patch. Games, accounts, addons and settings are kept.</p><p>Close Battle.net and your games first.</p>" || exit 0
+    pkill -f 'Battle.net' 2>/dev/null || true
+    rm -rf "$prefix/drive_c/ProgramData/Battle.net/Agent" "$prefix/drive_c/ProgramData/Battle.net/Setup"
+    find "$prefix/drive_c/users" -maxdepth 5 -type d \( -path '*/AppData/Local/Battle.net' -o -path '*/AppData/Local/Blizzard Entertainment' \) -exec rm -rf {} + 2>/dev/null
+    find "$prefix/drive_c" -maxdepth 5 -type d -path '*/World of Warcraft/_*_/Cache' -exec rm -rf {} + 2>/dev/null
+    say "<h3>Done</h3><p>Battle.net will set itself up again the next time it opens, and World of Warcraft rebuilds its cache. Start Battle.net from Lutris.</p><p>Still not working? Open ProtonPlus and install the newest GE-Proton, then pick it in Lutris for Battle.net.</p>"
+    ;;
+*)
+    echo "usage: steel-os-repair-game star-citizen | battlenet" >&2
+    exit 2
+    ;;
+esac

@@ -70,3 +70,20 @@ kdenetwork-filesharing
 plasma-nm-openvpn
 plasma-nm-openconnect
 plasma-nm-vpnc
+
+# Gaming devices (STEEL-32). Bazzite already includes the drivers for the Xbox
+# wireless adapter (xone), Razer devices (openrazer), and Thrustmaster,
+# Logitech and Fanatec racing wheels. These add the tools:
+#   Solaar:          Logitech wireless keyboards, mice and receivers
+#   ratbagd:         gaming-mouse settings (buttons, DPI, lights) for Piper
+#   AntiMicroX:      use a controller in games that only know keyboard and mouse
+#   jstest-gtk, linuxconsoletools: test and calibrate joysticks and flight sticks
+#   zenity:          dialogs used by the Star Citizen LUG Helper
+solaar
+solaar-udev
+libratbag-ratbagd
+antimicrox
+jstest-gtk
+linuxconsoletools
+steam-devices
+zenity

@@ -36,6 +36,10 @@ com.heroicgameslauncher.hgl | Heroic | Epic Games, GOG, Amazon games | Games and
 io.github.hmlendea.geforcenow-electron | GeForce NOW | Cloud gaming | Games and Streaming
 com.discordapp.Discord | Discord | Voice and text chat | Games and Streaming
 com.chatterino.chatterino | Chatterino | Twitch chat in its own window | Games and Streaming
+com.vysp3r.ProtonPlus | ProtonPlus | Install and update GE-Proton for Steam and Lutris | Games and Streaming
+org.freedesktop.Piper | Piper | Gaming mouse buttons, DPI and lights (Logitech G, SteelSeries and more) | Games and Streaming
+app.polychromatic.controller | Polychromatic | Razer keyboards, mice and keypads: lights and keys (needs Razer support from the Gaming tab) | Games and Streaming
+io.github.berarma.Oversteer | Oversteer | Racing wheels: rotation, force feedback, buttons (Logitech, Thrustmaster, Fanatec) | Games and Streaming
 
 # Developer. Virtual Machine Manager is the recommended VM app: it worked
 # where GNOME Boxes stalled on an NVIDIA laptop in testing. The virtual

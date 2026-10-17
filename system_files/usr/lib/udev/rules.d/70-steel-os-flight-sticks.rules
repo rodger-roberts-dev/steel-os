@@ -1,0 +1,20 @@
+# Steel OS (STEEL-32): flight sticks, throttles and pedals.
+# Games running through Proton/Wine and tools like the Star Citizen LUG Helper
+# read these devices directly (hidraw). Give the person sitting at the PC
+# access, the same way Steam's rules do for game controllers.
+#   044f  Thrustmaster (T.16000M, TWCS, HOTAS Warthog, T.Flight)
+#   06a3  Saitek / Mad Catz (X52, X52 Pro, X55, X56 Rhino, pedals)
+#   0738  Mad Catz (newer X56 revisions)
+#   046d  Logitech Extreme 3D Pro (c215) and Attack 3 (c214) only, not every
+#         Logitech keyboard and mouse
+#   231d  VKB
+#   3344  Virpil
+#   1dd2  Leo Bodnar
+KERNEL=="hidraw*", ATTRS{idVendor}=="044f", TAG+="uaccess"
+KERNEL=="hidraw*", ATTRS{idVendor}=="06a3", TAG+="uaccess"
+KERNEL=="hidraw*", ATTRS{idVendor}=="0738", TAG+="uaccess"
+KERNEL=="hidraw*", ATTRS{idVendor}=="231d", TAG+="uaccess"
+KERNEL=="hidraw*", ATTRS{idVendor}=="3344", TAG+="uaccess"
+KERNEL=="hidraw*", ATTRS{idVendor}=="1dd2", TAG+="uaccess"
+KERNEL=="hidraw*", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="c215", TAG+="uaccess"
+KERNEL=="hidraw*", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="c214", TAG+="uaccess"

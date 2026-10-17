@@ -155,12 +155,52 @@ for category, entries in read_steel_apps(APPS_FILE).items():
         apps.append(flatpak_action(app_id, name, f"{category} · {description}"))
     apps.extend(EXTRAS.get(category, []))
 
+# Gaming tab (STEEL-32, STEEL-45, STEEL-46): devices, macros and game fixes.
+def launch(cmd):
+    return f"nohup setsid {cmd} >/dev/null 2>&1"
+
+
+gaming = screen("Gaming", "Controllers, flight sticks, macros and game fixes", [
+    action("controller-test", "Test a controller or flight stick",
+           "See every button, axis and hat respond: gamepads, flight sticks such as the X52 and X56, throttles and pedals.",
+           script=launch("jstest-gtk")),
+    action("macros", "Macros for keyboards, mice, keypads and controllers",
+           "Remap any key or button and record macros (Input Remapper): gaming keyboards and mice, Razer Tartarus, Nostromo N52 and other keypads, controllers.",
+           script=launch("input-remapper-gtk")),
+    action("antimicrox", "Use a controller in keyboard-and-mouse games",
+           "Map controller buttons and sticks to keys and the mouse (AntiMicroX), for games without controller support.",
+           script=launch("antimicrox")),
+    action("logitech", "Logitech wireless keyboards and mice",
+           "Pair devices to a Logitech receiver, check battery levels and change settings (Solaar).",
+           script=launch("solaar")),
+    action("razer", "Razer devices",
+           "Lights, keys and DPI for Razer keyboards, mice and keypads such as the Tartarus (OpenRazer with Polychromatic).",
+           status_script="ujust install-openrazer status",
+           options=[
+               ("install", "Install Razer support",
+                "ujust install-openrazer install-polychromatic" + PAUSE),
+               ("uninstall", "Remove Razer support", "ujust install-openrazer uninstall" + PAUSE),
+           ]),
+    action("star-citizen", "Star Citizen: install or update the LUG Helper",
+           "The community tool that installs Star Citizen and keeps it working after patches. Adds \"Star Citizen LUG Helper\" to the start menu.",
+           script="/usr/libexec/steel-os-lug-helper" + PAUSE),
+    action("repair-star-citizen", "Repair Star Citizen",
+           "Clears shader and DXVK caches, the usual fix for crashes or stutter after a patch. Your game and settings are kept.",
+           script=launch("/usr/libexec/steel-os-repair-game star-citizen")),
+    action("repair-battlenet", "Repair Battle.net and World of Warcraft",
+           "Clears Battle.net's own files and WoW's cache, the usual fix when Battle.net won't open or WoW won't start after a patch.",
+           script=launch("/usr/libexec/steel-os-repair-game battlenet")),
+    action("proton-ge", "Get the newest GE-Proton",
+           "GE-Proton runs many Windows games better than the default, including Battle.net games. Opens ProtonPlus (installs it first if needed).",
+           script="flatpak info com.vysp3r.ProtonPlus >/dev/null 2>&1 || flatpak install -y flathub com.vysp3r.ProtonPlus; nohup setsid flatpak run com.vysp3r.ProtonPlus >/dev/null 2>&1"),
+])
+
 steel_apps = screen("Steel Apps", "Popular apps by category, one click each", apps)
 
 with open(BASE_FILE, encoding="utf-8") as f:
     base = "".join(l for l in f if not l.startswith("#"))
 
-out = "\n".join(["title: Steel OS Portal", "screens:"] + welcome + steel_apps) + "\n" + base
+out = "\n".join(["title: Steel OS Portal", "screens:"] + welcome + steel_apps + gaming) + "\n" + base
 
 # Fail the build rather than ship a broken or Bazzite-branded portal.
 parsed = yaml.safe_load(out)
