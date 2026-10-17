@@ -87,3 +87,9 @@ jstest-gtk
 linuxconsoletools
 steam-devices
 zenity
+
+# Steel Shield, built-in virus protection (STEEL-53): the ClamAV scanner, its
+# hourly definitions updater, and file-change watching for Downloads.
+clamav
+clamav-freshclam
+inotify-tools
