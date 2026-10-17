@@ -201,7 +201,7 @@ awk '
     { print }
 ' "$SHORTCUTS" > "$SHORTCUTS.new" && mv "$SHORTCUTS.new" "$SHORTCUTS"
 install -D -m 0644 "$SHORTCUTS" /etc/skel/.config/kglobalshortcutsrc
-chmod 0755 /usr/libexec/steel-os-shortcuts
+chmod 0755 /usr/libexec/steel-os-shortcuts /usr/libexec/steel-os-taskbar
 grep -A1 'org.kde.konsole.desktop' "$SHORTCUTS"
 
 ### 12. No Fedora logo presented as ours (STEEL-51)

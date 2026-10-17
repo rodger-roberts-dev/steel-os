@@ -18,7 +18,7 @@ in `system_files/etc/skel/.local/share/kxmlgui6/konsole/sessionui.rc`.
 |---|---|
 | Super+Enter or Alt+Enter | Terminal (Konsole). Ctrl+Alt+T also works |
 | Super+Shift+Enter or Super+Shift+B | Web browser (Firefox) |
-| Super+Shift+F | File manager (Dolphin) |
+| Super+F or Super+Shift+F | File manager (Dolphin) |
 | Super+Shift+N | Text editor (Kate) |
 | Super+Shift+O | Obsidian |
 | Super+Space, Alt+Space or Alt+F2 | Search and app launcher (KRunner) |
@@ -34,7 +34,8 @@ An app's shortcut does nothing until that app is installed.
 | Keys | Does |
 |---|---|
 | Super+W, Super+Q or Alt+F4 | Close the window |
-| Super+F | Full screen |
+| Super+F11 | Full screen |
+| Super+T | Show or auto-hide the taskbar |
 | Super+Alt+F | Maximise |
 | Super+M | Minimise |
 | Super+O | Keep the window above others |
