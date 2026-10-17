@@ -7,3 +7,5 @@ ConditionACPower=true
 Type=oneshot
 Nice=19
 ExecStart=/usr/bin/flatpak update --user --noninteractive --assumeyes
+# Steel & Code Forge, if this user installed it (STEEL-25).
+ExecStartPost=-/usr/libexec/steel-os-forge update

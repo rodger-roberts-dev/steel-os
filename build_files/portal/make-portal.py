@@ -6,6 +6,7 @@ from Bazzite Portal (portal/base.yml), and writes the file the portal app
 opens: /usr/share/steel-os/portal.yml. Runs during the image build.
 """
 import json
+import os
 import sys
 
 import yaml
@@ -151,6 +152,25 @@ EXTRAS = {
         ],
     )],
 }
+
+# Steel & Code Forge (STEEL-25): a one-click entry once its public package
+# address is in packages/forge-source.txt; hidden while that file is empty.
+FORGE_SOURCE = os.path.join(os.path.dirname(os.path.abspath(APPS_FILE)), "forge-source.txt")
+if os.path.exists(FORGE_SOURCE) and any(
+        l.strip() and not l.strip().startswith("#") for l in open(FORGE_SOURCE, encoding="utf-8")):
+    EXTRAS["Developer"].append(action(
+        "steel-and-code-forge", "Steel & Code Forge",
+        "Developer · Terminal-first AI agents from Steel & Code, starting with Byte, the coding agent. "
+        "Every command it wants to run goes through Forge's safety checks first. Needs an OpenRouter key.",
+        status_script="test -x \"$HOME/.local/bin/forge\" && echo install || echo uninstall",
+        options=[
+            ("install", "Install Steel & Code Forge", "/usr/libexec/steel-os-forge install" + PAUSE),
+            ("uninstall", "Uninstall Steel & Code Forge", "/usr/libexec/steel-os-forge uninstall" + PAUSE),
+        ],
+    ))
+    print("Steel OS Portal: Steel & Code Forge listed")
+else:
+    print("Steel OS Portal: Steel & Code Forge not listed yet (packages/forge-source.txt is empty)")
 
 apps = []
 for category, entries in read_steel_apps(APPS_FILE).items():

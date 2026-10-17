@@ -96,3 +96,8 @@ inotify-tools
 
 # Developer tools built in (Katana test, Rodger): Neovim, with the nvim command.
 neovim
+
+# Steel & Code Forge one-click install (STEEL-25): its Python environment
+# and the password-store command that keeps its OpenRouter key.
+python3-pip
+libsecret

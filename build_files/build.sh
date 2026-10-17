@@ -332,6 +332,13 @@ python3 /ctx/portal/make-portal.py /ctx/packages/steel-apps.txt /ctx/portal/base
 # (/usr/libexec/steel-os-setup, STEEL-35) and end by offering to open the
 # Portal. The Portal is in the start menu, the favourites and on the taskbar;
 # its "Launch at startup" switch makes it open at every login.
+# Steel & Code Forge one-click install (STEEL-25): the installer script, the
+# package address it uses, and a check that what it needs is in the image.
+install -D -m 0644 /ctx/packages/forge-source.txt /usr/share/steel-os/forge-source
+chmod 0755 /usr/libexec/steel-os-forge
+command -v secret-tool >/dev/null || { echo "Steel OS: secret-tool missing (Forge key storage)" >&2; exit 1; }
+python3 -c 'import sys, venv, ensurepip; sys.exit(0 if sys.version_info >= (3, 11) else 1)'     || { echo "Steel OS: Python 3.11+ with venv is needed for Forge" >&2; exit 1; }
+echo "Steel OS: Forge prerequisites present ($(python3 --version), secret-tool)"
 chmod 0755 /usr/libexec/steel-os-setup /usr/libexec/steel-os-help
 
 # One installer for every PC (STEEL-30): at boot, move the PC to the Steel OS
