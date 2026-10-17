@@ -34,6 +34,7 @@ Forge Orange is for accents and large shapes, not small body text on white.
 | `mark/` | The hexagon mark only, same four variants, SVG | Start menu button, boot splash, favicon source |
 | `icon/` | Square rounded app icon, SVG in `dark`, `light`, `orange`, `mono-white`, `mono-black`, plus `png/` at 16 to 1024 px | `/usr/share/icons/hicolor/` in the image, the About screen logo, the web app icon |
 | `portal/` | The Steel OS Portal app icon: four app tiles inside the hexagon, SVG | `steel-os-portal` icon in `/usr/share/icons/hicolor/`, the Portal's launcher, taskbar pin and window |
+| `shield/` | The Steel Shield app icon: a Steel Blue shield with the Forge Orange S, SVG | `steel-shield` icon in `/usr/share/icons/hicolor/`, Steel Shield's window, notifications and menu entry |
 | `wallpaper/` | The waves wallpaper at 3840x2160 (default) and the gaming-room wallpaper (second choice) | Default desktop wallpaper, optional wallpaper, login background |
 
 All SVGs are pure shapes with the lettering converted to outlines, so no font is

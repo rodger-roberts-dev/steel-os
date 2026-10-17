@@ -519,6 +519,46 @@ done
 rpm -q input-remapper solaar libratbag-ratbagd antimicrox jstest-gtk steam-devices zenity || true
 ls /usr/share/applications | grep -i -E "jstest|antimicro|solaar|input-remapper" || true
 
+### 21. Steel Shield: built-in virus protection (STEEL-53)
+# ClamAV with definitions from Cisco Talos, updated hourly. Steel Shield
+# (/usr/bin/steel-shield) scans new downloads automatically, offers to scan
+# USB drives, scans the home folder weekly, keeps a recoverable quarantine and
+# explains findings in plain English. The scanner runs only while scanning.
+chmod 0755 /usr/bin/steel-shield
+install -D -m 0644 /ctx/branding/shield/steel-shield.svg /usr/share/icons/hicolor/scalable/apps/steel-shield.svg
+gtk-update-icon-cache -f /usr/share/icons/hicolor 2>/dev/null || true
+
+# Definitions: hourly, from the official mirror. Fedora's sample line
+# "Example" must not be active or freshclam refuses to run.
+FRESHCLAM=/etc/freshclam.conf
+if [[ -f "$FRESHCLAM" ]]; then
+    sed -i -e 's/^Example/#Example/' -e '/^Checks /d' -e '/^DatabaseMirror /d' "$FRESHCLAM"
+    printf '%s\n' "# Steel Shield (STEEL-53): check for new definitions every hour." \
+        "Checks 24" "DatabaseMirror database.clamav.net" >> "$FRESHCLAM"
+fi
+systemctl enable clamav-freshclam.service
+systemctl --global enable steel-shield-downloads.service steel-shield-usb.path steel-shield-weekly.timer
+
+# Self-test with the EICAR test file and a one-line definition, so the build
+# proves scanning, detection and quarantine work without downloading the
+# real definitions. Fails the build if anything is off.
+st="$(mktemp -d)"
+mkdir -p "$st/home/Downloads"
+printf '%s' 'X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*' > "$st/home/Downloads/eicar.com"
+printf '%s:%s:Win.Test.EICAR_HDB-1\n' "$(md5sum "$st/home/Downloads/eicar.com" | cut -d' ' -f1)" \
+    "$(stat -c %s "$st/home/Downloads/eicar.com")" > "$st/test.hdb"
+HOME="$st/home" XDG_DATA_HOME="$st/home/.local/share" XDG_STATE_HOME="$st/home/.local/state" \
+    XDG_CONFIG_HOME="$st/home/.config" STEEL_SHIELD_DB="$st/test.hdb" \
+    /usr/bin/steel-shield selftest-scan "$st/home/Downloads/eicar.com"
+if [[ -e "$st/home/Downloads/eicar.com" ]] || ! ls "$st"/home/.local/share/steel-shield/quarantine/*/file >/dev/null 2>&1; then
+    echo "Steel Shield self-test FAILED: the test file was not quarantined" >&2
+    exit 1
+fi
+/usr/bin/steel-shield explain Win.Test.EICAR_HDB-1
+/usr/bin/steel-shield explain Win.Trojan.Agent-12345
+rm -rf "$st"
+echo "Steel Shield self-test passed: test file detected and quarantined"
+
 ### 9. Rebuild the boot image so the boot splash shows Steel OS (STEEL-31)
 # The logo shown while the machine starts is read from the initramfs, a small
 # boot image Bazzite generated before our files were added. Our watermark in
