@@ -110,6 +110,8 @@ build $target_image=image_name $tag=default_tag:
         STEEL_OS_BUILD="${STEEL_OS_BUILD}-$(git rev-parse --short HEAD)"
     fi
     BUILD_ARGS+=("--build-arg" "STEEL_OS_BUILD=${STEEL_OS_BUILD}")
+    # Same number as an image label, so an installer's .image.txt can name it.
+    LABELS+=("--label" "steel-os.build=${STEEL_OS_BUILD}")
     if [[ -z "$(git status -s)" ]]; then
         GIT_SHA=$(git rev-parse --short HEAD)
         LABELS+=("--label" "io.artifacthub.package.readme-url=https://raw.githubusercontent.com/{{ repo_organization }}/{{ image_name }}/${GIT_SHA}/README.md")

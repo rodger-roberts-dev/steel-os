@@ -119,7 +119,9 @@ jobs:
           # PCs still follow ${IMAGE_REF} for updates; this records the exact
           # version the installer was built from.
           digest="$(skopeo inspect --format '{{.Digest}}' "docker://${IMAGE_REF}" 2>/dev/null || echo unknown)"
-          build="$(skopeo inspect --format '{{index .Labels "org.opencontainers.image.version"}}' "docker://${IMAGE_REF}" 2>/dev/null || echo unknown)"
+          # The build number lives inside the image (/usr/share/steel-os/build);
+          # labels don't survive rechunking. The image is already pulled.
+          build="$(sudo podman run --rm --entrypoint cat "${IMAGE_REF}" /usr/share/steel-os/build 2>/dev/null || echo unknown)"
           printf 'installer: %s\nimage: %s\nimage digest: %s\nimage version: %s\nbuilt: %s\ncommit: %s\n' \
             "$name" "${IMAGE_REF}" "$digest" "$build" "$(date -u +%Y-%m-%dT%H:%MZ)" "${GITHUB_SHA}" > "$OUT/$name.image.txt"
           cat "$OUT/$name.image.txt"
@@ -143,13 +145,17 @@ jobs:
             cosign sign-blob -y --key env://COSIGN_PRIVATE_KEY "$iso" --output-signature "${iso}.sig"
           done
 
+      # Every installer, automatic or by hand, is also kept on GitHub for 90
+      # days (the run's Artifacts), so steel-os.org/download can point to older
+      # builds. downloads.steel-os.org keeps only the newest and the one before.
       - name: Upload to job artifacts
-        if: github.event_name != 'workflow_run' && inputs.upload-to-s3 != true
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
+          name: steel-os-installer
           path: ${{ steps.files.outputs.dir }}
           if-no-files-found: error
           compression-level: 0
+          retention-days: 90
           overwrite: true
 
       - name: Upload to S3
