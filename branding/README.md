@@ -1,8 +1,8 @@
 # Steel OS branding
 
 Steel OS is a Steel & Code (steelandcode.com) project in partnership with
-Blackbox Entertainment. The marks belong to Steel & Code; Blackbox
-Entertainment uses them under that partnership.
+Blackbox Entertainment. The Steel OS name, logo, hexagon mark and wallpapers
+are held jointly by Steel & Code and Blackbox Entertainment.
 
 ## The mark
 
