@@ -29,3 +29,9 @@ kdialog
 # full-screen session, and text-mode dialogs as a fallback.
 cage
 dialog
+
+# Login screen (STEEL-36): SDDM with the Breeze theme, so Steel OS can add
+# "Forgot your password?". Replaces Fedora 44's Plasma Login Manager.
+sddm
+sddm-breeze
+sddm-wayland-plasma
