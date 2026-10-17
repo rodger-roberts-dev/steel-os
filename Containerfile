@@ -28,6 +28,10 @@ COPY branding /branding
 # A PC is moved to the right edition at first boot (steel-os-graphics-check).
 FROM ${BASE_IMAGE}
 
+# Build number written into the image (date and commit), shown on the live
+# installer's information panel and in /usr/share/steel-os/build.
+ARG STEEL_OS_BUILD=local
+
 # Run the build script. The mounts give it the ctx stage at /ctx and scratch
 # space for package caches and logs that must not end up in the image.
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \

@@ -93,6 +93,10 @@ systemctl enable steel-os-flatpak-install.service
 install -D -m 0644 /ctx/packages/steel-apps.txt /usr/share/steel-os/steel-apps.txt
 
 ### 7. The OS calls itself Steel OS (STEEL-48)
+# Build number (STEEL-57): date and commit of this image, from the Containerfile.
+mkdir -p /usr/share/steel-os
+echo "${STEEL_OS_BUILD:-local}" > /usr/share/steel-os/build
+echo "Steel OS build: $(cat /usr/share/steel-os/build)"
 # Bazzite rewrites Fedora's /usr/lib/os-release in its build (see Bazzite's
 # build_files/image-info). We do the same on top, changing only the fields
 # that name the OS. ID stays "bazzite" and image-info.json stays untouched,

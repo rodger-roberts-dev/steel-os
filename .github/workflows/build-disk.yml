@@ -102,6 +102,15 @@ jobs:
           name="$(basename "$ISO_PATH")"
           mv "$ISO_PATH" "$OUT/$name"
           ( cd "$OUT" && sha256sum "$name" > "$name.sha256" )
+          # Which Steel OS image this installer contains (STEEL-57). Installed
+          # PCs still follow ${IMAGE_REF} for updates; this records the exact
+          # version the installer was built from.
+          digest="$(skopeo inspect --format '{{.Digest}}' "docker://${IMAGE_REF}" 2>/dev/null || echo unknown)"
+          build="$(skopeo inspect --format '{{index .Labels "org.opencontainers.image.version"}}' "docker://${IMAGE_REF}" 2>/dev/null || echo unknown)"
+          printf 'installer: %s\nimage: %s\nimage digest: %s\nimage version: %s\nbuilt: %s\ncommit: %s\n' \
+            "$name" "${IMAGE_REF}" "$digest" "$build" "$(date -u +%Y-%m-%dT%H:%MZ)" "${GITHUB_SHA}" > "$OUT/$name.image.txt"
+          cat "$OUT/$name.image.txt"
+          cat "$OUT/$name.image.txt" >> "$GITHUB_STEP_SUMMARY"
           ls -la "$OUT"
           cat "$OUT"/*.sha256
           echo "dir=$OUT" >> "$GITHUB_OUTPUT"
