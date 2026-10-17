@@ -6,10 +6,19 @@
 # (Anaconda WebUI) on top, branded Steel OS, built by Titanoboa.
 # The installer/ folder holds the live-session recipe.
 #
-# Run by hand from the Actions tab: "Build disk images" > Run workflow.
+# Runs by itself after every successful master image build, and uploads the
+# installer to downloads.steel-os.org (same address each time, so the newest
+# installer replaces the previous one). Docs-only merges don't build an image,
+# so they don't build an installer either.
+# Can still be run by hand from the Actions tab: "Build disk images" > Run
+# workflow (tick "Upload to S3" to publish, otherwise it's a test artifact).
 name: Build disk images
 
 on:
+  workflow_run:
+    workflows: ["Build container image"]
+    types: [completed]
+    branches: [master]
   workflow_dispatch:
     inputs:
       upload-to-s3:
@@ -26,13 +35,17 @@ on:
 env:
   IMAGE_REF: "ghcr.io/steel-and-code/steel-os:latest"
 
+# One installer build at a time. A build that has started always finishes;
+# if several merges land meanwhile, only the newest waits its turn.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build-iso:
     name: Build installer ISO
+    # Automatic runs only after an image build on master that succeeded.
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-26.04
     permissions:
       contents: read
@@ -131,7 +144,7 @@ jobs:
           done
 
       - name: Upload to job artifacts
-        if: inputs.upload-to-s3 != true
+        if: github.event_name != 'workflow_run' && inputs.upload-to-s3 != true
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           path: ${{ steps.files.outputs.dir }}
@@ -140,11 +153,14 @@ jobs:
           overwrite: true
 
       - name: Upload to S3
-        if: inputs.upload-to-s3 == true
+        if: github.event_name == 'workflow_run' || inputs.upload-to-s3 == true
         shell: bash
         env:
           RCLONE_CONFIG_S3_TYPE: s3
-          RCLONE_CONFIG_S3_PROVIDER: ${{ secrets.S3_PROVIDER }}
+          # downloads.steel-os.org is Cloudflare R2. With a generic provider rclone
+          # makes calls R2 doesn't support ("NotImplemented") and only succeeds on
+          # a retry.
+          RCLONE_CONFIG_S3_PROVIDER: Cloudflare
           RCLONE_CONFIG_S3_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
           RCLONE_CONFIG_S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
           RCLONE_CONFIG_S3_REGION: ${{ secrets.S3_REGION }}
@@ -153,4 +169,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y rclone
-          rclone copy "$SOURCE_DIR" "S3:${{ secrets.S3_BUCKET_NAME }}"
+          rclone copy --s3-no-check-bucket --retries 5 "$SOURCE_DIR" "S3:${{ secrets.S3_BUCKET_NAME }}"
+          echo "Uploaded:"
+          ls -la "$SOURCE_DIR"
