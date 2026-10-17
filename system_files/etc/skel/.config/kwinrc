@@ -1,0 +1,5 @@
+# Steel OS (STEEL-29): four virtual desktops for every new user. Everything
+# else in kwinrc comes from /etc/xdg/kwinrc.
+[Desktops]
+Number=4
+Rows=1
