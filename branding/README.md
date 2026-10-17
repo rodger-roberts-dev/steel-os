@@ -1,10 +1,8 @@
 # Steel OS branding
 
-Jira: STEEL-31
 Steel OS is a Steel & Code (steelandcode.com) project in partnership with
 Blackbox Entertainment. The marks belong to Steel & Code; Blackbox
-Entertainment uses them under that partnership. Chosen by T on 2026-10-16 from
-the "Steel & Code" concept (concept E).
+Entertainment uses them under that partnership.
 
 ## The mark
 
@@ -50,19 +48,16 @@ Font License, free for commercial use).
 
 ## Where each file goes in the image
 
-Done by `build_files/build.sh` section 5 and `system_files/` (STEEL-31):
-
 | Surface | File in the image |
 |---|---|
-| Desktop wallpaper, default | `/usr/share/backgrounds/default.jxl` links to the waves wallpaper (Bazzite's mechanism) |
-| Wallpaper chooser | `/usr/share/wallpapers/steel-os-waves/` and `steel-os-room/` as Plasma wallpaper packages |
+| Desktop wallpaper | Set to the waves wallpaper for every user by a Plasma layout script (`steel-os-wallpaper.js`) |
+| Lock screen | `/etc/xdg/kscreenlockerrc` points at the waves wallpaper |
 | Login screen | `/usr/share/sddm/themes/breeze/theme.conf.user` points at the waves wallpaper |
+| Wallpaper chooser | `/usr/share/wallpapers/steel-os-waves/` and `steel-os-room/` as Plasma wallpaper packages |
 | Boot splash | `/usr/share/plymouth/themes/spinner/watermark.png`, the logo at 220 px wide |
-| About this System | `/etc/xdg/kcm-about-distrorc` and `/usr/share/pixmaps/steel-os.png` |
-
-Still to do: start-menu button icon (STEEL-7), OS name in `/etc/os-release`
-and the icon in the hicolor theme (STEEL-48), installer product name
-(STEEL-35), terminal banner.
+| Start button | The Steel OS icon, set by a Plasma layout script (`steel-os-panel.js`) |
+| About this System | `/etc/xdg/kcm-about-distrorc`, `/usr/lib/os-release` and the `steel-os` icon in the hicolor theme |
+| Installer | `installer/system_files/overrides/usr/share/cockpit/branding/fedora/` (logo and colours) |
 
 ## Wallpapers
 

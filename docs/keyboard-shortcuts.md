@@ -1,6 +1,5 @@
 # Keyboard Shortcuts: Omarchy to Steel OS (Plasma)
 
-Jira: STEEL-29
 Date: 2026-10-15
 Written for: rodger-roberts-dev to review, and for the user manual later
 
@@ -131,11 +130,11 @@ any, and your answer on the "None" rows you actually use. Each one either gets a
 Plasma replacement or stays unbound. Add them to this file or to a note in the
 repo; I will fold them in.
 
-**To verify on the first image (STEEL-16):** that Plasma reads these three
+**To verify on the first image:** that Plasma reads these three
 files from `/etc/xdg` as defaults on a fresh login, and that the Flatpak
 desktop file names for Firefox and Obsidian match what Flathub installs.
 
-## Inside Konsole (STEEL-18)
+## Inside Konsole
 
 | Keys | Does |
 |---|---|

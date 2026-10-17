@@ -100,6 +100,5 @@ including the GNU GPL. The source is available here:
 | Bazzite | [github.com/ublue-os/bazzite](https://github.com/ublue-os/bazzite) |
 | Fedora packages | [src.fedoraproject.org](https://src.fedoraproject.org) |
 
-Proprietary apps such as Obsidian are never copied onto the Steel OS
-installer; they are downloaded from Flathub after installation under their
-own licences.
+Proprietary apps such as Obsidian are downloaded from Flathub after
+installation under their own licences.

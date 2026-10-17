@@ -1,10 +1,9 @@
 # Printers and Network Devices: Evaluation
 
-Jira: STEEL-3
 Date: 2026-10-15
 
 > **Status: background, still useful.** Later the same day the team chose a
-> Fedora Atomic base via Bazzite with KDE Plasma (STEEL-28). The package
+> Fedora Atomic base via Bazzite with KDE Plasma. The package
 > inventory below is Omarchy's, but the findings about what a user sees, the
 > missing scanner and printer drivers, Windows PCs not appearing, and the need
 > for a sharing wizard all carry over. On Bazzite the front doors are Plasma's
@@ -157,7 +156,7 @@ is on by default. It is worth telling users about it before building sharing.
 ## 6. How to test (in a VM or on the test machine, not done yet)
 
 The acceptance criteria say at least one printer and one share must be tried.
-Needs a real printer on the same network, so the test machine (STEEL-5) is
+Needs a real printer on the same network, so the test machine is
 better than a VM for this. Record what you see at each step.
 
 **Printer**
@@ -179,5 +178,5 @@ better than a VM for this. Record what you see at each step.
 8. On the Windows PC, open Explorer, Network. Does the Linux machine appear?
    (Expected: no.)
 
-**Report** the answers as a comment on STEEL-3. They decide the follow-up
-tickets in section 5.
+**Report** the answers to the team. They decide the follow-up work in
+section 5.

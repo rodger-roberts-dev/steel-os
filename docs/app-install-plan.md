@@ -1,7 +1,6 @@
 # Application Installation Plan
 
-Jira: STEEL-4
-Date: 2026-10-15 (rewritten the same day for the Bazzite decision, STEEL-28)
+Date: 2026-10-15 (rewritten the same day for the Bazzite decision)
 Owners: T (which apps, what the user sees) and rodger-roberts-dev (how each is installed)
 
 **How this was researched.** Every app on T's list was checked against Flathub,
@@ -38,7 +37,8 @@ top with the must-haves from `steel-apps.txt`. Bazzite's own catalogue (DaVinci
 Resolve, Antigravity, CoolerControl, ASUS tools, and the media web apps such as
 Prime Video, Apple TV, Disney Plus and HBO Max, which T asked to keep) stays
 below it. How the Portal's list is defined in the image, and whether a section
-can be added without patching Bazzite, is a check for STEEL-16.
+can be added without patching Bazzite, is checked when the Steel Apps screen
+is built.
 
 No server is needed anywhere in this. Flathub hosts the apps. The list is a
 text file inside the image.
@@ -98,7 +98,7 @@ Three tiers. All Flatpak IDs below were confirmed on Flathub on 2026-10-15.
 | Lutris (EA app, Ubisoft, other Windows stores) | `net.lutris.Lutris` | How the EA app and Battle.net are installed. Bazzite documents this path. |
 | Heroic (Epic, GOG, Amazon) | `com.heroicgameslauncher.hgl` | |
 | GeForce NOW (cloud gaming) | `io.github.hmlendea.geforcenow-electron` | |
-| Steel & Code Forge | not packaged yet | rodger-roberts-dev's AI development platform. His story, STEEL-25. Ships with Python runtimes inside; wants a container runtime (Bazzite has Podman) and NVIDIA support (the NVIDIA image). |
+| Steel & Code Forge | not packaged yet | rodger-roberts-dev's AI development platform. His story. Ships with Python runtimes inside; wants a container runtime (Bazzite has Podman) and NVIDIA support (the NVIDIA image). |
 | Ollama (local AI models) | to decide: Flatpak, Homebrew, or container | Optional, like Forge. |
 
 ### Web apps (no Linux program exists)
@@ -139,8 +139,7 @@ Blackbox's hands, not Steel OS's:
 
 Steel OS adds nothing special for them; they are Steam games as far as the OS
 is concerned. The VM T is setting up is a good first test bed for the Linux
-builds, and the physical test machine for GPU acceleration. Tracked in
-STEEL-34.
+builds, and the physical test machine for GPU acceleration.
 
 ## 3. Developer tools
 
@@ -153,7 +152,7 @@ rodger-roberts-dev would work:
   versions, docker-compose).
 - Docker: Bazzite ships Podman, which runs Docker-style containers and can
   provide a `docker` command. Docker Engine itself can be added to the image
-  if Forge needs it (STEEL-25 will say).
+  if Forge needs it.
 - A "developer setup" entry in the Steel Apps list runs the Homebrew installs
   in one go.
 
@@ -198,21 +197,20 @@ unusual.
   Flathub's app database). NAPS2 and the first guess at NotepadNext's ID came
   back missing; NotepadNext was found under `com.github.dail8859.NotepadNext`,
   NAPS2 has no Flatpak.
-- **Not done:** booting a Steel OS image. That is STEEL-16.
-- **Not done:** confirming which KDE apps Bazzite already includes. First-boot
-  task in STEEL-16.
+- **Not done at the time:** booting a Steel OS image.
+- **Not done at the time:** confirming which KDE apps Bazzite already includes.
 
 ---
 
 ## 7. Follow-up tickets
 
-1. **First-boot Flatpak install and default browser** (STEEL-19, reworded):
+1. **First-boot Flatpak install and default browser**:
    install `flatpaks-default.txt` on first login, confirm Firefox is default,
    idempotent.
 2. **Steel Apps section in Bazzite Portal** (new, phase 4): add the
    `steel-apps.txt` entries as a section at the top of Bazzite Portal's
    Install Applications tab, rename the window to Steel OS, keep the rest.
 3. **Developer setup entry** (new, phase 4): Homebrew installs from `brew.txt`.
-4. **remove.txt after first boot** (STEEL-20, reworded): list and remove what
+4. **remove.txt after first boot**: list and remove what
    we do not want.
-5. **Forge packaging** (STEEL-25, rodger-roberts-dev).
+5. **Forge packaging**.
