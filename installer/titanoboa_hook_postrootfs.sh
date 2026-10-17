@@ -317,3 +317,18 @@ fi
 dnf -yq install gparted
 
 ###############################
+
+# Steel OS: log the live user straight in. The installed system uses SDDM, but
+# the Plasma Login Manager package is still present, so livesys-kde writes its
+# autologin to /etc/plasmalogin.conf. With SDDM running the live session never
+# started (a black screen after the boot logo). The live session therefore uses
+# Plasma Login Manager, as Bazzite's does; SDDM also gets the autologin in case
+# that package is ever removed. None of this reaches the installed system.
+if [[ $desktop_env == kde ]]; then
+    if [[ -f /usr/lib/systemd/system/plasmalogin.service ]]; then
+        ln -sf /usr/lib/systemd/system/plasmalogin.service /etc/systemd/system/display-manager.service
+    fi
+    mkdir -p /etc/sddm.conf.d
+    printf '[Autologin]\nUser=liveuser\nSession=plasma.desktop\n' >/etc/sddm.conf.d/zz-steel-os-live.conf
+    echo "Steel OS live session login manager: $(readlink -f /etc/systemd/system/display-manager.service)"
+fi
