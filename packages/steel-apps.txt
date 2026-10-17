@@ -31,7 +31,6 @@ org.shotcut.Shotcut | Shotcut | Simple video editor | Creative
 # Games and Streaming. Twitch has no Linux app; make-portal.py adds a Twitch
 # launcher that opens it in the browser. OBS Studio for streaming is already
 # installed by default.
-net.lutris.Lutris | Lutris | Windows game stores: EA app, Battle.net, Ubisoft | Games and Streaming
 com.heroicgameslauncher.hgl | Heroic | Epic Games, GOG, Amazon games | Games and Streaming
 io.github.hmlendea.geforcenow-electron | GeForce NOW | Cloud gaming | Games and Streaming
 com.discordapp.Discord | Discord | Voice and text chat | Games and Streaming
