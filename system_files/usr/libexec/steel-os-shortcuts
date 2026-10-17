@@ -45,8 +45,8 @@ while IFS= read -r line; do
     "$KWRITE" --file kglobalshortcutsrc "${args[@]}" --key "$key" -- "$value"
 done < "$SRC"
 
-# Make the running session pick the new shortcuts up.
-systemctl --user restart plasma-kglobalaccel.service 2>/dev/null || true
+# This runs before KWin starts (steel-os-shortcuts.service), and Plasma reads
+# the shortcuts when KWin starts, so nothing needs restarting.
 
 mkdir -p "$STATE_DIR"
 printf '%s\n' "$VERSION" > "$STAMP"

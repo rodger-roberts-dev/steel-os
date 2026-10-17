@@ -237,6 +237,41 @@ cp -f /usr/share/ublue-os/motd/template.md /usr/share/ublue-os/motd/template.sv.
 chmod 0755 /usr/libexec/steel-os-hostname
 systemctl enable steel-os-hostname.service
 
+### 14. Shortcuts as built-in defaults; no Bazzite Portal at all (STEEL-29, STEEL-18, STEEL-31)
+# Konsole's own launcher file sets its default shortcut (Ctrl+Alt+T), and
+# Plasma uses that for every user who has not changed it. Put Super+Enter and
+# Alt+Enter there too, so they work with no per-user step at all.
+KONSOLE_DESKTOP=/usr/share/applications/org.kde.konsole.desktop
+if [[ -f "$KONSOLE_DESKTOP" ]]; then
+    if grep -q '^X-KDE-Shortcuts=' "$KONSOLE_DESKTOP"; then
+        sed -i 's/^X-KDE-Shortcuts=.*/X-KDE-Shortcuts=Meta+Return,Alt+Return,Ctrl+Alt+T/' "$KONSOLE_DESKTOP"
+    else
+        sed -i '/^\[Desktop Entry\]/a X-KDE-Shortcuts=Meta+Return,Alt+Return,Ctrl+Alt+T' "$KONSOLE_DESKTOP"
+    fi
+    grep '^X-KDE-Shortcuts=' "$KONSOLE_DESKTOP"
+fi
+
+# Apply the per-user shortcuts BEFORE the desktop starts (Plasma 6 reads them
+# only when KWin starts), as a user service, instead of an autostart entry
+# that ran too late.
+rm -f /etc/xdg/autostart/steel-os-shortcuts.desktop
+systemctl --global enable steel-os-shortcuts.service
+
+# Bazzite Portal: remove it entirely. Steel Apps replaces it.
+PORTAL_PKGS=()
+for p in yafti yafti-gtk krunner-yafti; do
+    rpm -q "$p" >/dev/null 2>&1 && PORTAL_PKGS+=("$p")
+done
+for f in /usr/bin/yafti_gtk.py /usr/bin/yafti; do
+    [[ -e "$f" ]] && owner="$(rpm -qf --qf '%{NAME}\n' "$f" 2>/dev/null)" && [[ -n "$owner" ]] && PORTAL_PKGS+=("$owner")
+done
+if [[ ${#PORTAL_PKGS[@]} -gt 0 ]]; then
+    mapfile -t PORTAL_PKGS < <(printf '%s\n' "${PORTAL_PKGS[@]}" | sort -u)
+    dnf5 remove -y "${PORTAL_PKGS[@]}" || echo "Portal packages could not be removed: ${PORTAL_PKGS[*]}"
+fi
+rm -rf /usr/share/yafti
+rm -f /usr/share/applications/*yafti*.desktop /etc/skel/.config/autostart/bazzite-portal.desktop
+
 ### 9. Rebuild the boot image so the boot splash shows Steel OS (STEEL-31)
 # The logo shown while the machine starts is read from the initramfs, a small
 # boot image Bazzite generated before our files were added. Our watermark in
