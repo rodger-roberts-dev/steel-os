@@ -61,19 +61,12 @@ Font License, free for commercial use).
 
 ## Wallpapers
 
-Decided 2026-10-16 by rodger-roberts-dev and T. Steel OS ships exactly two
-wallpapers; the first-kit grey hexagon wallpaper was retired the same day
-(still in git history if ever needed).
+Steel OS ships two wallpapers, both 3840x2160.
 
-- **Default desktop wallpaper:** `wallpaper/steel-os-wallpaper-waves-3840x2160.png`
-  (3840x2160, final size). Dark navy with blue and orange light waves, the hex
-  mark and `STEEL OS_` centred. Clean, no stray text, matches the brand
-  colours. Also the candidate for the login screen and the website hero.
-- **Second wallpaper, shipped as a choice:** `wallpaper/steel-os-wallpaper-room-3840x2160.png`
-  (3840x2160, final size). Isometric gaming studio: person on
-  the couch with a controller, space game on the TV, Steel OS on the monitors
-  and a neon sign. rodger-roberts-dev's favourite; appears in Plasma's
-  wallpaper settings as the alternative.
-
-Both are final size. Before the image ships, check in the VM that Plasma's
-bottom panel does not cover the logo on either wallpaper.
+- **Default:** `wallpaper/steel-os-wallpaper-waves-3840x2160.png`. Dark navy
+  with blue and orange light waves, the hex mark and `STEEL OS_` centred. Used
+  on the desktop, the lock screen and the login screen.
+- **Alternative:** `wallpaper/steel-os-wallpaper-room-3840x2160.png`. An
+  isometric gaming room: someone on the couch with a controller, a space game
+  on the TV, Steel OS on the monitors and a neon sign. Available in Plasma's
+  wallpaper settings.
