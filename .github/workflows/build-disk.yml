@@ -179,10 +179,11 @@ jobs:
           # one before in previous/. First the current top files move into
           # previous/ (replacing what was there), then this build replaces
           # the top. Old files go only after the new ones uploaded completely,
-          # so the download link never breaks.
+          # so the download link never breaks. shield/ (Steel Shield's threat
+          # list, STEEL-60) is never touched.
           B="${{ secrets.S3_BUCKET_NAME }}"
-          rclone sync --s3-no-check-bucket --retries 5 --exclude "previous/**" "S3:$B" "S3:$B/previous"
-          rclone sync --delete-after --s3-no-check-bucket --retries 5 --exclude "previous/**" "$SOURCE_DIR" "S3:$B"
+          rclone sync --s3-no-check-bucket --retries 5 --exclude "previous/**" --exclude "shield/**" "S3:$B" "S3:$B/previous"
+          rclone sync --delete-after --s3-no-check-bucket --retries 5 --exclude "previous/**" --exclude "shield/**" "$SOURCE_DIR" "S3:$B"
           echo "Kept: newest at the top, the build before in previous/"
           rclone lsl "S3:$B"
           echo "Uploaded:"

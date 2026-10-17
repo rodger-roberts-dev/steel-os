@@ -1,0 +1,74 @@
+---
+# Steel Shield (STEEL-60): build the extra threat list once a day.
+#
+# abuse.ch MalwareBazaar publishes the SHA-256 fingerprints of fresh malware
+# samples. This job adds the last 48 hours of them to the list, keeps the
+# newest 300,000, writes them in ClamAV's format and uploads the list to
+# downloads.steel-os.org/shield/. Each Steel OS PC fetches it daily
+# (steel-shield-extra.timer) and Steel Shield scans against it automatically.
+#
+# Needs a free abuse.ch Auth-Key in the repository secret ABUSECH_AUTH_KEY
+# (https://auth.abuse.ch). Until that secret exists the job does nothing.
+name: Steel Shield threat list
+
+on:
+  schedule:
+    - cron: "20 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: shield-threat-list
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Build the list
+        id: build
+        env:
+          ABUSECH_AUTH_KEY: ${{ secrets.ABUSECH_AUTH_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${ABUSECH_AUTH_KEY:-}" ]]; then
+            echo "::notice::No ABUSECH_AUTH_KEY secret yet; the extra threat list is off."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          mkdir -p out
+          curl -fsSL https://downloads.steel-os.org/shield/steel-shield-extra.hsb -o previous.hsb || : > previous.hsb
+          curl -fsSL -H "Auth-Key: ${ABUSECH_AUTH_KEY}" \
+            https://bazaar.abuse.ch/export/txt/sha256/recent/ -o recent.txt
+          grep -Eo '^[0-9a-f]{64}' recent.txt | sed 's/$/:*:SteelShield.Extra.MalwareBazaar:73/' > new.hsb
+          echo "New fingerprints: $(wc -l < new.hsb)"
+          cat previous.hsb new.hsb | grep -E '^[0-9a-f]{64}:\*:[A-Za-z0-9._-]+:73$' \
+            | awk '!seen[$0]++' | tail -n 300000 > out/steel-shield-extra.hsb
+          echo "List size: $(wc -l < out/steel-shield-extra.hsb)"
+          test -s out/steel-shield-extra.hsb
+
+      - name: Check ClamAV accepts it
+        if: steps.build.outputs.skip != 'true'
+        shell: bash
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq clamav >/dev/null
+          printf 'harmless' > sample.txt
+          clamscan --no-summary -d out/steel-shield-extra.hsb sample.txt
+
+      - name: Upload
+        if: steps.build.outputs.skip != 'true'
+        shell: bash
+        env:
+          RCLONE_CONFIG_S3_TYPE: s3
+          RCLONE_CONFIG_S3_PROVIDER: Cloudflare
+          RCLONE_CONFIG_S3_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
+          RCLONE_CONFIG_S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
+          RCLONE_CONFIG_S3_REGION: ${{ secrets.S3_REGION }}
+          RCLONE_CONFIG_S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
+        run: |
+          sudo apt-get install -y -qq rclone >/dev/null
+          rclone copyto --s3-no-check-bucket --retries 5 out/steel-shield-extra.hsb \
+            "S3:${{ secrets.S3_BUCKET_NAME }}/shield/steel-shield-extra.hsb"
