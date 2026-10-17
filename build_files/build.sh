@@ -75,6 +75,12 @@ for f in /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/bazzit
     [[ -f "$f" ]] && sed -i '/yafti_gtk\.desktop/d' "$f"
 done
 
+# New users get Plasma's default layout and Plasma marks every update script
+# as already done for them, so the wallpaper script also has to run inside
+# the default layout (the same way Bazzite adds its taskbar pins).
+LAYOUT=/usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js
+sed -i '$r /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/steel-os-wallpaper.js' "$LAYOUT"
+
 ### 6. Default apps at first boot (STEEL-17)
 # The Flatpak list ships inside the image; a small service installs it from
 # Flathub after the first boot with a network. See
