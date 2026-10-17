@@ -33,3 +33,41 @@
         display: none !important;
     }
 }
+
+/* Steel OS: Forge Orange for the primary buttons and the current step, in the
+   light and dark themes (both PatternFly token sets), and the hexagon S mark at
+   a readable size in the header. */
+:root,
+:root.pf-v6-theme-dark,
+.pf-v6-theme-dark {
+    --pf-t--global--color--brand--default: #F2641E !important;
+    --pf-t--global--color--brand--hover: #FF7A35 !important;
+    --pf-t--global--color--brand--clicked: #D9551A !important;
+    --pf-t--global--text--color--on-brand--default: #FFF4EE !important;
+    --pf-t--global--text--color--on-brand--hover: #FFF4EE !important;
+    --pf-t--global--text--color--on-brand--clicked: #FFF4EE !important;
+}
+
+.pf-v6-c-button.pf-m-primary {
+    background-color: #F2641E !important;
+    color: #FFF4EE !important;
+}
+.pf-v6-c-button.pf-m-primary:hover,
+.pf-v6-c-button.pf-m-primary:focus {
+    background-color: #FF7A35 !important;
+}
+
+.pf-v6-c-wizard__nav-link.pf-m-current::before {
+    background-color: #F2641E !important;
+    color: #FFF4EE !important;
+}
+
+.anaconda .logo {
+    background-image: url("mark.svg") !important;
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    inline-size: 40px !important;
+    block-size: 40px !important;
+    min-inline-size: 40px !important;
+}
