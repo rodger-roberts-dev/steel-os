@@ -11,4 +11,4 @@ RUN --mount=type=bind,source=./.,target=/src \
     env \
     BASE_IMAGE="$BASE_IMAGE" \
     INSTALL_IMAGE_PAYLOAD="$INSTALL_IMAGE_PAYLOAD" \
-    /src/build.sh
+    bash /src/build.sh
