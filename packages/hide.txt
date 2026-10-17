@@ -1,0 +1,13 @@
+# Steel OS (STEEL-20): launchers that stay installed but are hidden from the
+# start menu. One .desktop file name per line. Removing a whole package goes
+# in remove.txt instead. Missing files are skipped, so this list is safe when
+# Bazzite renames something.
+#
+# Bazzite's own command-line helpers; Steel OS replaces them with Steel Apps
+# and System Settings.
+bbrew.desktop
+# Bazzite's Steam variants; plain "Steam" stays.
+bazzite-steam-bpm.desktop
+# Developer tools a non-technical user should not stumble into; still
+# available from the terminal.
+htop.desktop

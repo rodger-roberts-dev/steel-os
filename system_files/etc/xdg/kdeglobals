@@ -1,7 +1,15 @@
 # Steel OS application defaults for KDE Plasma (STEEL-18, STEEL-29).
 # Konsole is the default terminal (decided 2026-10-16; it is Bazzite's default
 # too, so this only pins it). WezTerm is a one-click install.
-
 [General]
 TerminalApplication=konsole
 TerminalService=org.kde.konsole.desktop
+# Steel OS (STEEL-7): website colours. Dark theme, Forge Orange accent
+# (#F2641E), the same orange as the buttons on steel-os.org. Users can change
+# both in System Settings > Colours & Themes.
+ColorScheme=BreezeDark
+AccentColor=242,100,30
+accentColorFromWallpaper=false
+
+[KDE]
+LookAndFeelPackage=org.kde.breezedark.desktop

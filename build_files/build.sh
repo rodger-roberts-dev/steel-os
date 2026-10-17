@@ -140,6 +140,42 @@ for repo in /etc/yum.repos.d/*.repo; do
 done
 grep -l '^enabled=1' /etc/yum.repos.d/*.repo || true
 
+### 10. Desktop polish (STEEL-7, STEEL-20, STEEL-37, STEEL-48)
+# Start button icon and plain-English start menu, for new and existing users.
+LAYOUT=/usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js
+sed -i '$r /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/steel-os-panel.js' "$LAYOUT"
+
+# No "Bazzite" in any start-menu name. Desktop files keep their file names
+# (other tools refer to them); only the text people read changes.
+for f in /usr/share/applications/*.desktop; do
+    [[ -f "$f" ]] || continue
+    if grep -qE '^(Name|GenericName|Comment)(\[[^]]*\])?=.*Bazzite' "$f"; then
+        sed -i -E '/^(Name|GenericName|Comment)(\[[^]]*\])?=/ s/Bazzites?/Steel OS/g' "$f"
+    fi
+done
+
+# The app store is Bazzite's "Bazaar". Call it what it is.
+BAZAAR=/usr/share/applications/io.github.kolunmi.Bazaar.desktop
+if [[ -f "$BAZAAR" ]]; then
+    sed -i -E 's/^Name=.*/Name=App Store/; s/^GenericName=.*/GenericName=App Store/' "$BAZAAR"
+    grep -q '^Keywords=' "$BAZAAR" && sed -i 's/^Keywords=/Keywords=Bazaar;store;apps;install;/' "$BAZAAR" \
+        || echo 'Keywords=Bazaar;store;apps;install;' >> "$BAZAAR"
+fi
+
+# Things Steel OS does not ship (STEEL-20): rpm packages listed in
+# packages/remove.txt are removed, and launchers listed in
+# packages/hide.txt stay installed but out of the start menu.
+mapfile -t REMOVE_PACKAGES < <(grep -Ev '^\s*(#|$)' /ctx/packages/remove.txt || true)
+if [[ ${#REMOVE_PACKAGES[@]} -gt 0 ]]; then
+    dnf5 remove -y "${REMOVE_PACKAGES[@]}"
+fi
+while IFS= read -r launcher; do
+    f="/usr/share/applications/${launcher}"
+    [[ -f "$f" ]] || { echo "hide.txt: $launcher not found, skipping"; continue; }
+    grep -q '^NoDisplay=' "$f" && sed -i 's/^NoDisplay=.*/NoDisplay=true/' "$f" \
+        || sed -i '/^\[Desktop Entry\]/a NoDisplay=true' "$f"
+done < <(grep -Ev '^\s*(#|$)' /ctx/packages/hide.txt || true)
+
 ### 9. Rebuild the boot image so the boot splash shows Steel OS (STEEL-31)
 # The logo shown while the machine starts is read from the initramfs, a small
 # boot image Bazzite generated before our files were added. Our watermark in
