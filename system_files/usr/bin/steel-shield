@@ -89,7 +89,8 @@ explain() {
 run_clamscan() {
     local db_args=()
     [[ -n "${STEEL_SHIELD_DB:-}" ]] && db_args=(-d "$STEEL_SHIELD_DB")
-    nice -n 19 ionice -c 3 clamscan --no-summary --infected --stdout "${db_args[@]}" "$@" 2>/dev/null \
+    # clamscan exits 1 when it finds something; that is a result, not an error.
+    { nice -n 19 ionice -c 3 clamscan --no-summary --infected --stdout "${db_args[@]}" "$@" 2>/dev/null || true; } \
         | sed -n 's/^\(.*\): \(.*\) FOUND$/\1\t\2/p'
 }
 
