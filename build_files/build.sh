@@ -343,11 +343,11 @@ for f in /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/bazzit
     grep -q 'steel-os-portal.desktop' "$f" && echo "Steel OS Portal pinned in $f" || echo "Steel OS Portal: no Konsole pin found in $f"
 done
 # Taskbar for new users (T, 2026-10-17): Firefox, Steel OS Portal, file
-# manager, App Store, Steel Shield, in that order, next to the start button.
-# Everything else stays in the start menu; anyone can pin or unpin more.
+# manager, App Store, Steel Shield, Steam, Lutris and the terminal, in that
+# order, next to the start button. Anyone can pin or unpin more.
 # The four desktop boxes (Super+1 to 4) move from beside the start button to
 # beside the clock, numbered, so they don't look like empty taskbar spots.
-STEEL_PINS='"preferred://browser", "applications:steel-os-portal.desktop", "preferred://filemanager", "applications:io.github.kolunmi.Bazaar.desktop", "applications:steel-shield.desktop"'
+STEEL_PINS='"preferred://browser", "applications:steel-os-portal.desktop", "preferred://filemanager", "applications:io.github.kolunmi.Bazaar.desktop", "applications:steel-shield.desktop", "applications:steam.desktop", "applications:net.lutris.Lutris.desktop", "applications:org.kde.konsole.desktop"'
 for f in /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/bazzite-pins.js \
          /usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js; do
     [[ -f "$f" ]] || continue
