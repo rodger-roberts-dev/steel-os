@@ -1,4 +1,5 @@
 #!/usr/bin/bash
+# Based on Bazzite (github.com/ublue-os/bazzite), Apache-2.0. Modified for Steel OS by Steel & Code (STEEL-35).
 # Ref: https://github.com/ondrejbudai/bootc-isos/blob/3b3a185e4a57947f57baf53d2be5aee469274f98/bazzite/src/build.sh
 
 set -exo pipefail

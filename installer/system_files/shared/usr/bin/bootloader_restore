@@ -1,4 +1,5 @@
 #!/usr/bin/env -S /usr/bin/pkexec --keep-cwd /usr/bin/bash
+# Based on Bazzite (github.com/ublue-os/bazzite), Apache-2.0. Modified for Steel OS by Steel & Code (STEEL-35).
 
 set -o pipefail
 if [[ $DEBUG -eq 1 ]]; then

@@ -9,5 +9,46 @@ The Steel OS name, hexagon mark, logo and wallpapers in branding/ are
 trademarks and artwork of Steel & Code. The Apache License does not grant
 permission to use them (section 6); see branding/README.md.
 
-Steel OS is built on Bazzite by Universal Blue (Apache-2.0) and on Fedora.
-The software inside the image keeps its own licences.
+-------------------------------------------------------------------------
+Third-party work included in this repository
+-------------------------------------------------------------------------
+
+This repository contains files from the following projects, all licensed
+under the Apache License, Version 2.0. Files that were changed carry a note
+at the top saying so.
+
+* Universal Blue image template
+  https://github.com/ublue-os/image-template
+  Containerfile, build_files/build.sh, Justfile, disk_config/,
+  .github/workflows/, .github/dependabot.yml, .github/renovate.json5
+  (adapted for Steel OS).
+
+* Bazzite, by Universal Blue
+  https://github.com/ublue-os/bazzite
+  installer/ (the live installer recipe, its hooks and system files),
+  adapted and rebranded for Steel OS.
+
+* Titanoboa, by Universal Blue
+  https://github.com/ublue-os/titanoboa
+  Used by .github/workflows/build-disk.yml to build the installer ISO.
+
+-------------------------------------------------------------------------
+What the Steel OS image contains
+-------------------------------------------------------------------------
+
+The Steel OS image is built on Bazzite, which is built on Fedora. The
+software inside it keeps its own licences, including the GNU General Public
+License for the Linux kernel and many other parts. Its source code is
+available from:
+
+* Fedora:  https://src.fedoraproject.org  (package sources)
+* Bazzite: https://github.com/ublue-os/bazzite
+* Steel OS: https://github.com/rodger-roberts-dev/steel-os
+
+Fedora is a trademark of Red Hat, Inc. Bazzite is a project of Universal
+Blue. Steel OS is not affiliated with or endorsed by either. Steel OS uses
+their names only to credit them.
+
+Proprietary apps are not copied onto the Steel OS installer ISO. Where a
+proprietary app is a default (for example Obsidian), it is downloaded from
+Flathub after installation under its own licence.

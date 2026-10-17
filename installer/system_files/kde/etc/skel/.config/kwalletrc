@@ -1,2 +1,3 @@
+# Based on Bazzite (github.com/ublue-os/bazzite), Apache-2.0. Used unchanged in Steel OS.
 [Wallet]
 Enabled=false

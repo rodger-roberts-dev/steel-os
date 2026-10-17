@@ -1,3 +1,4 @@
+// Based on Bazzite (github.com/ublue-os/bazzite), Apache-2.0. Modified for Steel OS by Steel & Code (STEEL-35).
 const allPanels = panels();
 
 for (let i = 0; i < allPanels.length; ++i) {

@@ -1,4 +1,5 @@
 #!/bin/sh
+# Based on Bazzite (github.com/ublue-os/bazzite), Apache-2.0. Modified for Steel OS by Steel & Code (STEEL-35).
 
 set -u
 TMPBASE=$(mktemp -d /tmp/conky_efi.XXXX) || exit 0

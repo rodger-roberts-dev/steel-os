@@ -1,17 +1,11 @@
-# Steel OS: Flatpaks installed on every machine at first boot (from Flathub)
-# All IDs verified on Flathub 2026-10-15.
-
-# Office suite (T's "Open Office"). Opens Word, Excel, PowerPoint.
+# Steel OS (STEEL-35, STEEL-51): apps copied onto the ISO and onto the disk
+# during install, so they are there at first login. Free and open-source
+# apps only: putting a copy of a proprietary app on our ISO would be
+# redistributing it. Proprietary defaults (Obsidian) are installed after the
+# first boot from Flathub instead, by steel-os-flatpak-install.
 org.libreoffice.LibreOffice
-# Default browser (decided 2026-10-16). Pinned here so it is always present.
 org.mozilla.firefox
-# Screen recording and streaming.
 com.obsproject.Studio
-# Full video editor (CapCut's offline stand-in).
 org.kde.kdenlive
-# Notes.
-md.obsidian.Obsidian
-# PC game streaming client.
 com.moonlight_stream.Moonlight
-# Code editor.
 dev.zed.Zed
