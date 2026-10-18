@@ -3,9 +3,10 @@
 # apps only: putting a copy of a proprietary app on our ISO would be
 # redistributing it. Proprietary defaults (Obsidian) are installed after the
 # first boot from Flathub instead, by steel-os-flatpak-install.
+#
+# Only the two everyone needs at first login (T, 2026-10-18): every app here
+# is downloaded again for every installer build and makes the download
+# bigger. Zed and the other defaults install after the first boot; OBS
+# Studio, Kdenlive and Moonlight are one click in the Steel OS Portal.
 org.libreoffice.LibreOffice
 org.mozilla.firefox
-com.obsproject.Studio
-org.kde.kdenlive
-com.moonlight_stream.Moonlight
-dev.zed.Zed

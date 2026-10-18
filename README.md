@@ -28,7 +28,7 @@ Website and downloads: **[steel-os.org](https://steel-os.org)**.
 | **Safe updates** | The whole system updates as one tested image, automatically every Tuesday at 4 am. If an update ever goes wrong, pick the previous version in the boot menu. |
 | **Easy like Windows** | KDE Plasma desktop, windows that cascade, a start menu in plain English ("Web Browser (Firefox)"), printers and network PCs found without a terminal. |
 | **Plays games** | Steam, Proton, Lutris and controller support built in. |
-| **Apps that just install** | LibreOffice, Firefox, OBS Studio, Kdenlive, Obsidian, Moonlight and Zed come pre-installed. Chrome, Slack, Zoom, Discord and more are one click away. |
+| **Apps that just install** | LibreOffice, Firefox, Obsidian and Zed come pre-installed. Chrome, Slack, Zoom, Discord, OBS Studio, Kdenlive, Moonlight and more are one click away. |
 | **Keyboard-first if you want it** | Super+Enter opens the terminal (Konsole), Super+Shift+Enter opens Firefox, Alt+C and Alt+V copy and paste. Full list in [docs/keyboard-shortcuts.md](docs/keyboard-shortcuts.md). |
 | **Built-in security** | Read-only system files, sandboxed apps, a firewall and Secure Boot support. Every Steel OS update is signed by us; making installed machines refuse unsigned updates is in progress. |
 

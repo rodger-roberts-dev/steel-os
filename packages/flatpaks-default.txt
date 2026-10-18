@@ -5,15 +5,11 @@
 org.libreoffice.LibreOffice
 # Default browser (decided 2026-10-16). Bazzite already installs it; this pins it.
 org.mozilla.firefox
-# Screen recording and streaming.
-com.obsproject.Studio
-# Full video editor (CapCut's offline stand-in).
-org.kde.kdenlive
+# OBS Studio, Kdenlive and Moonlight are one click in the Steel OS Portal
+# instead (T, 2026-10-18), in packages/steel-apps.txt.
 # Notes.
 md.obsidian.Obsidian
-# PC game streaming client.
-com.moonlight_stream.Moonlight
-# Code editor.
+# Code editor (asked for in the Katana test; zeditor opens it).
 dev.zed.Zed
 # Proton versions for Steam and Lutris games: installs GE-Proton and keeps it
 # current (T, 2026-10-17). Also in the Portal's Gaming tab.
