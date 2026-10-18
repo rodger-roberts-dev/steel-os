@@ -46,6 +46,10 @@ point. It takes about 30 minutes.
 7. When it says **READY**, click **CLOSE** and take the stick out. Windows may
    say the stick needs formatting afterwards: don't, that is normal.
 
+On Steel OS, another Linux or a Mac, use **Fedora Media Writer** instead (on
+Steel OS: Portal, Steel Apps, Everyday). Choose **Select .iso file**, pick the
+Steel OS file and your stick, click **Write** and type your password.
+
 Installing in a virtual machine instead? Attach the downloaded file as the
 virtual machine's CD drive, use UEFI firmware, 8 GB of memory and a 64 GB disk,
 and skip to step 4.

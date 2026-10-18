@@ -28,8 +28,8 @@
 <h2>1. Download</h2>
 <p>On <a href="https://steel-os.org/download">steel-os.org/download</a>, click <b>Download</b>. To check the file, open Command Prompt in your Downloads folder and type <code>certutil -hashfile steel-os-preview-x86_64.iso SHA256</code>. The long number must match the <b>SHA-256 checksum</b> link on the website.</p>
 
-<h2>2. Make the USB stick with Rufus</h2>
-<p>Download <b>Rufus</b> from <a href="https://rufus.ie">rufus.ie</a> and open it. (Fedora Media Writer and balenaEtcher work too: choose the file, choose the stick, click <b>Write</b>.)</p>
+<h2>2. Make the USB stick with Rufus (Windows)</h2>
+<p>On Windows, download <b>Rufus</b> from <a href="https://rufus.ie">rufus.ie</a> and open it. (On Steel OS, Linux or a Mac, see <a href="#media-writer">Fedora Media Writer</a> below.)</p>
 <ol>
   <li><b>Device:</b> pick your USB stick. Check the drive letter and size: <b>everything on it will be erased</b>, so copy off anything you need first.</li>
   <li><b>Boot selection:</b> click <b>SELECT</b> and choose the Steel OS file you downloaded.</li>
@@ -40,6 +40,18 @@
 </ol>
 <p class="note">Afterwards Windows may say the stick needs formatting, or show it almost empty. That is normal: Windows can't read it, but the PC can start from it. Don't format it. To use the stick for files again later, format it in Rufus or Windows.</p>
 <p>Installing in a virtual machine instead? Attach the downloaded file as its CD drive (UEFI firmware on, 8 GB of memory, a 64 GB disk; in VirtualBox, 3D acceleration off) and skip to step 4.</p>
+
+<h2 id="media-writer">Make the USB stick on Steel OS, Linux or a Mac</h2>
+<p>Rufus only runs on Windows. Everywhere else, use <b>Fedora Media Writer</b>; it works on Windows too. On Steel OS it is one click: Steel OS Portal, <b>Steel Apps</b> tab, <b>Everyday</b>, <b>Fedora Media Writer</b>. On a Mac or another Linux, get it from <a href="https://flathub.org/apps/org.fedoraproject.MediaWriter">flathub.org</a> or <a href="https://github.com/FedoraQt/MediaWriter/releases">its download page</a>.</p>
+<ol>
+  <li>Plug in the USB stick (16 GB or more; <b>everything on it will be erased</b>) and open <b>Fedora Media Writer</b>.</li>
+  <li>Choose <b>Select .iso file</b> and click <b>Next</b>.</li>
+  <li>Click <b>Select</b> and choose the Steel OS file you downloaded (usually in your <b>Downloads</b> folder).</li>
+  <li>Under <b>USB Drive</b>, pick your stick. Check the name and size.</li>
+  <li>Click <b>Write</b>. Type your password when asked: writing to a USB stick needs it.</li>
+  <li>When it says <b>Finished</b>, click <b>Finish</b> and take out the stick.</li>
+</ol>
+<p>Fedora Media Writer always writes the file exactly as it is, so there are no settings to choose.</p>
 
 <h2>3. Start the PC from the USB stick</h2>
 <ol>
