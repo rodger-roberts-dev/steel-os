@@ -153,6 +153,14 @@ if [[ ":Jupiter:Galileo:" =~ ":\$SYS_ID:" ]]; then
 	exit 0
 fi
 
+# Secure Boot off: every driver loads without the key, so skip the blue key
+# screen at the next start. Turned on later? Steel OS Help, "A blue screen
+# after installing", has the one command that brings the screen back.
+if ! LC_ALL=C mokutil --sb-state 2>/dev/null | grep -qi "SecureBoot enabled"; then
+	echo "Secure Boot is off. Skipping key enrollment."
+	exit 0
+fi
+
 mokutil --timeout -1 || :
 echo -e "\$ENROLLMENT_PASSWORD\n\$ENROLLMENT_PASSWORD" | mokutil --import "\$SECUREBOOT_KEY" || :
 %end
