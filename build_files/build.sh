@@ -338,6 +338,33 @@ sed -i \
     -e 's|^Icon=io.github.ublue_os.yafti_gtk$|Icon=steel-os-portal|' \
     -e 's|^DEFAULT_ACCENT = .*|DEFAULT_ACCENT = "#F2641E"|' \
     "$PORTAL_ENGINE"
+# Buttons that only open an app or a web page ("terminal: false" in the
+# Portal's list, from make-portal.py) start it directly instead of in a
+# terminal window (T, 2026-10-18: Steel Shield opened Konsole too). If the
+# engine's code has changed, they keep opening a terminal, with a warning.
+python3 - "$PORTAL_ENGINE" <<'PYEOF2'
+import sys
+p = sys.argv[1]
+s = open(p).read()
+call = "error_message = self.launch_terminal(script)"
+method = "    def launch_terminal(self, script):"
+if s.count(call) == 1 and s.count(method) == 1:
+    s = s.replace(call, "error_message = self.launch_detached(script) if action.get('terminal') is False else self.launch_terminal(script)")
+    s = s.replace(method, """    def launch_detached(self, script):
+        \"\"\"Steel OS: run a button that only opens an app, without a terminal window.\"\"\"
+        try:
+            return subprocess.Popen(['bash', '-c', script], start_new_session=True,
+                                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except Exception as e:
+            return f"Could not start it: {e}"
+
+""" + method)
+    open(p, "w").write(s)
+    compile(s, p, "exec")
+    print("Steel OS Portal: buttons that open an app start it without a terminal")
+else:
+    print("Steel OS Portal: WARNING engine changed; every button still opens a terminal")
+PYEOF2
 if grep -qi bazzite "$PORTAL_ENGINE"; then
     echo "Steel OS Portal: the engine still mentions Bazzite:" >&2
     grep -ni bazzite "$PORTAL_ENGINE" >&2

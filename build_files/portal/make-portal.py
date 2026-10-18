@@ -32,6 +32,11 @@ def action(id_, title, description, script=None, status_script=None, options=Non
         lines.append(f"        status_script: {q(status_script)}")
     if script:
         lines.append(f"        script: {q(script)}")
+        # Buttons that only open an app or a web page don't need a terminal
+        # window (T, 2026-10-18: Steel Shield opened Konsole too). Needs the
+        # "terminal: false" support build.sh adds to the Portal program.
+        if script.startswith(("nohup setsid ", "xdg-open ")):
+            lines.append("        terminal: false")
     if options:
         lines.append("        options:")
         for opt_id, label, opt_script in options:
