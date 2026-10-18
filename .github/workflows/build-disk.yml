@@ -91,8 +91,8 @@ jobs:
           # master is by now.
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
-      # Each image build also publishes the image as latest-<commit>. Use that
-      # exact image, so this installer is the version of the merge that
+      # Each image build also publishes the image under names that include the
+      # commit. Use that exact image, so this installer is the version of the merge that
       # triggered it (T, 2026-10-18: when merges land quickly, taking
       # "latest" skipped numbers and labelled builds with a later merge).
       # Locally it is tagged "latest" again, because the installer tells the
@@ -102,23 +102,37 @@ jobs:
         shell: bash
         env:
           SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+          BUILT: ${{ github.event.workflow_run.created_at || '' }}
         run: |
           set -euo pipefail
           repo="${IMAGE_REF%:*}"
+          # The image build publishes several names for each merge
+          # (<date>-<commit>, latest-<date>-<commit>, latest-<commit>), and
+          # they are not always the same file: only one is signed, and
+          # Steel OS refuses unsigned images. Take the first name whose image
+          # has a signature (a sha256-<digest>.sig entry next to it).
+          day="$(date -u -d "${BUILT:-now}" +%Y%m%d)"
+          next="$(date -u -d "${BUILT:-now} + 1 day" +%Y%m%d)"
           found=""
           for n in 7 8 9 10 11 12; do
-            if skopeo inspect --no-tags "docker://${repo}:latest-${SHA:0:$n}" >/dev/null 2>&1; then
-              found="${repo}:latest-${SHA:0:$n}"
-              break
-            fi
+            c="${SHA:0:$n}"
+            for tag in "${day}-${c}" "${next}-${c}" "latest-${day}-${c}" "latest-${next}-${c}" "latest-${c}"; do
+              digest="$(skopeo inspect --no-tags --format '{{.Digest}}' "docker://${repo}:${tag}" 2>/dev/null || true)"
+              [[ -n "$digest" ]] || continue
+              if skopeo inspect --raw "docker://${repo}:${digest/:/-}.sig" >/dev/null 2>&1; then
+                found="${repo}:${tag}"
+                echo "Using $found ($digest, signed)"
+                break 2
+              fi
+              echo "$tag ($digest) is not signed; trying the next name"
+            done
           done
           if [[ -n "$found" ]]; then
-            echo "Using $found"
             sudo podman pull -q "$found"
             sudo podman tag "$found" "$IMAGE_REF"
             echo "PAYLOAD=$found" >> "$GITHUB_ENV"
           else
-            echo "::warning::No image tagged for ${SHA:0:7}; using the newest image instead"
+            echo "::warning::No signed image found for ${SHA:0:7}; using the newest image instead"
             sudo podman pull -q "$IMAGE_REF"
             echo "PAYLOAD=$IMAGE_REF" >> "$GITHUB_ENV"
           fi
