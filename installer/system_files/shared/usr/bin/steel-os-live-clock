@@ -27,7 +27,11 @@ installer_zone() {
     local addr
     addr="$(sudo -n cat /run/anaconda/bus.address 2>/dev/null)" || return 0
     [[ -n "$addr" ]] || return 0
-    sudo -n busctl --address="$addr" get-property         org.fedoraproject.Anaconda.Modules.Timezone         /org/fedoraproject/Anaconda/Modules/Timezone         org.fedoraproject.Anaconda.Modules.Timezone Timezone 2>/dev/null         | sed -n 's/^s "\(.*\)"$//p'
+    sudo -n busctl --address="$addr" get-property \
+        org.fedoraproject.Anaconda.Modules.Timezone \
+        /org/fedoraproject/Anaconda/Modules/Timezone \
+        org.fedoraproject.Anaconda.Modules.Timezone Timezone 2>/dev/null \
+        | sed -n 's/^s "\(.*\)"$/\1/p'
 }
 for _ in $(seq 1 1440); do
     target="$(readlink /mnt/sysroot/etc/localtime 2>/dev/null)"
