@@ -1,0 +1,13 @@
+[Desktop Entry]
+# Steel OS (T, 2026-10-18): like Windows' "Network & Internet". KDE keeps its
+# network page inside System Settings; this puts it in the start menu's
+# System category and in search.
+Name=Wi-Fi & Networking
+GenericName=Network & Internet
+Comment=Wi-Fi, wired connections, VPN, hotspot and network details
+Exec=systemsettings kcm_networkmanagement
+Icon=preferences-system-network
+Terminal=false
+Type=Application
+Categories=Settings;System;Network;
+Keywords=network;internet;wifi;wi-fi;wireless;ethernet;wired;vpn;hotspot;ip;dns;connection;
