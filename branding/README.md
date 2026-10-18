@@ -56,7 +56,7 @@ Font License, free for commercial use).
 | Lock screen | `/etc/xdg/kscreenlockerrc` points at the waves wallpaper |
 | Login screen | `/usr/share/sddm/themes/breeze/theme.conf.user` points at the waves wallpaper |
 | Wallpaper chooser | `/usr/share/wallpapers/steel-os-waves/` and `steel-os-room/` as Plasma wallpaper packages |
-| Boot splash | `/usr/share/plymouth/themes/spinner/watermark.png`, the logo at 220 px wide |
+| Boot splash | `/usr/share/steel-os/plymouth/`: the logo at 220 px wide, and 90 frames of it (the hexagon turning slowly, the underscore blinking) that replace the spinning circle |
 | Steel OS Portal | The `steel-os-portal` icon from `portal/`, on its launcher, taskbar pin and window |
 | Start button | The Steel OS icon, set by a Plasma layout script (`steel-os-panel.js`) |
 | About this System | `/etc/xdg/kcm-about-distrorc`, `/usr/lib/os-release` and the `steel-os` icon in the hicolor theme |

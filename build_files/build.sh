@@ -627,11 +627,51 @@ echo "Steel OS developer commands: $(command -v nvim) $(command -v zeditor)"
 
 ### 9. Rebuild the boot image so the boot splash shows Steel OS (STEEL-31)
 # The logo shown while the machine starts is read from the initramfs, a small
-# boot image Bazzite generated before our files were added. Our watermark in
-# /usr/share/plymouth/themes/spinner/ only appears once the initramfs is
+# boot image Bazzite generated before our files were added. Our logo frames in
+# /usr/share/plymouth/themes/spinner/ only appear once the initramfs is
 # rebuilt. Same command Bazzite uses (its build_files/build-initramfs).
 # Keep this the LAST section: anything copied in after it would not reach
 # the boot screen.
+# Steel OS boot screen (T, 2026-10-18): no spinning circle. The Steel OS logo
+# sits at the bottom; the hexagon around the S turns slowly and the blue
+# underscore blinks, like a text cursor. The theme's "throbber" (its spinner)
+# becomes 90 frames of the logo: the hexagon turns a sixth of a turn per loop
+# (it looks the same after 60 degrees, so the loop is seamless) and the
+# underscore is on for 15 frames and off for 15, placed where the logo used
+# to be. The separate logo (watermark) is removed so it isn't drawn
+# twice, and messages such as "Preparing System" appear above the logo.
+SPINNER=/usr/share/plymouth/themes/spinner
+if [[ -f "$SPINNER/spinner.plymouth" ]]; then
+    rm -f "$SPINNER"/throbber-*.png "$SPINNER/watermark.png"
+    cp /usr/share/steel-os/plymouth/throbber-*.png "$SPINNER/"
+    python3 - "$SPINNER/spinner.plymouth" <<'PYEOF'
+import sys
+path = sys.argv[1]
+want = {"HorizontalAlignment": ".5", "VerticalAlignment": ".96", "MessageBelowAnimation": "false"}
+lines = open(path).read().splitlines()
+out, section, seen = [], "", set()
+for line in lines:
+    stripped = line.strip()
+    if stripped.startswith("["):
+        if section == "two-step":
+            out.extend(f"{k}={v}" for k, v in want.items() if k not in seen)
+        section = stripped.strip("[]")
+    key = stripped.split("=", 1)[0]
+    if section == "two-step" and key in want:
+        line = f"{key}={want[key]}"
+        seen.add(key)
+    out.append(line)
+if section == "two-step":
+    out.extend(f"{k}={v}" for k, v in want.items() if k not in seen)
+open(path, "w").write("\n".join(out) + "\n")
+PYEOF
+    echo "Steel OS boot screen: blinking logo"
+    grep -E '^(ImageDir|HorizontalAlignment|VerticalAlignment|Watermark|MessageBelowAnimation)' "$SPINNER/spinner.plymouth"
+    ls "$SPINNER" | grep -c '^throbber-'
+else
+    echo "Steel OS: WARNING the spinner boot theme is missing; boot screen unchanged"
+fi
+
 QUALIFIED_KERNEL="$(rpm -q --queryformat='%{evr}.%{arch}' kernel-core | tail -n 1)"
 export DRACUT_NO_XATTR=1
 /usr/bin/dracut --no-hostonly --kver "$QUALIFIED_KERNEL" --reproducible --zstd -v \
