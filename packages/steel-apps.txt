@@ -14,6 +14,7 @@ org.mozilla.Thunderbird | Thunderbird | Email, calendar and contacts (the Outloo
 com.dropbox.Client | Dropbox | Cloud file sync | Everyday
 com.calibre_ebook.calibre | Calibre | Ebook library and converter | Everyday
 com.github.johnfactotum.Foliate | Foliate | Ebook reader | Everyday
+org.fedoraproject.MediaWriter | Fedora Media Writer | Make a USB stick to install Steel OS on another PC | Everyday
 
 # Work
 com.slack.Slack | Slack | Team chat | Work
