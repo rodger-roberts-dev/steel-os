@@ -2,9 +2,11 @@
 # Steel OS (STEEL-36): choose three security questions, so a forgotten
 # password can be reset from the login screen. Optional.
 #
-# Shown as a page of Steel OS Setup and from "Security questions" in the
-# Steel OS Portal. Saving runs steel-os-recovery-enrol through pkexec, which
-# asks for the user's own password.
+# One window (T, 2026-10-17): the explanation, three questions with their
+# answers, Save and Skip. Shown as a page of Steel OS Setup and from
+# "Security questions" in the Steel OS Portal. Saving runs
+# steel-os-recovery-enrol through pkexec, which asks for the user's own
+# password.
 
 set -uo pipefail
 
@@ -20,55 +22,77 @@ QUESTIONS=(
     "What was the name of your first school?"
 )
 
-command -v kdialog >/dev/null 2>&1 || exit 0
-dialog() { kdialog --title "$TITLE" --icon dialog-password "$@"; }
+command -v yad >/dev/null 2>&1 || exit 0
+msg() { kdialog --title "$TITLE" --icon dialog-password "$@" 2>/dev/null; }
 
+skip_label="Cancel"
+[[ "${1:-}" == "--from-setup" ]] && skip_label="Skip"
 
-intro="<h2>Security questions</h2>
-<p>If you ever forget your password, click <b>Forgot your password?</b> on the login
-screen and answer these three questions to set a new one, like on Windows.</p>
-<p>Pick questions only you know the answers to. Answers are not case
-sensitive. They are stored scrambled, so nobody can read them, not even
-Steel OS.</p>
-<p><b>Disk encryption:</b> if you turned it on, its password can't be reset this
-way or any other way.</p>"
+intro="<big><b>Security questions</b></big>
 
-if [[ "${1:-}" == "--from-setup" ]]; then
-    dialog --yes-label "Set up questions" --no-label "Skip" --yesno "$intro" || exit 0
-else
-    dialog --yes-label "Set up questions" --no-label "Cancel" --yesno "$intro" || exit 0
-fi
+If you ever forget your password, click <b>Forgot your password?</b> on the login screen and answer these three questions to set a new one, like on Windows.
 
-chosen=()
-answers=()
-for n in 1 2 3; do
-    options=()
-    for q in "${QUESTIONS[@]}"; do
-        skip=no
-        for c in "${chosen[@]}"; do [[ "$c" == "$q" ]] && skip=yes; done
-        [[ $skip == no ]] && options+=("$q")
+Pick three different questions only you know the answers to. Answers are not case sensitive, and they are stored scrambled, so nobody can read them, not even Steel OS.
+
+<b>Disk encryption:</b> if you turned it on, its password can't be reset this way or any other way."
+
+combo() { # combo default-index -> "a!^b!c" with the default marked
+    local i out=""
+    for i in "${!QUESTIONS[@]}"; do
+        [[ -n "$out" ]] && out+="!"
+        [[ $i -eq $1 ]] && out+="^"
+        out+="${QUESTIONS[$i]}"
     done
-    q="$(dialog --combobox "Question $n of 3" "${options[@]}" --default "${options[0]}")" || exit 0
-    while true; do
-        a="$(dialog --inputbox "<b>$q</b><br>Your answer:")" || exit 0
-        a_norm="$(printf '%s' "$a" | /usr/libexec/steel-os-recovery-crypt normalise)"
-        if [[ ${#a_norm} -lt 2 ]]; then
-            dialog --sorry "Please type an answer of at least two letters."
-            continue
+    echo "$out"
+}
+
+index_of() { local i; for i in "${!QUESTIONS[@]}"; do [[ "${QUESTIONS[$i]}" == "$1" ]] && { echo "$i"; return; }; done; echo 0; }
+
+d=(0 1 2)       # chosen question for each row
+a=("" "" "")    # answers typed so far
+problem=""
+
+while true; do
+    text="$intro"
+    [[ -n "$problem" ]] && text+="
+
+<span foreground='#F2641E'><b>$problem</b></span>"
+    out="$(yad --form --title="$TITLE" --window-icon=dialog-password --image=dialog-password \
+        --center --width=640 --borders=16 --separator=$'\t' --item-separator='!' \
+        --text="$text" \
+        --field="Question 1:CB" "$(combo "${d[0]}")" --field="Answer 1" "${a[0]}" \
+        --field="Question 2:CB" "$(combo "${d[1]}")" --field="Answer 2" "${a[1]}" \
+        --field="Question 3:CB" "$(combo "${d[2]}")" --field="Answer 3" "${a[2]}" \
+        --button="$skip_label:1" --button="Save:0")" || exit 0
+
+    IFS=$'\t' read -r q1 a1 q2 a2 q3 a3 _ <<< "$out"
+    chosen=("$q1" "$q2" "$q3")
+    a=("$a1" "$a2" "$a3")
+    d=("$(index_of "$q1")" "$(index_of "$q2")" "$(index_of "$q3")")
+
+    problem=""
+    if [[ "$q1" == "$q2" || "$q1" == "$q3" || "$q2" == "$q3" ]]; then
+        problem="Please pick three different questions."
+        continue
+    fi
+    for i in 0 1 2; do
+        norm="$(printf '%s' "${a[$i]}" | /usr/libexec/steel-os-recovery-crypt normalise)"
+        if [[ ${#norm} -lt 2 ]]; then
+            problem="Please type an answer of at least two letters for question $((i + 1))."
+            break
         fi
-        break
     done
-    chosen+=("$q")
-    answers+=("$a")
+    [[ -n "$problem" ]] && continue
+    break
 done
 
 data=""
 for i in 0 1 2; do
-    data+="${chosen[$i]}"$'\t'"${answers[$i]}"$'\n'
+    data+="${chosen[$i]}"$'\t'"${a[$i]}"$'\n'
 done
 
 if printf '%s' "$data" | pkexec /usr/libexec/steel-os-recovery-enrol >/dev/null 2>&1; then
-    dialog --msgbox "<h3>Security questions saved</h3><p>If you forget your password, click <b>Forgot your password?</b> on the login screen.</p>"
+    msg --msgbox "<h3>Security questions saved</h3><p>If you forget your password, click <b>Forgot your password?</b> on the login screen.</p>"
 else
-    dialog --sorry "The security questions were not saved. You can try again from the Steel OS Portal, Welcome tab."
+    msg --sorry "The security questions were not saved. You can try again from the Steel OS Portal, Welcome tab."
 fi
