@@ -625,16 +625,16 @@ if timeout 900 freshclam --foreground --show-progress=no --datadir="$SEED" --con
     chmod 0644 "$SEED"/*
     rm -f "$SEED"/freshclam.dat "$SEED"/*.tmp
     ls -la "$SEED"
-    # Prove the built-in definitions work: they must catch the EICAR test file.
-    eicar="$(mktemp)"
-    printf '%s' 'X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*' > "$eicar"
-    if clamscan --no-summary -d "$SEED" "$eicar" | grep -q FOUND; then
-        echo "Steel Shield: built-in definitions loaded and caught the test file"
-    else
-        echo "Steel Shield: built-in definitions did not catch the test file" >&2
+    # Prove the built-in definitions load: the scanner must report millions of
+    # known threats from them (the build stops otherwise). Detection and
+    # quarantine are proved by the self-test below.
+    known="$(clamscan -d "$SEED" /dev/null 2>&1 | sed -n 's/^Known viruses: *//p')"
+    echo "Steel Shield: built-in definitions hold ${known:-0} known threats"
+    if (( ${known:-0} < 1000000 )); then
+        echo "Steel Shield: the built-in definitions did not load" >&2
+        clamscan -d "$SEED" /dev/null >&2 || true
         exit 1
     fi
-    rm -f "$eicar"
 else
     echo "Steel OS: WARNING could not download the built-in virus definitions; installs will download them at first boot"
     rm -rf "$SEED"
