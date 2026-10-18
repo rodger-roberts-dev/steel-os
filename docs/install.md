@@ -95,7 +95,8 @@ to restart once.
 ## 6. First start
 
 1. Log in with the password you just made.
-2. **Steel OS Setup** opens: how updates work, which apps you want, and your
+2. **Steel OS Setup** opens: first your three security questions (for a
+   forgotten password), then how updates work, which apps you want, and your
    printer. Every page has **Skip**.
 3. Leave the PC online for a few minutes. Firefox, LibreOffice and the other
    default apps install themselves and appear in the start menu.

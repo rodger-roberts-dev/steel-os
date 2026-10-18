@@ -1,7 +1,11 @@
 #!/usr/bin/bash
 # Steel OS (STEEL-35): first-login setup, like Windows, with Skip on every page.
 #
-# 1. Welcome   2. Updates   3. Choose apps   4. Printers   5. Done
+# 1. Security questions   2. Welcome   3. Updates   4. Problems and ideas
+# 5. Choose apps   6. Printers   7. Done
+#
+# The security questions come first (T, 2026-10-18), so a way back in after
+# a forgotten password is set up before anything else; Skip moves on.
 #
 # Runs once per user at first login (autostart from /etc/skel). "Steel OS
 # Setup" in the start menu runs it again with --again. Uses kdialog, KDE's own
@@ -33,15 +37,20 @@ open_portal() {
     nohup setsid yafti_gtk.py /usr/share/steel-os/portal.yml >/dev/null 2>&1 &
 }
 
-# --- 1. Welcome ------------------------------------------------------------
+# --- 1. Security questions (STEEL-36), optional ------------------------
+if [[ -x /usr/libexec/steel-os-recovery-setup ]]; then
+    /usr/libexec/steel-os-recovery-setup --from-setup || true
+fi
+
+# --- 2. Welcome ------------------------------------------------------------
 dialog --yes-label "Next" --no-label "Skip setup" --yesno \
 "<h2>Welcome to Steel OS</h2>
-<p>A few quick steps get your computer ready: how updates work, your apps,
-your printer, and a way back in if you forget your password.</p>
+<p>A few more quick steps get your computer ready: how updates work, how to
+tell us about a problem, your apps and your printer.</p>
 <p>Every step can be skipped. You can run this setup again any time from
 the start menu: <b>Steel OS Setup</b>.</p>" || exit 0
 
-# --- 2. Updates ------------------------------------------------------------
+# --- 3. Updates ------------------------------------------------------------
 dialog --yes-label "Next" --no-label "Skip the rest" --yesno \
 "<h2>Updates look after themselves</h2>
 <p>Steel OS updates itself every <b>Tuesday morning</b> in the background.
@@ -51,7 +60,17 @@ update, restart and pick the earlier version from the menu.</p>
 <p>Want an update sooner? Open the <b>Steel OS Portal</b> and click
 <b>Update now</b>.</p>" || exit 0
 
-# --- 3. Choose apps --------------------------------------------------------
+# --- 4. Problems and ideas -------------------------------------------------
+dialog --yes-label "Next" --no-label "Skip the rest" --yesno \
+"<h2>Something wrong? Got an idea?</h2>
+<p>Tell the Steel OS team straight from your computer: open
+<b>Report a Problem or Idea</b> in the start menu, or in the
+<b>Steel OS Portal</b>, Welcome tab.</p>
+<p>Say what happened or what you would like, and it sends a screenshot and
+your computer details (no names, no files) with it. You see the screenshot
+first and can leave it out. No account needed.</p>" || exit 0
+
+# --- 5. Choose apps --------------------------------------------------------
 # Popular picks are ticked to start with; untick anything you don't want.
 PRESELECT=" com.google.Chrome com.slack.Slack us.zoom.Zoom com.discordapp.Discord "
 if [[ -r "$APPS_LIST" ]]; then
@@ -94,7 +113,7 @@ if [[ -r "$APPS_LIST" ]]; then
     fi
 fi
 
-# --- 4. Printers -----------------------------------------------------------
+# --- 6. Printers -----------------------------------------------------------
 if dialog --yes-label "Set up a printer now" --no-label "Later" --yesno \
 "<h2>Printers</h2>
 <p>Most printers are found when you click <b>Add</b> on the Printers page.
@@ -103,17 +122,13 @@ Older HP, Canon and Epson printers use drivers that are already built in.</p>
     nohup setsid systemsettings kcm_printer_manager >/dev/null 2>&1 &
 fi
 
-# --- 4b. Security questions (STEEL-36), optional ------------------------
-if [[ -x /usr/libexec/steel-os-recovery-setup ]]; then
-    /usr/libexec/steel-os-recovery-setup --from-setup || true
-fi
-
-# --- 5. Done ---------------------------------------------------------------
+# --- 7. Done ---------------------------------------------------------------
 if dialog --yes-label "Open the Steel OS Portal" --no-label "Finish" --yesno \
 "<h2>You're all set</h2>
 <p><b>Apps:</b> the start menu, the Steel OS Portal on the taskbar, or the App Store.<br>
 <b>Settings:</b> System Settings in the start menu.<br>
 <b>Help:</b> Steel OS Help in the start menu.<br>
+<b>Problems or ideas:</b> Report a Problem or Idea in the start menu.<br>
 <b>Updates and tools:</b> the Steel OS Portal.<br>
 <b>Terminal:</b> Super+Enter. <b>Browser:</b> Super+Shift+Enter.</p>"; then
     open_portal
