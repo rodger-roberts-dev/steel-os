@@ -7,7 +7,7 @@
   <vendor_url>https://steel-os.org</vendor_url>
   <action id="org.steel-os.recovery.enrol">
     <description>Save security questions for password recovery</description>
-    <message>Type your password to save your security questions.</message>
+    <message>Type your password to save or remove your security questions.</message>
     <defaults>
       <allow_any>no</allow_any>
       <allow_inactive>no</allow_inactive>

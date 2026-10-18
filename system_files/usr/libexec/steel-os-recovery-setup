@@ -7,6 +7,10 @@
 # "Security questions" in the Steel OS Portal. Saving runs
 # steel-os-recovery-enrol through pkexec, which asks for the user's own
 # password.
+#
+# Opened again later, the window says questions are already set, starts on
+# the questions chosen last time (never the answers, which are only stored
+# scrambled) and offers "Remove my security questions".
 
 set -uo pipefail
 
@@ -22,17 +26,31 @@ QUESTIONS=(
     "What was the name of your first school?"
 )
 
+# The questions (not the answers) chosen last time, one per line. Only a
+# reminder for this window: the real record is root-only, in
+# /var/lib/steel-os/recovery.
+MARK="${XDG_CONFIG_HOME:-$HOME/.config}/steel-os/security-questions"
+
 command -v yad >/dev/null 2>&1 || exit 0
 msg() { kdialog --title "$TITLE" --icon dialog-password "$@" 2>/dev/null; }
 
 skip_label="Cancel"
 [[ "${1:-}" == "--from-setup" ]] && skip_label="Skip"
 
+already=0
+[[ -s "$MARK" ]] && already=1
+
 intro="<big><b>Security questions</b></big>
 
 If you ever forget your password, click <b>Forgot your password?</b> on the login screen and answer these three questions to set a new one, like on Windows.
 
-Pick three different questions only you know the answers to. Answers are not case sensitive, and they are stored scrambled, so nobody can read them, not even Steel OS.
+Pick three different questions only you know the answers to. Answers are not case sensitive, and they are stored scrambled, so nobody can read them, not even Steel OS."
+if (( already )); then
+    intro+="
+
+<b>You already have security questions.</b> Saving replaces them; type all three answers again. Your old answers can't be shown, because they are stored scrambled."
+fi
+intro+="
 
 <b>Disk encryption:</b> if you turned it on, its password can't be reset this way or any other way."
 
@@ -50,6 +68,25 @@ index_of() { local i; for i in "${!QUESTIONS[@]}"; do [[ "${QUESTIONS[$i]}" == "
 
 d=(0 1 2)       # chosen question for each row
 a=("" "" "")    # answers typed so far
+if (( already )); then
+    mapfile -t last < "$MARK"
+    if (( ${#last[@]} >= 3 )); then
+        d=("$(index_of "${last[0]}")" "$(index_of "${last[1]}")" "$(index_of "${last[2]}")")
+    fi
+fi
+
+remove_questions() {
+    msg --warningyesno "<h3>Remove your security questions?</h3><p>You won't be able to reset a forgotten password from the login screen until you set them up again.</p>" \
+        --yes-label "Remove" --no-label "Keep them" || return 1
+    if pkexec /usr/libexec/steel-os-recovery-enrol --remove >/dev/null 2>&1; then
+        rm -f "$MARK"
+        msg --msgbox "<h3>Security questions removed</h3><p>Set them up again any time from the Steel OS Portal, Welcome tab, <b>Security questions</b>.</p>"
+    else
+        msg --sorry "The security questions were not removed."
+    fi
+    return 0
+}
+
 problem=""
 
 while true; do
@@ -57,13 +94,22 @@ while true; do
     [[ -n "$problem" ]] && text+="
 
 <span foreground='#F2641E'><b>$problem</b></span>"
+    buttons=(--button="$skip_label:1")
+    (( already )) && buttons+=(--button="Remove my security questions:2")
+    buttons+=(--button="Save:0")
     out="$(yad --form --title="$TITLE" --window-icon=dialog-password --image=dialog-password \
         --center --width=640 --borders=16 --separator=$'\t' --item-separator='!' \
         --text="$text" \
         --field="Question 1:CB" "$(combo "${d[0]}")" --field="Answer 1" "${a[0]}" \
         --field="Question 2:CB" "$(combo "${d[1]}")" --field="Answer 2" "${a[1]}" \
         --field="Question 3:CB" "$(combo "${d[2]}")" --field="Answer 3" "${a[2]}" \
-        --button="$skip_label:1" --button="Save:0")" || exit 0
+        "${buttons[@]}")"
+    rc=$?
+    if [[ $rc -eq 2 ]]; then
+        remove_questions && exit 0
+        continue
+    fi
+    [[ $rc -eq 0 ]] || exit 0
 
     IFS=$'\t' read -r q1 a1 q2 a2 q3 a3 _ <<< "$out"
     chosen=("$q1" "$q2" "$q3")
@@ -92,7 +138,9 @@ for i in 0 1 2; do
 done
 
 if printf '%s' "$data" | pkexec /usr/libexec/steel-os-recovery-enrol >/dev/null 2>&1; then
-    msg --msgbox "<h3>Security questions saved</h3><p>If you forget your password, click <b>Forgot your password?</b> on the login screen.</p>"
+    mkdir -p "$(dirname "$MARK")"
+    printf '%s\n' "${chosen[@]}" > "$MARK"
+    msg --msgbox "<h3>Security questions saved</h3><p>If you forget your password, click <b>Forgot your password?</b> on the login screen. To change or remove them, open the Steel OS Portal, Welcome tab, <b>Security questions</b>.</p>"
 else
     msg --sorry "The security questions were not saved. You can try again from the Steel OS Portal, Welcome tab."
 fi
