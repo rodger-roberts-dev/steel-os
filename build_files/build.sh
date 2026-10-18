@@ -128,7 +128,7 @@ echo "Steel OS version $(cat /usr/share/steel-os/version), build $(cat /usr/shar
 # how Steel OS machines are counted (STEEL-33).
 OS_RELEASE="/usr/lib/os-release"
 sed -i 's/^NAME=.*/NAME="Steel OS"/' "$OS_RELEASE"
-# The version shows in About this System: "Steel OS 0.4.12".
+# The version shows in About this System: "Steel OS 0.5.3".
 sed -i "s/^PRETTY_NAME=.*/PRETTY_NAME=\"Steel OS ${STEEL_OS_VERSION:-}\"/" "$OS_RELEASE"
 grep -q '^STEEL_OS_VERSION=' "$OS_RELEASE" || echo "STEEL_OS_VERSION=${STEEL_OS_VERSION:-0.0.0}" >> "$OS_RELEASE"
 sed -i 's/^VARIANT_ID=.*/VARIANT_ID=steel-os/' "$OS_RELEASE"

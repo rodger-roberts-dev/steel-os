@@ -3,13 +3,18 @@
 
 ARG BASE_IMAGE=${BASE_IMAGE:-ghcr.io/steel-and-code/steel-os:latest}
 ARG INSTALL_IMAGE_PAYLOAD=${INSTALL_IMAGE_PAYLOAD:-ghcr.io/steel-and-code/steel-os:latest}
+# The name the installed PC follows for updates (the payload may be pulled
+# under a one-merge tag such as latest-<commit>; see installer/build.sh).
+ARG INSTALL_IMAGE_TAG=${INSTALL_IMAGE_TAG:-ghcr.io/steel-and-code/steel-os:latest}
 
 
 FROM $BASE_IMAGE
 ARG BASE_IMAGE
 ARG INSTALL_IMAGE_PAYLOAD
+ARG INSTALL_IMAGE_TAG
 RUN --mount=type=bind,source=./.,target=/src \
     env \
     BASE_IMAGE="$BASE_IMAGE" \
     INSTALL_IMAGE_PAYLOAD="$INSTALL_IMAGE_PAYLOAD" \
+    INSTALL_IMAGE_TAG="$INSTALL_IMAGE_TAG" \
     bash /src/build.sh

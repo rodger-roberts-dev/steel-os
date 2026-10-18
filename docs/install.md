@@ -28,9 +28,9 @@ point. It takes about 30 minutes.
 3. Optional but wise: check the download. On Windows, open Command Prompt in
    your Downloads folder and run:
    ```
-   certutil -hashfile steel-os-preview-x86_64.iso SHA256
+   certutil -hashfile steel-os-0.5.3-x86_64.iso SHA256
    ```
-   The long number it prints must match the one on the website.
+   Use your file's name: it has the version in it. The long number it prints must match the one on the website.
 
 ## 2. Make the USB stick
 
