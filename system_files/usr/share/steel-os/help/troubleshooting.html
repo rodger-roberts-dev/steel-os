@@ -23,6 +23,17 @@
   <li>Restart the computer.</li>
   <li>Remove it and install it again from the Steel OS Portal or the App Store.</li>
 </ol>
+<h2>A blue screen after installing</h2>
+<p>With Secure Boot on, the first start after installing shows a blue screen about a key, only once. With Secure Boot off, it doesn't appear. It asks the computer to trust the Steel OS driver key, which graphics and gaming drivers need. It is not an error.</p>
+<ol>
+  <li>Press any key, then choose <b>Enroll MOK</b>.</li>
+  <li>Choose <b>Continue</b>, then <b>Yes</b>.</li>
+  <li>Type the password <b>steelos</b> and press Enter.</li>
+  <li>Choose <b>Reboot</b>. Steel OS then starts normally.</li>
+</ol>
+<p>Skipped it, or turned Secure Boot on after installing? Steel OS still works, but some drivers (NVIDIA, for example) may not load. To get the blue screen back, open the terminal (<kbd>Super</kbd>+<kbd>Enter</kbd>) and type:</p>
+<pre><code>sudo mokutil --import /usr/share/ublue-os/sb_pubkey.der</code></pre>
+<p>It asks for your password, then for a new one-time password (twice). Restart and follow the steps above, typing that one-time password.</p>
 <h2>Something broke after an update</h2>
 <p>Restart and pick the <b>second</b> entry in the start-up menu. You are back on the version before. See <a href="updates.html">Updates and going back</a>.</p>
 <h2>No internet</h2>
