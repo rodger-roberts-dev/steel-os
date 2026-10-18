@@ -104,3 +104,7 @@ libsecret
 
 # One-window forms (security questions on one page, T 2026-10-17).
 yad
+
+# The Steel Shield app window (T, 2026-10-18): Qt for Python. Without it
+# Steel Shield falls back to its simple menus.
+python3-pyside6

@@ -616,7 +616,11 @@ systemctl enable clamav-freshclam.service
 # nothing newer is there; the updater then keeps them current hourly. If the
 # download fails here the build goes on (installs then download them at
 # first boot, as before), with a warning in the log.
-chmod 0755 /usr/libexec/steel-shield-system
+chmod 0755 /usr/libexec/steel-shield-system /usr/libexec/steel-shield-quarantine /usr/libexec/steel-shield-app
+# The app window needs Qt for Python; check it loads, so a missing package
+# shows up here instead of as the plain menus on a user's PC.
+python3 -c 'import PySide6.QtSvgWidgets, PySide6.QtWidgets'     || { echo "Steel Shield: the app window can't load Qt for Python" >&2; exit 1; }
+python3 -c "import ast,sys; ast.parse(open(sys.argv[1]).read())" /usr/libexec/steel-shield-app
 SEED=/usr/share/steel-shield/definitions
 mkdir -p "$SEED"
 chown clamupdate:clamupdate "$SEED" 2>/dev/null || true
