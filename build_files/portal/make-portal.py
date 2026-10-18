@@ -66,9 +66,19 @@ def flatpak_action(app_id, name, description):
 BREW = 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && '
 
 welcome = screen("Welcome", "Get started with Steel OS", [
+    # Order (T, 2026-10-18): website, help, update, report a problem, then the rest.
     action("steel-os-website", "Visit steel-os.org",
            "News, help and downloads for Steel OS.",
            script="xdg-open https://steel-os.org"),
+    action("help", "Get help",
+           "Plain-English help pages: apps, updates, printers, shortcuts, gaming and fixes. Works offline.",
+           script="nohup setsid /usr/libexec/steel-os-help >/dev/null 2>&1"),
+    action("update-now", "Update now",
+           "Steel OS updates itself every Tuesday. Run an update right now instead.",
+           script="ujust update" + PAUSE),
+    action("report-problem", "Report a problem or idea",
+           "Tell the Steel OS team what went wrong or what you would like, with a screenshot. No account needed.",
+           script="nohup setsid /usr/libexec/steel-os-report >/dev/null 2>&1"),
     action("app-store", "Open the App Store",
            "Browse thousands more apps. Everything installs with one click.",
            script="nohup setsid gtk-launch io.github.kolunmi.Bazaar >/dev/null 2>&1"),
@@ -81,21 +91,12 @@ welcome = screen("Welcome", "Get started with Steel OS", [
     action("steel-shield", "Steel Shield (virus protection)",
            "See your protection, scan a file or folder, and manage quarantine. Downloads are scanned automatically.",
            script="nohup setsid /usr/bin/steel-shield >/dev/null 2>&1"),
-    action("update-now", "Update now",
-           "Steel OS updates itself every Tuesday. Run an update right now instead.",
-           script="ujust update" + PAUSE),
-    action("help", "Get help",
-           "Plain-English help pages: apps, updates, printers, shortcuts, gaming and fixes. Works offline.",
-           script="nohup setsid /usr/libexec/steel-os-help >/dev/null 2>&1"),
     action("security-questions", "Security questions",
            "Set up or change the three questions that let you reset a forgotten password from the login screen.",
            script="nohup setsid /usr/libexec/steel-os-recovery-setup >/dev/null 2>&1"),
     action("setup-again", "Run Steel OS Setup again",
            "The first-login welcome steps: updates, choosing apps and printers.",
            script="nohup setsid /usr/libexec/steel-os-setup --again >/dev/null 2>&1"),
-    action("report-problem", "Report a problem or idea",
-           "Tell the Steel OS team what went wrong or what you would like, with a screenshot. No account needed.",
-           script="nohup setsid /usr/libexec/steel-os-report >/dev/null 2>&1"),
 ])
 
 CATEGORIES = ["Everyday", "Work", "Creative", "Games and Streaming", "Developer", "AI"]
