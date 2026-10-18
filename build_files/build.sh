@@ -55,6 +55,27 @@ ln -sf /usr/share/wallpapers/steel-os-waves/contents/images/3840x2160.png /usr/s
 ln -sf /usr/share/wallpapers/steel-os-waves/contents/images/3840x2160.png /usr/share/backgrounds/default-dark.jxl
 rm -f /usr/share/backgrounds/default.xml
 
+# Plasma's own fallback (T, 2026-10-18: a 0.4.7 install showed Fedora's
+# picture). A new desktop takes the wallpaper named "Default", and the
+# look-and-feel themes name one too (Fedora's say "Fedora", Breeze's "Next").
+# All of them now mean the Steel OS waves, so it is the first wallpaper
+# however the desktop gets created. The other wallpapers stay in the chooser.
+rm -rf /usr/share/wallpapers/Default
+ln -s steel-os-waves /usr/share/wallpapers/Default
+python3 - <<'PYEOF'
+import glob, re
+for path in glob.glob("/usr/share/plasma/look-and-feel/*/contents/defaults"):
+    text = open(path).read()
+    if re.search(r"^\[Wallpaper\]", text, re.M):
+        text = re.sub(r"(^\[Wallpaper\]\n(?:(?!\[).*\n)*?)Image=.*", r"\1Image=steel-os-waves", text, count=1, flags=re.M)
+    else:
+        text = text.rstrip("\n") + "\n\n[Wallpaper]\nImage=steel-os-waves\n"
+    open(path, "w").write(text)
+    print("Steel OS wallpaper default:", path)
+PYEOF
+grep -h -A1 '^\[Wallpaper\]' /usr/share/plasma/look-and-feel/*/contents/defaults | grep Image= | sort | uniq -c
+readlink /usr/share/wallpapers/Default
+
 # Logo for System Settings > About (see system_files/etc/xdg/kcm-about-distrorc)
 install -D -m 0644 /ctx/branding/icon/png/steel-os-icon-dark-256.png /usr/share/pixmaps/steel-os.png
 
