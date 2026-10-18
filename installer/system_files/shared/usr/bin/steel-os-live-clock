@@ -1,0 +1,40 @@
+#!/usr/bin/bash
+# Steel OS: the live (installer) session's clock shows local time, not UTC.
+#   1. At start-up, guess the time zone from Fedora's location service, the
+#      same one the installer uses to pre-select a time zone.
+#   2. Once the installer has written the time zone chosen for the new system,
+#      switch the live session to it too.
+# The installed system always uses the time zone chosen in the installer.
+
+set_zone() {
+    local zone="$1"
+    [[ -n "$zone" && -e "/usr/share/zoneinfo/$zone" ]] || return 1
+    [[ "$(timedatectl show -p Timezone --value 2>/dev/null)" == "$zone" ]] && return 0
+    sudo -n timedatectl set-timezone "$zone" 2>/dev/null || timedatectl set-timezone "$zone" 2>/dev/null
+}
+
+# 1. A first guess from the location service (waits up to a minute for the network).
+for _ in $(seq 1 12); do
+    zone="$(curl -fsS --max-time 5 https://geoip.fedoraproject.org/city 2>/dev/null \
+        | python3 -c 'import json,sys; print(json.load(sys.stdin).get("time_zone") or "")' 2>/dev/null)"
+    [[ -n "$zone" ]] && { set_zone "$zone"; break; }
+    sleep 5
+done
+
+# 2. Follow the time zone picked in the installer: asked from the installer
+#    while it runs, and read from the new system once it has been written.
+installer_zone() {
+    local addr
+    addr="$(sudo -n cat /run/anaconda/bus.address 2>/dev/null)" || return 0
+    [[ -n "$addr" ]] || return 0
+    sudo -n busctl --address="$addr" get-property         org.fedoraproject.Anaconda.Modules.Timezone         /org/fedoraproject/Anaconda/Modules/Timezone         org.fedoraproject.Anaconda.Modules.Timezone Timezone 2>/dev/null         | sed -n 's/^s "\(.*\)"$//p'
+}
+for _ in $(seq 1 1440); do
+    target="$(readlink /mnt/sysroot/etc/localtime 2>/dev/null)"
+    if [[ "$target" == *zoneinfo/* ]]; then
+        set_zone "${target##*zoneinfo/}" && exit 0
+    fi
+    zone="$(installer_zone)"
+    [[ -n "$zone" ]] && set_zone "$zone"
+    sleep 5
+done

@@ -13,6 +13,9 @@
 conky -c /usr/share/conky/conky.conf &
 # Offers "Restart now" once an install has finished and the installer is closed.
 /usr/bin/steel-os-install-done &
+# The session clock shows local time: a guess from the location service, then
+# the time zone chosen in the installer.
+/usr/bin/steel-os-live-clock &
 
 shutdown_now() {
     systemctl poweroff || shutdown -h now || true
