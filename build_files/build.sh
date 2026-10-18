@@ -608,6 +608,38 @@ if [[ -f "$FRESHCLAM" ]]; then
         "Checks 24" "DatabaseMirror database.clamav.net" >> "$FRESHCLAM"
 fi
 systemctl enable clamav-freshclam.service
+
+# Built-in definitions (T, 2026-10-18): today's definitions ship inside the
+# image, so a new install is protected from the first boot, even offline,
+# and the first online update only fetches what changed. The
+# steel-shield-definitions service puts them in /var/lib/clamav at boot when
+# nothing newer is there; the updater then keeps them current hourly. If the
+# download fails here the build goes on (installs then download them at
+# first boot, as before), with a warning in the log.
+chmod 0755 /usr/libexec/steel-shield-system
+SEED=/usr/share/steel-shield/definitions
+mkdir -p "$SEED"
+chown clamupdate:clamupdate "$SEED" 2>/dev/null || true
+if timeout 900 freshclam --foreground --show-progress=no --datadir="$SEED" --config-file=/etc/freshclam.conf; then
+    chown -R root:root "$SEED"
+    chmod 0644 "$SEED"/*
+    rm -f "$SEED"/freshclam.dat "$SEED"/*.tmp
+    ls -la "$SEED"
+    # Prove the built-in definitions work: they must catch the EICAR test file.
+    eicar="$(mktemp)"
+    printf '%s' 'X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*' > "$eicar"
+    if clamscan --no-summary -d "$SEED" "$eicar" | grep -q FOUND; then
+        echo "Steel Shield: built-in definitions loaded and caught the test file"
+    else
+        echo "Steel Shield: built-in definitions did not catch the test file" >&2
+        exit 1
+    fi
+    rm -f "$eicar"
+else
+    echo "Steel OS: WARNING could not download the built-in virus definitions; installs will download them at first boot"
+    rm -rf "$SEED"
+fi
+systemctl enable steel-shield-definitions.service
 systemctl --global enable steel-shield-downloads.service steel-shield-usb.path steel-shield-weekly.timer
 
 # Behaviour watching (STEEL-60): startup changes, file scrambling, hidden
