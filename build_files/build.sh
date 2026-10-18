@@ -633,10 +633,12 @@ echo "Steel OS developer commands: $(command -v nvim) $(command -v zeditor)"
 # Keep this the LAST section: anything copied in after it would not reach
 # the boot screen.
 # Steel OS boot screen (T, 2026-10-18): no spinning circle. The Steel OS logo
-# sits at the bottom with its blue underscore blinking, like a text cursor.
-# The theme's "throbber" (its spinner) becomes 30 frames of the logo, 15 with
-# the underscore and 15 without, about one blink a second, placed where the
-# logo used to be. The separate logo (watermark) is removed so it isn't drawn
+# sits at the bottom; the hexagon around the S turns slowly and the blue
+# underscore blinks, like a text cursor. The theme's "throbber" (its spinner)
+# becomes 90 frames of the logo: the hexagon turns a sixth of a turn per loop
+# (it looks the same after 60 degrees, so the loop is seamless) and the
+# underscore is on for 15 frames and off for 15, placed where the logo used
+# to be. The separate logo (watermark) is removed so it isn't drawn
 # twice, and messages such as "Preparing System" appear above the logo.
 SPINNER=/usr/share/plymouth/themes/spinner
 if [[ -f "$SPINNER/spinner.plymouth" ]]; then
