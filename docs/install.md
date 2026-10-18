@@ -28,16 +28,23 @@ point. It takes about 30 minutes.
 3. Optional but wise: check the download. On Windows, open Command Prompt in
    your Downloads folder and run:
    ```
-   certutil -hashfile steel-os-0.2.0-preview-x86_64.iso SHA256
+   certutil -hashfile steel-os-preview-x86_64.iso SHA256
    ```
    The long number it prints must match the one on the website.
 
 ## 2. Make the USB stick
 
-1. On Windows, download **Fedora Media Writer**, **Rufus** or **balenaEtcher**.
-2. Open it, choose the Steel OS file you downloaded, choose your USB stick,
-   and click **Write** (or **Start** in Rufus; pick DD mode if it asks).
-3. When it finishes, take the stick out.
+1. On Windows, download **Rufus** (rufus.ie). Fedora Media Writer and
+   balenaEtcher work too: choose the file, choose the stick, click **Write**.
+2. In Rufus, pick your USB stick under **Device**. Everything on it is erased.
+3. Click **SELECT** and choose the Steel OS file.
+4. A box says **ISOHybrid image detected**. That is normal: click **OK**. (If
+   Rufus asks instead, choose **Write in DD Image mode**.)
+5. Leave the rest as it is: **GPT** and **UEFI** are right, and the greyed-out
+   settings are not used.
+6. Click **START**, then **OK** on the warning that the stick will be erased.
+7. When it says **READY**, click **CLOSE** and take the stick out. Windows may
+   say the stick needs formatting afterwards: don't, that is normal.
 
 Installing in a virtual machine instead? Attach the downloaded file as the
 virtual machine's CD drive, use UEFI firmware, 8 GB of memory and a 64 GB disk,

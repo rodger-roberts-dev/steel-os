@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Installing Steel OS · Steel OS Help</title>
+<meta name="description" content="From download to desktop in about 30 minutes, with no terminal.">
+<link rel="canonical" href="https://steel-os.org/help/install">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="stylesheet" href="help.css">
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <a class="brand" href="index.html">STEEL <span class="os">OS</span> Help</a>
+  <nav><a href="index.html">Help home</a><a href="getting-started.html">Getting started</a><a href="apps.html">Apps</a><a href="updates.html">Updates</a><a href="network.html">Wi-Fi and home network</a><a href="printers.html">Printers and sharing</a><a href="shortcuts.html">Shortcuts</a><a href="gaming.html">Gaming</a><a href="steel-shield.html">Steel Shield</a><a href="troubleshooting.html">Something went wrong</a></nav>
+</header>
+<h1>Installing Steel OS</h1>
+<p class="lede">From download to desktop in about 30 minutes, with no terminal.</p>
+<h2>What you need</h2>
+<ul>
+  <li>A 64-bit PC from the last ten years, with 8 GB of memory (4 GB at least) and 64 GB of free disk space. It must start in <b>UEFI</b> mode, which every PC from about 2012 on does.</li>
+  <li>A USB stick of <b>16 GB or more</b> (the installer is about 8.5 GB). <b>Everything on the stick is erased.</b></li>
+  <li><b>A backup of the PC you are installing to.</b> <b>Use entire disk</b> erases that disk.</li>
+  <li>An internet connection, ideally a cable for the first start.</li>
+</ul>
+
+<h2>1. Download</h2>
+<p>On <a href="https://steel-os.org/download">steel-os.org/download</a>, click <b>Download</b>. To check the file, open Command Prompt in your Downloads folder and type <code>certutil -hashfile steel-os-preview-x86_64.iso SHA256</code>. The long number must match the <b>SHA-256 checksum</b> link on the website.</p>
+
+<h2>2. Make the USB stick with Rufus</h2>
+<p>Download <b>Rufus</b> from <a href="https://rufus.ie">rufus.ie</a> and open it. (Fedora Media Writer and balenaEtcher work too: choose the file, choose the stick, click <b>Write</b>.)</p>
+<ol>
+  <li><b>Device:</b> pick your USB stick. Check the drive letter and size: <b>everything on it will be erased</b>, so copy off anything you need first.</li>
+  <li><b>Boot selection:</b> click <b>SELECT</b> and choose the Steel OS file you downloaded.</li>
+  <li>A box says <b>ISOHybrid image detected</b>. This is normal: click <b>OK</b>. (If Rufus asks instead, choose <b>Write in DD Image mode</b>, then <b>OK</b>.)</li>
+  <li>Leave everything else as it is. <b>Partition scheme GPT</b> and <b>Target system UEFI</b> are right; the greyed-out settings below them are not used.</li>
+  <li>Click <b>START</b>, then <b>OK</b> when Rufus warns that the stick will be erased. Writing takes a few minutes.</li>
+  <li>When the status bar says <b>READY</b> again, click <b>CLOSE</b> and take out the stick.</li>
+</ol>
+<p class="note">Afterwards Windows may say the stick needs formatting, or show it almost empty. That is normal: Windows can't read it, but the PC can start from it. Don't format it. To use the stick for files again later, format it in Rufus or Windows.</p>
+<p>Installing in a virtual machine instead? Attach the downloaded file as its CD drive (UEFI firmware on, 8 GB of memory, a 64 GB disk; in VirtualBox, 3D acceleration off) and skip to step 4.</p>
+
+<h2>3. Start the PC from the USB stick</h2>
+<ol>
+  <li>Plug the stick into the PC you are installing to and turn it on.</li>
+  <li>Straight away, press the <b>boot menu</b> key, usually <kbd>F12</kbd>, <kbd>F11</kbd>, <kbd>F8</kbd> or <kbd>Esc</kbd>. The start-up screen often says which.</li>
+  <li>Pick the USB stick from the list.</li>
+</ol>
+<p>Windows starts instead? Restart and press the key again. Some PCs need <b>Fast Boot</b> turned off in their firmware settings before they show the stick.</p>
+
+<h2>4. Install</h2>
+<ol>
+  <li>Steel OS starts from the stick. Nothing on the PC has changed yet. Click <b>Install Steel OS</b> (or try it first; the installer is also on the desktop).</li>
+  <li>Pick your language, then the disk. <b>Use entire disk</b> is already selected: check it is the right disk.</li>
+  <li>Optional: <b>disk encryption</b> protects your files if the PC is stolen. You type its password at every start, and <b>nobody can recover it if you forget it</b>.</li>
+  <li>Create your account, check the summary and click <b>Install</b>. It takes 10 to 20 minutes.</li>
+  <li>Click <b>Finish</b>. A window says <b>Steel OS is installed</b>: remove the USB stick and click <b>Restart now</b>.</li>
+</ol>
+<p>With Secure Boot on, one blue screen appears at this first restart. The <b>Restart now</b> window lists the steps, and so does <a href="troubleshooting.html">Something went wrong</a>: choose <b>Enroll MOK</b>, <b>Continue</b>, <b>Yes</b>, type <b>steelos</b>, then <b>Reboot</b>.</p>
+
+<h2>5. First start</h2>
+<p>Log in, and <b>Steel OS Setup</b> walks you through updates, apps, your printer and security questions; every page has <b>Skip</b>. Leave the PC online for a few minutes while Firefox, LibreOffice and the other default apps install themselves. Next: <a href="getting-started.html">Getting started</a>.</p>
+<footer>Steel OS Help is built into Steel OS (start menu, Steel OS Help) and is also at steel-os.org/help. Something missing? Tell us at <a href="https://steel-os.org/report">steel-os.org/report</a>.</footer>
+</div>
+</body>
+</html>
