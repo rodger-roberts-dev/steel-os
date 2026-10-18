@@ -110,17 +110,22 @@ build $target_image=image_name $tag=default_tag:
         STEEL_OS_BUILD="${STEEL_OS_BUILD}-$(git rev-parse --short HEAD)"
     fi
     BUILD_ARGS+=("--build-arg" "STEEL_OS_BUILD=${STEEL_OS_BUILD}")
-    # Version: VERSION holds the milestone (major.minor, changed by hand when a
-    # milestone is reached); the last number counts merges to master since then,
-    # so every build counts up by itself: 0.4.0, 0.4.1, 0.4.2...
+    # Version: VERSION holds the starting point (major.minor, changed by hand,
+    # e.g. to 1.0 for the release). Every merge to master since then counts
+    # one up, and the last number rolls over after 9 (T, 2026-10-18):
+    # 0.4.8, 0.4.9, 0.5.0, 0.5.1 ... 0.9.9, 0.10.0. Reaching 1.0 is a decision,
+    # made by changing VERSION, never automatic.
     STEEL_OS_MILESTONE="$(tr -d '[:space:]' < VERSION 2>/dev/null || echo 0.0)"
     VERSION_COMMIT="$(git log -1 --first-parent --format=%H -- VERSION 2>/dev/null || true)"
     if [[ -n "$VERSION_COMMIT" ]]; then
-        STEEL_OS_PATCH="$(git rev-list --count --first-parent "${VERSION_COMMIT}..HEAD" 2>/dev/null || echo 0)"
+        MERGES="$(git rev-list --count --first-parent "${VERSION_COMMIT}..HEAD" 2>/dev/null || echo 0)"
     else
-        STEEL_OS_PATCH=0
+        MERGES=0
     fi
-    STEEL_OS_VERSION="${STEEL_OS_MILESTONE}.${STEEL_OS_PATCH}"
+    STEEL_OS_MAJOR="${STEEL_OS_MILESTONE%%.*}"
+    STEEL_OS_MINOR="${STEEL_OS_MILESTONE#*.}"
+    STEEL_OS_MINOR="${STEEL_OS_MINOR%%.*}"
+    STEEL_OS_VERSION="${STEEL_OS_MAJOR}.$(( STEEL_OS_MINOR + MERGES / 10 )).$(( MERGES % 10 ))"
     echo "Steel OS version: ${STEEL_OS_VERSION}"
     BUILD_ARGS+=("--build-arg" "STEEL_OS_VERSION=${STEEL_OS_VERSION}")
     # Same number as an image label, so an installer's .image.txt can name it.

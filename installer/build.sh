@@ -28,6 +28,14 @@ if mountpoint -q /usr/lib/containers/storage; then
 else
     podman pull "$INSTALL_IMAGE_PAYLOAD"
 fi
+# Steel OS: the payload can be one merge's exact image (latest-<commit>). The
+# installer tells the installed PC to follow the tag it finds here, so rename
+# it to the tag PCs update from (ghcr.io/steel-and-code/steel-os:latest).
+if [[ -n "${INSTALL_IMAGE_TAG:-}" && "$INSTALL_IMAGE_TAG" != "$INSTALL_IMAGE_PAYLOAD" ]]; then
+    podman tag "$INSTALL_IMAGE_PAYLOAD" "$INSTALL_IMAGE_TAG"
+    podman untag "$INSTALL_IMAGE_TAG" "$INSTALL_IMAGE_PAYLOAD"
+    podman images
+fi
 
 # Copy system files (Steel OS is KDE Plasma only)
 echo "Copying shared system files..."

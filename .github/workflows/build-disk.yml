@@ -86,14 +86,53 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          # The merge whose image build triggered this run, not whatever
+          # master is by now.
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      # Each image build also publishes the image as latest-<commit>. Use that
+      # exact image, so this installer is the version of the merge that
+      # triggered it (T, 2026-10-18: when merges land quickly, taking
+      # "latest" skipped numbers and labelled builds with a later merge).
+      # Locally it is tagged "latest" again, because the installer tells the
+      # installed PC to follow the tag it was built from: installed PCs must
+      # keep following :latest for their updates.
+      - name: Use this merge's image
+        shell: bash
+        env:
+          SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: |
+          set -euo pipefail
+          repo="${IMAGE_REF%:*}"
+          found=""
+          for n in 7 8 9 10 11 12; do
+            if skopeo inspect --no-tags "docker://${repo}:latest-${SHA:0:$n}" >/dev/null 2>&1; then
+              found="${repo}:latest-${SHA:0:$n}"
+              break
+            fi
+          done
+          if [[ -n "$found" ]]; then
+            echo "Using $found"
+            sudo podman pull -q "$found"
+            sudo podman tag "$found" "$IMAGE_REF"
+            echo "PAYLOAD=$found" >> "$GITHUB_ENV"
+          else
+            echo "::warning::No image tagged for ${SHA:0:7}; using the newest image instead"
+            sudo podman pull -q "$IMAGE_REF"
+            echo "PAYLOAD=$IMAGE_REF" >> "$GITHUB_ENV"
+          fi
+          echo "COMMIT=$SHA" >> "$GITHUB_ENV"
 
       - name: Build the live session image
         run: |
           sudo env TMPDIR=/mnt/podman-storage/tmp podman build \
+            --pull=never \
             --cap-add sys_admin \
             --security-opt label=disable \
             --build-arg BASE_IMAGE="${IMAGE_REF}" \
-            --build-arg INSTALL_IMAGE_PAYLOAD="${IMAGE_REF}" \
+            --build-arg INSTALL_IMAGE_PAYLOAD="${PAYLOAD}" \
+            --build-arg INSTALL_IMAGE_TAG="${IMAGE_REF}" \
             -t localhost/payload:latest installer/
 
       - name: Build the ISO
@@ -112,20 +151,27 @@ jobs:
           set -euo pipefail
           OUT="${GITHUB_WORKSPACE}/upload"
           mkdir -p "$OUT"
-          name="$(basename "$ISO_PATH")"
+          # The build number and version live inside the image
+          # (/usr/share/steel-os/); labels don't survive rechunking. The image
+          # is already pulled.
+          build="$(sudo podman run --rm --entrypoint cat "${IMAGE_REF}" /usr/share/steel-os/build 2>/dev/null || echo unknown)"
+          version="$(sudo podman run --rm --entrypoint cat "${IMAGE_REF}" /usr/share/steel-os/version 2>/dev/null || echo unknown)"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          # The file is named by its version: steel-os-0.5.3-x86_64.iso (T).
+          if [[ "$version" =~ ^[0-9]+(\.[0-9]+)+$ ]]; then
+            name="steel-os-${version}-x86_64.iso"
+          else
+            name="$(basename "$ISO_PATH")"
+          fi
+          echo "name=$name" >> "$GITHUB_OUTPUT"
           mv "$ISO_PATH" "$OUT/$name"
           ( cd "$OUT" && sha256sum "$name" > "$name.sha256" )
           # Which Steel OS image this installer contains (STEEL-57). Installed
           # PCs still follow ${IMAGE_REF} for updates; this records the exact
           # version the installer was built from.
-          digest="$(skopeo inspect --format '{{.Digest}}' "docker://${IMAGE_REF}" 2>/dev/null || echo unknown)"
-          # The build number lives inside the image (/usr/share/steel-os/build);
-          # labels don't survive rechunking. The image is already pulled.
-          build="$(sudo podman run --rm --entrypoint cat "${IMAGE_REF}" /usr/share/steel-os/build 2>/dev/null || echo unknown)"
-          version="$(sudo podman run --rm --entrypoint cat "${IMAGE_REF}" /usr/share/steel-os/version 2>/dev/null || echo unknown)"
-          echo "version=$version" >> "$GITHUB_OUTPUT"
+          digest="$(sudo podman image inspect --format '{{index .RepoDigests 0}}' "${IMAGE_REF}" 2>/dev/null || echo unknown)"
           printf 'installer: %s\nversion: %s\nimage: %s\nimage digest: %s\nbuild: %s\nbuilt: %s\ncommit: %s\n' \
-            "$name" "$version" "${IMAGE_REF}" "$digest" "$build" "$(date -u +%Y-%m-%dT%H:%MZ)" "${GITHUB_SHA}" > "$OUT/$name.image.txt"
+            "$name" "$version" "${IMAGE_REF}" "$digest" "$build" "$(date -u +%Y-%m-%dT%H:%MZ)" "${COMMIT:-$GITHUB_SHA}" > "$OUT/$name.image.txt"
           cat "$OUT/$name.image.txt"
           cat "$OUT/$name.image.txt" >> "$GITHUB_STEP_SUMMARY"
           ls -la "$OUT"
@@ -175,6 +221,7 @@ jobs:
           RCLONE_CONFIG_S3_REGION: ${{ secrets.S3_REGION }}
           RCLONE_CONFIG_S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
           SOURCE_DIR: ${{ steps.files.outputs.dir }}
+          NAME: ${{ steps.files.outputs.name }}
         run: |
           sudo apt-get update
           sudo apt-get install -y rclone
@@ -184,9 +231,26 @@ jobs:
           # the top. Old files go only after the new ones uploaded completely,
           # so the download link never breaks. shield/ (Steel Shield's threat
           # list, STEEL-60) is never touched.
+          #
+          # The address stays the same for every build
+          # (downloads.steel-os.org/steel-os-preview-x86_64.iso, so the website
+          # never changes), but the browser saves the file under its version,
+          # e.g. steel-os-0.5.3-x86_64.iso: the ISO is stored with a
+          # Content-Disposition header naming it.
           B="${{ secrets.S3_BUCKET_NAME }}"
+          FIXED=steel-os-preview-x86_64.iso
+          R2="$RUNNER_TEMP/r2"
+          mkdir -p "$R2"
+          for f in "$SOURCE_DIR"/*; do
+            base="$(basename "$f")"
+            cp "$f" "$R2/${base/#$NAME/$FIXED}"
+          done
+          ls -la "$R2"
           rclone sync --s3-no-check-bucket --retries 5 --exclude "previous/**" --exclude "shield/**" "S3:$B" "S3:$B/previous"
-          rclone sync --delete-after --s3-no-check-bucket --retries 5 --exclude "previous/**" --exclude "shield/**" "$SOURCE_DIR" "S3:$B"
+          rclone copyto --s3-no-check-bucket --retries 5 \
+            --header-upload "Content-Disposition: attachment; filename=\"$NAME\"" \
+            "$R2/$FIXED" "S3:$B/$FIXED"
+          rclone sync --delete-after --s3-no-check-bucket --retries 5 --exclude "previous/**" --exclude "shield/**" "$R2" "S3:$B"
           echo "Kept: newest at the top, the build before in previous/"
           rclone lsl "S3:$B"
           echo "Uploaded:"
