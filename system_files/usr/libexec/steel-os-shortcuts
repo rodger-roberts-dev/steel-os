@@ -13,6 +13,18 @@ set -euo pipefail
 # copy of its autostart entry; remove it (STEEL-31). Harmless if absent.
 rm -f "$HOME/.config/autostart/bazzite-portal.desktop"
 
+# Steam no longer starts by itself at login (T, 2026-10-17). Remove the base
+# image's autostart entry once for existing users; if they turn it back on in
+# Steam's own settings, it stays on.
+STEAM_STAMP="${XDG_STATE_HOME:-$HOME/.local/state}/steel-os/steam-autostart-off.done"
+if [[ ! -f "$STEAM_STAMP" ]]; then
+    if [[ -f "$HOME/.config/autostart/steam.desktop" ]] && grep -q -- '-silent' "$HOME/.config/autostart/steam.desktop"; then
+        rm -f "$HOME/.config/autostart/steam.desktop"
+    fi
+    mkdir -p "$(dirname "$STEAM_STAMP")"
+    : > "$STEAM_STAMP"
+fi
+
 # Pin the Steel OS Portal on the taskbar, once, for people whose desktop
 # existed before the portal arrived (STEEL-40). This runs before Plasma starts,
 # so Plasma reads the change at login. It only adds the pin, next to the

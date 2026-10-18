@@ -174,11 +174,17 @@ if os.path.exists(FORGE_SOURCE) and any(
 else:
     print("Steel OS Portal: Steel & Code Forge not listed yet (packages/forge-source.txt is empty)")
 
+# Developer apps get their own tab (T, 2026-10-17): code editors, AI coding
+# tools and virtual machines. The other categories stay on Steel Apps.
 apps = []
+developer = []
 for category, entries in read_steel_apps(APPS_FILE).items():
+    target = developer if category == "Developer" else apps
     for app_id, name, description in entries:
-        apps.append(flatpak_action(app_id, name, f"{category} · {description}"))
-    apps.extend(EXTRAS.get(category, []))
+        target.append(flatpak_action(app_id, name, f"{category} · {description}"))
+    target.extend(EXTRAS.get(category, []))
+# Zed is installed by default; listing it here lets people remove or reinstall it.
+developer.insert(0, flatpak_action("dev.zed.Zed", "Zed", "Developer · Fast code editor, installed by default (zeditor in a terminal)"))
 
 # Gaming tab (STEEL-32, STEEL-45, STEEL-46): devices, macros and game fixes.
 def launch(cmd):
@@ -221,11 +227,12 @@ gaming = screen("Gaming", "Controllers, flight sticks, macros and game fixes", [
 ])
 
 steel_apps = screen("Steel Apps", "Popular apps by category, one click each", apps)
+developer_tab = screen("Developer", "Code editors, AI coding tools and virtual machines, one click each", developer)
 
 with open(BASE_FILE, encoding="utf-8") as f:
     base = "".join(l for l in f if not l.startswith("#"))
 
-out = "\n".join(["title: Steel OS Portal", "screens:"] + welcome + steel_apps + gaming) + "\n" + base
+out = "\n".join(["title: Steel OS Portal", "screens:"] + welcome + steel_apps + developer_tab + gaming) + "\n" + base
 
 # Fail the build rather than ship a broken or Bazzite-branded portal.
 parsed = yaml.safe_load(out)
@@ -234,4 +241,4 @@ if "bazzite" in out.lower():
     sys.exit("portal.yml still mentions Bazzite")
 with open(OUT_FILE, "w", encoding="utf-8") as f:
     f.write(out)
-print(f"Steel OS Portal: {len(apps)} Steel Apps; tabs: {', '.join(titles)}")
+print(f"Steel OS Portal: {len(apps)} Steel Apps, {len(developer)} developer apps; tabs: {', '.join(titles)}")
