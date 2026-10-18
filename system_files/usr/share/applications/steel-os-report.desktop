@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Report a Problem or Idea
+GenericName=Send feedback to the Steel OS team
+Comment=Tell the Steel OS team what went wrong or what you would like, with a screenshot
+Exec=/usr/libexec/steel-os-report
+Icon=tools-report-bug
+Terminal=false
+Type=Application
+Categories=System;Utility;
+Keywords=bug;report;problem;feedback;idea;feature;request;support;help;steel;

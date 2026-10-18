@@ -1,0 +1,129 @@
+#!/usr/bin/bash
+# Steel OS: "Report a problem or idea". Opened from the start menu and the
+# Steel OS Portal (Welcome tab).
+#
+# Takes a screenshot of the screen as it was, then one window: Problem or
+# Idea, a title, what happened, and two ticks (include the screenshot, include
+# the computer details listed in the window). "See screenshot" opens it first.
+# Send posts it to steel-os.org/api/report, which files it in the Steel OS
+# team's private tracker and answers with a reference number. Nothing is sent
+# without clicking Send, and no account is needed.
+
+set -uo pipefail
+
+TITLE="Report a problem or idea"
+ENDPOINT="${STEEL_OS_REPORT_URL:-https://steel-os.org/api/report}"
+WORK="${XDG_RUNTIME_DIR:-/tmp}/steel-os-report"
+SHOT="$WORK/screenshot.png"
+
+command -v yad >/dev/null 2>&1 || { xdg-open https://steel-os.org/report; exit 0; }
+msg() { kdialog --title "$TITLE" --icon tools-report-bug "$@" 2>/dev/null; }
+
+mkdir -p "$WORK" && chmod 700 "$WORK"
+rm -f "$SHOT"
+
+# 1. The screenshot, before any window of ours is on screen (a moment for the
+# start menu or the Portal button to close).
+sleep 0.6
+spectacle --background --nonotify --fullscreen --output "$SHOT" >/dev/null 2>&1 || true
+have_shot=0
+[[ -s "$SHOT" ]] && have_shot=1
+
+# 2. Computer details: no names, no user name, no files.
+details() {
+    local image gpu mem cpu sb
+    image="$(rpm-ostree status --booted --json 2>/dev/null | jq -r '.deployments[0]["container-image-reference"] // empty' 2>/dev/null)"
+    gpu="$(lspci 2>/dev/null | grep -E 'VGA|3D|Display' | cut -d: -f3- | sed 's/^ *//' | paste -sd ';' -)"
+    mem="$(free -h 2>/dev/null | awk '/^Mem:/ {print $2}')"
+    cpu="$(lscpu 2>/dev/null | sed -n 's/^Model name: *//p' | head -1)"
+    sb="$(mokutil --sb-state 2>/dev/null | head -1)"
+    printf 'Steel OS: %s\n' "$(cat /usr/share/steel-os/version 2>/dev/null || echo unknown)"
+    printf 'Build: %s\n' "$(cat /usr/share/steel-os/build 2>/dev/null || echo unknown)"
+    [[ -n "$image" ]] && printf 'Image: %s\n' "$image"
+    printf 'Kernel: %s\n' "$(uname -r)"
+    printf 'Desktop: %s, %s\n' "$(plasmashell --version 2>/dev/null || echo Plasma)" "${XDG_SESSION_TYPE:-unknown}"
+    [[ -n "$cpu" ]] && printf 'Processor: %s\n' "$cpu"
+    [[ -n "$mem" ]] && printf 'Memory: %s\n' "$mem"
+    [[ -n "$gpu" ]] && printf 'Graphics: %s\n' "$gpu"
+    [[ -n "$sb" ]] && printf 'Secure Boot: %s\n' "$sb"
+    printf 'Model: %s %s\n' "$(cat /sys/devices/virtual/dmi/id/sys_vendor 2>/dev/null)" "$(cat /sys/devices/virtual/dmi/id/product_name 2>/dev/null)"
+}
+DETAILS="$(details)"
+
+escape() { sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g' <<< "$1"; }
+
+kind="Problem"; title=""; text=""; use_shot=TRUE; use_details=TRUE
+(( have_shot )) || use_shot=FALSE
+problem=""
+
+while true; do
+    intro="<big><b>Report a problem or idea</b></big>
+
+Tell the Steel OS team what went wrong, or what you would like. It goes straight to the team; no account needed.
+
+<b>Computer details</b> (no names, no files):
+<small>$(escape "$DETAILS")</small>"
+    (( have_shot )) || intro+="
+
+<i>No screenshot could be taken.</i>"
+    [[ -n "$problem" ]] && intro+="
+
+<span foreground='#F2641E'><b>$(escape "$problem")</b></span>"
+
+    combo="Problem!Idea"
+    [[ "$kind" == "Idea" ]] && combo="Problem!^Idea"
+    [[ "$kind" == "Problem" ]] && combo="^Problem!Idea"
+
+    buttons=(--button="Cancel:1")
+    (( have_shot )) && buttons+=(--button="See screenshot:2")
+    buttons+=(--button="Send:0")
+
+    out="$(yad --form --title="$TITLE" --window-icon=tools-report-bug --image=tools-report-bug \
+        --center --width=680 --height=640 --borders=16 --separator=$'\x1f' --item-separator='!' \
+        --text="$intro" \
+        --field="This is a:CB" "$combo" \
+        --field="Title" "$title" \
+        --field="What happened, or what would you like?:TXT" "$text" \
+        --field="Include the screenshot:CHK" "$use_shot" \
+        --field="Include the computer details:CHK" "$use_details" \
+        "${buttons[@]}")"
+    rc=$?
+    [[ $rc -eq 0 || $rc -eq 2 ]] || exit 0
+
+    IFS=$'\x1f' read -r kind title text use_shot use_details _ <<< "$out"
+    text="$(printf '%s' "$text" | sed 's/\\n/\n/g')"
+
+    if [[ $rc -eq 2 ]]; then
+        xdg-open "$SHOT" >/dev/null 2>&1 &
+        problem=""
+        continue
+    fi
+
+    problem=""
+    if [[ ${#title} -lt 3 ]]; then problem="Please give it a short title."; continue; fi
+    if [[ ${#text} -lt 5 ]]; then problem="Please say a little more about it."; continue; fi
+
+    args=(-sS --max-time 90 -F "kind=$([[ "$kind" == "Idea" ]] && echo idea || echo problem)"
+          -F "title=<-" -F "website=")
+    # Text goes through files so quotes, semicolons and new lines arrive as typed.
+    printf '%s' "$text" > "$WORK/description.txt"
+    args+=(-F "description=<$WORK/description.txt")
+    if [[ "$use_details" == "TRUE" ]]; then
+        printf '%s' "$DETAILS" > "$WORK/details.txt"
+        args+=(-F "details=<$WORK/details.txt")
+    fi
+    if [[ "$use_shot" == "TRUE" && $have_shot -eq 1 ]]; then
+        args+=(-F "screenshot=@$SHOT;type=image/png")
+    fi
+
+    answer="$(printf '%s' "$title" | curl "${args[@]}" "$ENDPOINT" 2>/dev/null)"
+    ok="$(jq -r '.ok // false' <<< "$answer" 2>/dev/null)"
+    if [[ "$ok" == "true" ]]; then
+        key="$(jq -r '.key // empty' <<< "$answer")"
+        msg --msgbox "<h3>Thank you!</h3><p>Your report reached the Steel OS team.${key:+ Its reference is <b>$key</b>.}</p>"
+        rm -rf "$WORK"
+        exit 0
+    fi
+    error="$(jq -r '.error // empty' <<< "$answer" 2>/dev/null)"
+    problem="${error:-The report could not be sent. Check the internet connection, then click Send again.}"
+done
