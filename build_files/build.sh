@@ -628,7 +628,7 @@ if timeout 900 freshclam --foreground --show-progress=no --datadir="$SEED" --con
     # Prove the built-in definitions load: the scanner must report millions of
     # known threats from them (the build stops otherwise). Detection and
     # quarantine are proved by the self-test below.
-    known="$(clamscan -d "$SEED" /dev/null 2>&1 | sed -n 's/^Known viruses: *//p')"
+    known="$(clamscan -d "$SEED" /dev/null 2>&1 | sed -n 's/^Known viruses: *//p' || true)"
     echo "Steel Shield: built-in definitions hold ${known:-0} known threats"
     if (( ${known:-0} < 1000000 )); then
         echo "Steel Shield: the built-in definitions did not load" >&2
