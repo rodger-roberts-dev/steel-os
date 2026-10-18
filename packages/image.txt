@@ -101,3 +101,6 @@ neovim
 # and the password-store command that keeps its OpenRouter key.
 python3-pip
 libsecret
+
+# One-window forms (security questions on one page, T 2026-10-17).
+yad
