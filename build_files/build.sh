@@ -608,6 +608,38 @@ if [[ -f "$FRESHCLAM" ]]; then
         "Checks 24" "DatabaseMirror database.clamav.net" >> "$FRESHCLAM"
 fi
 systemctl enable clamav-freshclam.service
+
+# Built-in definitions (T, 2026-10-18): today's definitions ship inside the
+# image, so a new install is protected from the first boot, even offline,
+# and the first online update only fetches what changed. The
+# steel-shield-definitions service puts them in /var/lib/clamav at boot when
+# nothing newer is there; the updater then keeps them current hourly. If the
+# download fails here the build goes on (installs then download them at
+# first boot, as before), with a warning in the log.
+chmod 0755 /usr/libexec/steel-shield-system
+SEED=/usr/share/steel-shield/definitions
+mkdir -p "$SEED"
+chown clamupdate:clamupdate "$SEED" 2>/dev/null || true
+if timeout 900 freshclam --foreground --show-progress=no --datadir="$SEED" --config-file=/etc/freshclam.conf; then
+    chown -R root:root "$SEED"
+    chmod 0644 "$SEED"/*
+    rm -f "$SEED"/freshclam.dat "$SEED"/*.tmp
+    ls -la "$SEED"
+    # Prove the built-in definitions load: the scanner must report millions of
+    # known threats from them (the build stops otherwise). Detection and
+    # quarantine are proved by the self-test below.
+    known="$(clamscan -d "$SEED" /dev/null 2>&1 | sed -n 's/^Known viruses: *//p' || true)"
+    echo "Steel Shield: built-in definitions hold ${known:-0} known threats"
+    if (( ${known:-0} < 1000000 )); then
+        echo "Steel Shield: the built-in definitions did not load" >&2
+        clamscan -d "$SEED" /dev/null >&2 || true
+        exit 1
+    fi
+else
+    echo "Steel OS: WARNING could not download the built-in virus definitions; installs will download them at first boot"
+    rm -rf "$SEED"
+fi
+systemctl enable steel-shield-definitions.service
 systemctl --global enable steel-shield-downloads.service steel-shield-usb.path steel-shield-weekly.timer
 
 # Behaviour watching (STEEL-60): startup changes, file scrambling, hidden
