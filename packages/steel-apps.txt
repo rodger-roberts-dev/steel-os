@@ -14,6 +14,10 @@ org.mozilla.Thunderbird | Thunderbird | Email, calendar and contacts (the Outloo
 com.dropbox.Client | Dropbox | Cloud file sync | Everyday
 com.calibre_ebook.calibre | Calibre | Ebook library and converter | Everyday
 com.github.johnfactotum.Foliate | Foliate | Ebook reader | Everyday
+# OneDrive, Google Drive, Dropbox and more as folders in the file manager.
+# Microsoft has no OneDrive app for Linux (T, 2026-10-18); this opens files
+# on demand rather than keeping a full offline copy.
+io.github.zarestia_dev.rclone-manager | RClone Manager | OneDrive, Google Drive and Dropbox as folders in your file manager | Everyday
 org.fedoraproject.MediaWriter | Fedora Media Writer | Make a USB stick to install Steel OS on another PC | Everyday
 
 # Work

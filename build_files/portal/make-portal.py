@@ -130,7 +130,7 @@ TWITCH_INSTALL = (
     'echo "Twitch is now in your start menu."' + PAUSE
 )
 
-def web_launcher(id_, name, url, description):
+def web_launcher(id_, name, url, description, category="AI"):
     """One click adds a start-menu entry that opens the site in the browser."""
     desktop = f"$HOME/.local/share/applications/steel-os-{id_}.desktop"
     install = (
@@ -143,7 +143,7 @@ def web_launcher(id_, name, url, description):
     )
     return action(
         id_, name,
-        f"AI · {description}. Adds {name} to the start menu; it opens in your web browser.",
+        f"{category} · {description}. Adds {name} to the start menu; it opens in your web browser.",
         status_script=f'test -f "{desktop}" && echo install || echo uninstall',
         options=[
             ("install", f"Add {name} to the start menu", install),
@@ -154,6 +154,12 @@ def web_launcher(id_, name, url, description):
 
 # Extra one-click entries that are not Flatpaks, added to a category.
 EXTRAS = {
+    # OneDrive has no Linux app from Microsoft (T, 2026-10-18): the web version
+    # here, and RClone Manager in steel-apps.txt shows it as a folder.
+    "Everyday": [
+        web_launcher("onedrive", "OneDrive", "https://onedrive.live.com",
+                     "Microsoft OneDrive in your browser: your files, plus Word, Excel and PowerPoint online", "Everyday"),
+    ],
     "AI": [
         web_launcher("copilot", "Microsoft Copilot", "https://copilot.microsoft.com", "Microsoft's AI assistant (free; sign in with a Microsoft account for more)"),
         web_launcher("chatgpt", "ChatGPT", "https://chatgpt.com", "OpenAI's AI assistant (free tier, or your subscription)"),
