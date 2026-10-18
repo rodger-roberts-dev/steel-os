@@ -93,9 +93,9 @@ welcome = screen("Welcome", "Get started with Steel OS", [
     action("setup-again", "Run Steel OS Setup again",
            "The first-login welcome steps: updates, choosing apps and printers.",
            script="nohup setsid /usr/libexec/steel-os-setup --again >/dev/null 2>&1"),
-    action("report-problem", "Report a problem",
-           "Tell the Steel OS team what went wrong.",
-           script="xdg-open https://steel-os.org/report"),
+    action("report-problem", "Report a problem or idea",
+           "Tell the Steel OS team what went wrong or what you would like, with a screenshot. No account needed.",
+           script="nohup setsid /usr/libexec/steel-os-report >/dev/null 2>&1"),
 ])
 
 CATEGORIES = ["Everyday", "Work", "Creative", "Games and Streaming", "Developer", "AI"]
