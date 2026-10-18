@@ -17,9 +17,22 @@ done
 # so it can't be started again by mistake.
 rm -f "$HOME/Desktop/liveinst.desktop" "$HOME/.local/share/applications/liveinst.desktop"
 
+text="<big><b>Steel OS is installed</b></big>\n\nRemove the USB stick or disc you installed from,\nthen click <b>Restart now</b>. Steel OS starts from the disk,\nand its welcome appears after you log in."
+
+# Secure Boot is on: the PC shows a blue key screen once at the next start
+# (the installer asked it to trust the Steel OS driver key).
+if [[ -e /run/steel-os-secure-boot-key ]]; then
+    text+="\n\n<b>One blue screen first (Secure Boot, only this once)</b>\n
+1. Press any key, then choose <b>Enroll MOK</b>.
+2. Choose <b>Continue</b>, then <b>Yes</b>.
+3. Type the password <b>steelos</b> and press Enter.
+4. Choose <b>Reboot</b>. Steel OS then starts normally.\n
+Skipped it? Steel OS Help, <i>Something went wrong</i>, shows how to bring it back."
+fi
+
 yad --on-top --center --buttons-layout=center --text-align=center \
     --title="Steel OS is installed" --image=steel-os \
-    --text="<big><b>Steel OS is installed</b></big>\n\nRemove the USB stick or disc you installed from,\nthen click <b>Restart now</b>. Steel OS starts from the disk,\nand its welcome appears after you log in." \
+    --text="$text" \
     --button="Restart now:0" --button="Stay in the live desktop:1"
 if [[ $? -eq 0 ]]; then
     systemctl reboot || sudo systemctl reboot

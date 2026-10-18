@@ -134,7 +134,7 @@ cat <<EOF >>/usr/share/anaconda/post-scripts/secureboot-enroll-key.ks
 %post --erroronfail --nochroot --log=/tmp/anacoda_custom_logs/secureboot-enroll-key.log
 set -oue pipefail
 
-readonly ENROLLMENT_PASSWORD="universalblue"
+readonly ENROLLMENT_PASSWORD="steelos"
 readonly SECUREBOOT_KEY="$SECUREBOOT_KEY"
 
 if [[ ! -d "/sys/firmware/efi" ]]; then
@@ -164,8 +164,10 @@ SECUREBOOT_KEY="$SECUREBOOT_KEY"
 SECUREBOOT_DOC_URL="$SECUREBOOT_DOC_URL"
 SECUREBOOT_DOC_URL_QR="$SECUREBOOT_DOC_URL_QR"
 
+# The "Steel OS is installed" box (steel-os-install-done) shows the steps
+# for the blue key screen when this mark exists.
 LC_ALL=C mokutil -t "\$SECUREBOOT_KEY" | grep -q "is already in the enrollment request" && \
-    run0 --user=liveuser yad --timeout=0 --on-top --button=OK:0 --image=dialog-information --text="<b>One more step at the next start (Secure Boot)</b>\n\nWhen the PC restarts, a blue screen appears. Choose <b>Enroll MOK</b>,\nthen <b>Continue</b>, then <b>Yes</b>, type the password <b>universalblue</b>,\nthen choose <b>Reboot</b>. Steel OS then starts normally."
+    touch /run/steel-os-secure-boot-key || :
 %end
 EOF
 

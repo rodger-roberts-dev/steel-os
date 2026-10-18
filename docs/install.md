@@ -52,7 +52,7 @@ and skip to step 4.
 
 **Secure Boot** can stay on. If a blue screen asks to **enrol a key**, choose
 **Enroll MOK**, then **Continue**, then **Yes**, type the password
-`universalblue`, and restart.
+`steelos`, and restart.
 
 ## 4. The Steel OS live desktop
 
@@ -100,7 +100,7 @@ That's it. Steel OS updates itself every Tuesday from now on.
 | What you see | What to do |
 |---|---|
 | The PC starts Windows instead of the USB stick | Restart and press the boot menu key again. Some PCs need **Secure Boot** or **Fast Boot** turned off in the firmware settings to see the stick. |
-| A blue screen about a key (MOK) | Choose **Enroll MOK**, **Continue**, **Yes**, type `universalblue`, restart. |
+| A blue screen about a key (MOK) | Choose **Enroll MOK**, **Continue**, **Yes**, type `steelos`, restart. |
 | The installer says the disk is too small | Steel OS needs 64 GB. Pick a bigger disk, or free up space. |
 | The default apps never appear | Check the internet connection, then restart. They retry by themselves. |
 
