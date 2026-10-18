@@ -15,13 +15,14 @@ import yaml
 
 APPS_FILE, EXISTING_FILE, OUT_FILE = sys.argv[1:4]
 
-CATEGORIES = ["Everyday", "Work", "Creative", "Games and Streaming", "Developer"]
+CATEGORIES = ["Everyday", "Work", "Creative", "Games and Streaming", "Developer", "AI"]
 SUBTITLES = {
     "Everyday": "Browsing, email, files and reading",
     "Work": "Chat, meetings and notes",
     "Creative": "Photos, drawing, audio and video",
     "Games and Streaming": "Game stores, cloud gaming and chat",
     "Developer": "Code editors, terminals and virtual machines",
+    "AI": "AI assistants, on your PC or online",
 }
 BANNER = "file:///usr/share/wallpapers/steel-os-waves/contents/images/3840x2160.png"
 

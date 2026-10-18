@@ -98,7 +98,7 @@ welcome = screen("Welcome", "Get started with Steel OS", [
            script="xdg-open https://steel-os.org/report"),
 ])
 
-CATEGORIES = ["Everyday", "Work", "Creative", "Games and Streaming", "Developer"]
+CATEGORIES = ["Everyday", "Work", "Creative", "Games and Streaming", "Developer", "AI"]
 
 
 def read_steel_apps(path):
@@ -129,8 +129,36 @@ TWITCH_INSTALL = (
     'echo "Twitch is now in your start menu."' + PAUSE
 )
 
+def web_launcher(id_, name, url, description):
+    """One click adds a start-menu entry that opens the site in the browser."""
+    desktop = f"$HOME/.local/share/applications/steel-os-{id_}.desktop"
+    install = (
+        'mkdir -p "$HOME/.local/share/applications" && printf "%s\n" '
+        f'"[Desktop Entry]" "Type=Application" "Name={name}" '
+        f'"Comment={description}" '
+        f'"Exec=xdg-open {url}" "Icon=internet-web-browser" '
+        f'"Categories=Network;Office;" > "{desktop}" && '
+        f'echo "{name} is now in your start menu."' + PAUSE
+    )
+    return action(
+        id_, name,
+        f"AI · {description}. Adds {name} to the start menu; it opens in your web browser.",
+        status_script=f'test -f "{desktop}" && echo install || echo uninstall',
+        options=[
+            ("install", f"Add {name} to the start menu", install),
+            ("uninstall", f"Remove {name} from the start menu", f'rm -f "{desktop}"' + PAUSE),
+        ],
+    )
+
+
 # Extra one-click entries that are not Flatpaks, added to a category.
 EXTRAS = {
+    "AI": [
+        web_launcher("copilot", "Microsoft Copilot", "https://copilot.microsoft.com", "Microsoft's AI assistant (free; sign in with a Microsoft account for more)"),
+        web_launcher("chatgpt", "ChatGPT", "https://chatgpt.com", "OpenAI's AI assistant (free tier, or your subscription)"),
+        web_launcher("claude", "Claude", "https://claude.ai", "Anthropic's AI assistant (free tier, or your subscription)"),
+        web_launcher("gemini", "Gemini", "https://gemini.google.com", "Google's AI assistant (free with a Google account)"),
+    ],
     "Games and Streaming": [action(
         "twitch", "Twitch",
         "Games and Streaming · Watch live streams. Twitch has no Linux app, so this adds a Twitch launcher that opens it in your browser.",
@@ -178,8 +206,9 @@ else:
 # tools and virtual machines. The other categories stay on Steel Apps.
 apps = []
 developer = []
+ai = []
 for category, entries in read_steel_apps(APPS_FILE).items():
-    target = developer if category == "Developer" else apps
+    target = developer if category == "Developer" else ai if category == "AI" else apps
     for app_id, name, description in entries:
         target.append(flatpak_action(app_id, name, f"{category} · {description}"))
     target.extend(EXTRAS.get(category, []))
@@ -228,11 +257,12 @@ gaming = screen("Gaming", "Controllers, flight sticks, macros and game fixes", [
 
 steel_apps = screen("Steel Apps", "Popular apps by category, one click each", apps)
 developer_tab = screen("Developer", "Code editors, AI coding tools and virtual machines, one click each", developer)
+ai_tab = screen("AI", "AI assistants: private ones that run on your PC, and Copilot, ChatGPT, Claude and Gemini", ai)
 
 with open(BASE_FILE, encoding="utf-8") as f:
     base = "".join(l for l in f if not l.startswith("#"))
 
-out = "\n".join(["title: Steel OS Portal", "screens:"] + welcome + steel_apps + developer_tab + gaming) + "\n" + base
+out = "\n".join(["title: Steel OS Portal", "screens:"] + welcome + steel_apps + ai_tab + developer_tab + gaming) + "\n" + base
 
 # Fail the build rather than ship a broken or Bazzite-branded portal.
 parsed = yaml.safe_load(out)
@@ -241,4 +271,4 @@ if "bazzite" in out.lower():
     sys.exit("portal.yml still mentions Bazzite")
 with open(OUT_FILE, "w", encoding="utf-8") as f:
     f.write(out)
-print(f"Steel OS Portal: {len(apps)} Steel Apps, {len(developer)} developer apps; tabs: {', '.join(titles)}")
+print(f"Steel OS Portal: {len(apps)} Steel Apps, {len(ai)} AI apps, {len(developer)} developer apps; tabs: {', '.join(titles)}")

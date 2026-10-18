@@ -49,5 +49,14 @@ org.wezfurlong.wezterm | WezTerm | Alternative terminal (Konsole is the default)
 org.virt_manager.virt-manager | Virtual Machine Manager | Run other operating systems in a window (virtual machines) | Developer
 org.gnome.Boxes | GNOME Boxes | Run other operating systems in a window (simpler; less reliable on NVIDIA laptops) | Developer
 
+# AI (T, 2026-10-17): assistants that run on Steel OS. Alpaca and GPT4All
+# run AI models on the PC itself (private, offline); Newelle is a desktop
+# assistant for online AI (your own ChatGPT, Claude or Gemini key) or local
+# models. make-portal.py adds launchers for Copilot, ChatGPT, Claude and
+# Gemini, which open in the browser.
+com.jeffser.Alpaca | Alpaca | Chat with AI that runs on your own PC: private and offline | AI
+io.github.qwersyk.Newelle | Newelle | Desktop AI assistant, like Copilot: online AI with your own key, or local models | AI
+io.gpt4all.gpt4all | GPT4All | Private AI chat that runs on your PC | AI
+
 # Not yet packaged; added when Steel & Code Forge is ready:
 # steel-forge | Steel & Code Forge | AI development platform (optional) | Developer
