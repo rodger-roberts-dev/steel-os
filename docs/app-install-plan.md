@@ -67,10 +67,10 @@ Three tiers. All Flatpak IDs below were confirmed on Flathub on 2026-10-15.
 | Firefox (default browser) | Flatpak, first boot | `org.mozilla.firefox` | Default browser (decided 2026-10-16). Bazzite already ships it. |
 | Files (Dolphin), Ark (zip), Kate (editor), Okular (PDF, EPUB), Skanpage (scanner), Spectacle (screenshots), Gwenview (images) | Part of Plasma on Bazzite | rpm, already present | Confirm on first boot which are present; add missing ones to `packages/image.txt`. |
 | Steam | Already in Bazzite | native | Bazzite's reason to exist. |
-| OBS Studio | Flatpak, first boot | `com.obsproject.Studio` | Screen capture works on Plasma Wayland. |
-| Kdenlive (video editor) | Flatpak, first boot | `org.kde.kdenlive` | The offline video editor. |
+| OBS Studio | Flatpak, one click (Steel Apps) | `com.obsproject.Studio` | Screen capture works on Plasma Wayland. One click since 2026-10-18. |
+| Kdenlive (video editor) | Flatpak, one click (Steel Apps) | `org.kde.kdenlive` | The offline video editor. One click since 2026-10-18. |
 | Obsidian | Flatpak, first boot | `md.obsidian.Obsidian` | |
-| Moonlight (game streaming) | Flatpak, first boot | `com.moonlight_stream.Moonlight` | |
+| Moonlight (game streaming) | Flatpak, one click (Steel Apps) | `com.moonlight_stream.Moonlight` | One click since 2026-10-18. |
 | Zed (editor) | Flatpak, first boot | `dev.zed.Zed` | |
 | Discover (store) | Part of Plasma on Bazzite | rpm | The store. |
 

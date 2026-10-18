@@ -36,8 +36,8 @@ Use a fresh virtual machine: UEFI firmware, 8 GB of memory, 64 GB disk.
 - [ ] The boot splash, login screen, wallpaper and lock screen are Steel OS.
 - [ ] Steel OS Setup appears at first login; every page can be skipped.
 - [ ] Choosing one app in Setup installs it, and a notification says so.
-- [ ] Within a few minutes Firefox, LibreOffice, OBS Studio, Kdenlive,
-      Obsidian, Moonlight and Zed are in the start menu.
+- [ ] Firefox and LibreOffice are in the start menu at once; within a few
+      minutes Obsidian, Zed and ProtonPlus are too.
 - [ ] The Steel OS Portal is on the taskbar and in the start-menu favourites.
 - [ ] Super+Enter opens the terminal, Super+Shift+Enter opens Firefox, and
       Super+2 switches desktops.

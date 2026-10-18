@@ -236,36 +236,44 @@ jobs:
           RCLONE_CONFIG_S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
           SOURCE_DIR: ${{ steps.files.outputs.dir }}
           NAME: ${{ steps.files.outputs.name }}
+          VERSION: ${{ steps.files.outputs.version }}
         run: |
           sudo apt-get update
           sudo apt-get install -y rclone
-          # Two builds at most (T): the newest at the top of the bucket and the
-          # one before in previous/. First the current top files move into
-          # previous/ (replacing what was there), then this build replaces
-          # the top. Old files go only after the new ones uploaded completely,
-          # so the download link never breaks. shield/ (Steel Shield's threat
-          # list, STEEL-60) is never touched.
-          #
-          # The address stays the same for every build
-          # (downloads.steel-os.org/steel-os-preview-x86_64.iso, so the website
-          # never changes), but the browser saves the file under its version,
-          # e.g. steel-os-0.5.3-x86_64.iso: the ISO is stored with a
-          # Content-Disposition header naming it.
+          # Two builds at most (T): the newest and the one before. Each
+          # installer is uploaded once, under its own name
+          # (steel-os-0.5.4-x86_64.iso), and latest.json says which is which.
+          # steel-os.org/get/preview and /get/previous read latest.json and
+          # redirect, so the website never changes, the browser saves the file
+          # with its version, and nothing is copied inside the bucket (that
+          # copy failed on Cloudflare R2 and took up to 15 minutes, T,
+          # 2026-10-18). Older files go only after the new ones and latest.json
+          # are up, so the download link never breaks. shield/ (Steel Shield's
+          # threat list, STEEL-60) is never touched.
           B="${{ secrets.S3_BUCKET_NAME }}"
-          FIXED=steel-os-preview-x86_64.iso
-          R2="$RUNNER_TEMP/r2"
-          mkdir -p "$R2"
-          for f in "$SOURCE_DIR"/*; do
-            base="$(basename "$f")"
-            cp "$f" "$R2/${base/#$NAME/$FIXED}"
-          done
-          ls -la "$R2"
-          rclone sync --s3-no-check-bucket --retries 5 --exclude "previous/**" --exclude "shield/**" "S3:$B" "S3:$B/previous"
+          rclone copy --s3-no-check-bucket --retries 5 "$SOURCE_DIR" "S3:$B"
+
+          old="$(rclone cat "S3:$B/latest.json" 2>/dev/null | jq -r '.current // empty' 2>/dev/null || true)"
+          if [[ -z "$old" ]]; then
+            # First run with latest.json: the installer before used the old fixed name.
+            old=steel-os-preview-x86_64.iso
+          elif [[ "$old" == "$NAME" ]]; then
+            # The same build uploaded again: keep the previous one as it was.
+            old="$(rclone cat "S3:$B/latest.json" | jq -r '.previous // empty')"
+          fi
+          jq -n --arg c "$NAME" --arg p "$old" --arg v "$VERSION" --arg t "$(date -u +%Y-%m-%dT%H:%MZ)" \
+            '{current: $c, previous: $p, version: $v, updated: $t}' > "$RUNNER_TEMP/latest.json"
+          cat "$RUNNER_TEMP/latest.json"
           rclone copyto --s3-no-check-bucket --retries 5 \
-            --header-upload "Content-Disposition: attachment; filename=\"$NAME\"" \
-            "$R2/$FIXED" "S3:$B/$FIXED"
-          rclone sync --delete-after --s3-no-check-bucket --retries 5 --exclude "previous/**" --exclude "shield/**" "$R2" "S3:$B"
-          echo "Kept: newest at the top, the build before in previous/"
+            --header-upload "Cache-Control: no-cache" \
+            "$RUNNER_TEMP/latest.json" "S3:$B/latest.json"
+
+          rclone lsf -R --files-only --exclude "shield/**" "S3:$B" | while read -r f; do
+            case "$f" in
+              latest.json|"$NAME"|"$NAME".*|"$old"|"$old".*) ;;
+              *) echo "Removing old file $f"; rclone deletefile --retries 5 "S3:$B/$f" ;;
+            esac
+          done
+          rclone rmdirs --leave-root "S3:$B" --exclude "shield/**" 2>/dev/null || true
+          echo "Kept: $NAME (newest) and $old (the build before)"
           rclone lsl "S3:$B"
-          echo "Uploaded:"
-          ls -la "$SOURCE_DIR"
