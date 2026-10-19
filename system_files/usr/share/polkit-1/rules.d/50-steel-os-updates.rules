@@ -4,7 +4,7 @@
 // the update only accepts Steel OS images signed with the Steel OS key.
 polkit.addRule(function (action, subject) {
     if (action.id == "org.freedesktop.systemd1.manage-units" &&
-        action.lookup("unit") == "uupd.service" &&
+        (action.lookup("unit") == "uupd.service" || action.lookup("unit") == "uupd-manual.service") &&
         action.lookup("verb") == "start" &&
         subject.active && subject.local && subject.isInGroup("wheel")) {
         return polkit.Result.YES;
