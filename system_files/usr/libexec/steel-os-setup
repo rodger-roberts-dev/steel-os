@@ -57,6 +57,10 @@ dialog --yes-label "Next" --no-label "Skip the rest" --yesno \
 The new version starts the next time you restart.</p>
 <p>The version before is always kept. If anything ever goes wrong after an
 update, restart and pick the earlier version from the menu.</p>
+<p>If you don't restart for a while, Steel OS restarts by itself <b>at night</b>,
+only when nobody is using the computer and no game is running, with a
+15-minute warning. Don't want that? Steel OS Portal, Welcome,
+<b>Automatic restarts for updates</b>, Off.</p>
 <p>Want an update sooner? Open the <b>Steel OS Portal</b> and click
 <b>Update now</b>.</p>" || exit 0
 
