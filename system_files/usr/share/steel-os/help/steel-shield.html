@@ -48,6 +48,20 @@
 </ul>
 <p>Fix now and the scans don't ask for a password. Restoring or deleting a file that the full scan found outside your own folders does.</p>
 <p>Right-click any file or folder in Dolphin and choose <b>Scan with Steel Shield</b>.</p>
+<h2>The protection cards</h2>
+<ul>
+  <li><b>Virus definitions:</b> the list of known threats, and whether it stays current by itself (it checks every hour). <b>Check now</b> looks for new ones straight away.</li>
+  <li><b>Firewall:</b> blocks connections to your computer that you didn't ask for. <b>Turn off</b> asks for your password; only do it to solve a specific problem, and turn it back on afterwards. <b>Settings</b> opens the full firewall app.</li>
+  <li><b>App sandbox:</b> always on. It isn't a setting but how Steel OS is built: apps run in their own space, and the system files are read-only.</li>
+</ul>
+<h2 id="secure-boot">Turn on Secure Boot</h2>
+<p>Secure Boot checks that only trusted software starts your computer. It is a setting in the PC itself (the firmware), not in Steel OS, so it is switched on there:</p>
+<ol>
+  <li>Restart, and straight away press the firmware key, usually <kbd>Del</kbd>, <kbd>F2</kbd> or <kbd>F10</kbd> (the start-up screen often says which).</li>
+  <li>Find <b>Secure Boot</b>, usually under <b>Boot</b> or <b>Security</b>, and set it to <b>Enabled</b>. If it asks for a mode, choose <b>Standard</b> or <b>Windows UEFI mode</b>.</li>
+  <li>Save and exit (often <kbd>F10</kbd>).</li>
+</ol>
+<p>If Steel OS was installed with Secure Boot off, first follow <a href="troubleshooting.html">A blue screen after installing</a>, "turned Secure Boot on after installing", so graphics drivers keep working.</p>
 <h2>"Needs attention"</h2>
 <p>Steel Shield never shows a green tick when something is wrong. If the definitions are old or a part has stopped, it says so and offers <b>Fix now</b>, which downloads the newest definitions straight away and tells you whether it worked. A scan never says "no threats found" if it couldn't actually check.</p>
 <h2>Check that it works</h2>
