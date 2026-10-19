@@ -281,8 +281,9 @@ jobs:
           # reported, a threat caught); the website counts those fetches like
           # it counts installer downloads. Never cached, so every ping reaches R2.
           for p in scam-reported threat-caught; do
-            printf 'ok\n' | rclone rcat --s3-no-check-bucket --retries 5 \
-              --header-upload "Cache-Control: no-store" "S3:$B/ping/$p"
+            printf 'ok\n' > "$RUNNER_TEMP/$p"
+            rclone copyto --s3-no-check-bucket --retries 5 \
+              --header-upload "Cache-Control: no-store" "$RUNNER_TEMP/$p" "S3:$B/ping/$p"
           done
 
           rclone lsf -R --files-only --exclude "shield/**" "S3:$B" | while read -r f; do
