@@ -19,6 +19,7 @@ COPY system_files /system_files
 COPY packages /packages
 COPY cosign.pub /cosign.pub
 COPY branding /branding
+COPY tests /tests
 
 # Base image (STEEL-30). Steel OS is built in three editions from this one
 # recipe; the build workflow passes BASE_IMAGE:
