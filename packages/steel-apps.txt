@@ -10,7 +10,8 @@
 
 # Everyday
 com.google.Chrome | Google Chrome | Web browser (Firefox is the default) | Everyday
-org.mozilla.Thunderbird | Thunderbird | Email, calendar and contacts (the Outlook equivalent) | Everyday
+# Flathub retired org.mozilla.Thunderbird in favour of thunderbird_esr (T, 2026-10-19).
+org.mozilla.thunderbird_esr | Thunderbird | Email, calendar and contacts (the Outlook equivalent) | Everyday
 com.dropbox.Client | Dropbox | Cloud file sync | Everyday
 com.calibre_ebook.calibre | Calibre | Ebook library and converter | Everyday
 com.github.johnfactotum.Foliate | Foliate | Ebook reader | Everyday

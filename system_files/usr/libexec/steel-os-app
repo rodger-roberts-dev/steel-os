@@ -89,6 +89,15 @@ case "$action" in
             exit 0
         fi
         run_with_window "Installing $name" flatpak install -y --noninteractive flathub "$app"
+        # Flathub sometimes retires an app under a new name and installs that
+        # instead ("end-of-life, in favor of app/NEW/..."). That is a success.
+        renamed="$(grep -oE 'in favor of app/[^/ ]+' <<< "$out" | head -1 | sed 's#.*app/##')"
+        if [[ "$rc" == 0 && -n "$renamed" ]] && flatpak info "$renamed" >/dev/null 2>&1; then
+            app="$renamed"
+            done_box "<b>$name is installed.</b>
+Find it in the start menu. It updates itself."
+            exit 0
+        fi
         if [[ "$rc" == 0 ]] && installed; then
             done_box "<b>$name is installed.</b>\nFind it in the start menu. It updates itself."
         else
