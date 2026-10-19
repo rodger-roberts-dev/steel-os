@@ -65,7 +65,7 @@ plain() { # uupd's step title -> plain English
                 all="$(grep -oE '[\\]?"bytesTotal[\\]?":[0-9]+' <<< "$pull" | head -1 | grep -oE '[0-9]+$')"
                 if [[ -n "$got" && -n "$all" ]] && (( all > 0 && total > 0 )); then
                     # This step's share of the whole bar, filled by the download.
-                    pct=$(( ( (step - 1) * 100 + got * 100 / all ) / total ))
+                    pct=$(( ( step * 100 + got * 100 / all ) / total ))   # step counts from 0
                     (( pct > 99 )) && pct=99
                     echo "$pct"
                     echo "# Downloading the new version of Steel OS… $(( got / 1000000 )) of $(( all / 1000000 )) MB"
@@ -76,7 +76,7 @@ plain() { # uupd's step title -> plain English
             (( pct > 99 )) && pct=99
             echo "$pct"
             if (( total > 0 )); then
-                echo "# $(plain "$title")… step $step of $total, $pct%"
+                echo "# $(plain "$title")… step $(( step + 1 > total ? total : step + 1 )) of $total, $pct%"
             else
                 echo "# $(plain "$title")… $pct%"
             fi
