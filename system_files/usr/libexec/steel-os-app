@@ -14,6 +14,11 @@ action="${1:-}" app="${2:-}" name="${3:-${2:-the app}}"
 TITLE="Steel OS Portal"
 [[ "$app" =~ ^[A-Za-z0-9._-]+$ ]] || { echo "usage: steel-os-app install|uninstall|open APP_ID NAME" >&2; exit 2; }
 
+# A thick orange bar (/usr/share/steel-os/progress.css), when this yad can style.
+STYLE=()
+yad --help-all 2>/dev/null | grep -q -- '--css' && [[ -r /usr/share/steel-os/progress.css ]] \
+    && STYLE=(--css=/usr/share/steel-os/progress.css)
+
 installed() { flatpak info "$app" >/dev/null 2>&1; }
 open_app() { nohup setsid flatpak run "$app" >/dev/null 2>&1 & }
 esc() { sed 's/&/\&amp;/g; s/</\&lt;/g' <<< "$1"; }
@@ -39,7 +44,7 @@ run_with_window() { # run_with_window "Installing Name" flatpak args...
             sleep 1
         done
         echo 100
-    ) | yad --progress --pulsate --auto-close --no-buttons --center --width=440 --borders=16 \
+    ) | yad --progress "${STYLE[@]}" --pulsate --auto-close --no-buttons --center --width=440 --borders=16 \
             --title="$TITLE" --window-icon=steel-os --image=steel-os --text="<b>$heading</b>" 2>/dev/null &
     local win=$!
     wait "$job"; wait "$win" 2>/dev/null

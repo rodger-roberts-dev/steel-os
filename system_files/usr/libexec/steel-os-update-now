@@ -17,6 +17,12 @@ command -v yad >/dev/null 2>&1 || { systemctl start uupd.service; exit; }
 UNIT=uupd.service
 systemctl cat uupd-manual.service >/dev/null 2>&1 && UNIT=uupd-manual.service
 
+# A thick orange bar (/usr/share/steel-os/progress.css), when this yad can
+# style its window (T, 2026-10-19: the default bar was a thin grey line).
+STYLE=()
+yad --help-all 2>/dev/null | grep -q -- '--css' && [[ -r /usr/share/steel-os/progress.css ]] \
+    && STYLE=(--css=/usr/share/steel-os/progress.css)
+
 log="$(mktemp)"
 since="$(date '+%Y-%m-%d %H:%M:%S')"
 (
@@ -78,7 +84,7 @@ plain() { # uupd's step title -> plain English
         sleep 1
     done
     echo 100
-) | yad --progress --percentage=0 --auto-close --no-buttons --center --width=480 --borders=16 \
+) | yad --progress "${STYLE[@]}" --percentage=0 --auto-close --no-buttons --center --width=480 --borders=16 \
         --title="$TITLE" --window-icon=steel-os --image=steel-os \
         --text="<b>Updating Steel OS</b>\nYou can keep working. Your files and apps stay as they are." 2>/dev/null &
 win=$!
