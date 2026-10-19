@@ -1,0 +1,85 @@
+#!/usr/bin/bash
+# Steel OS: restart at night to finish an update, like Windows (T, 2026-10-18).
+#
+# Runs every 15 minutes between 2 and 5 am, from two timers:
+#   steel-os-night-restart system   (system timer) restarts at once when an
+#                                   update is waiting and nobody is logged in.
+#   steel-os-night-restart session  (each user's timer) restarts when an update
+#                                   is waiting and the PC is safe to restart:
+#                                   screen locked or untouched for 30 minutes,
+#                                   no game, no OBS, a laptop on mains power.
+#                                   It warns 15 minutes first ("Not now" skips
+#                                   tonight) and checks again before restarting.
+# "Automatic restarts for updates" in the Steel OS Portal switches it off
+# (~/.config/steel-os/no-night-restart). Never forces: if the PC is in use, it
+# tries again the next night, and the daily "Restart to finish updating"
+# reminder carries on.
+
+set -uo pipefail
+
+staged() {
+    rpm-ostree status --json 2>/dev/null | jq -e '[.deployments[] | select(.staged == true)] | length > 0' >/dev/null
+}
+
+on_mains() { # true on desktops, and on laptops that are plugged in
+    local ac found=0
+    for ac in /sys/class/power_supply/*; do
+        [[ "$(cat "$ac/type" 2>/dev/null)" == Mains ]] || continue
+        found=1
+        [[ "$(cat "$ac/online" 2>/dev/null)" == 1 ]] && return 0
+    done
+    ls /sys/class/power_supply/BAT* >/dev/null 2>&1 || return 0   # no battery: a desktop
+    (( found == 0 )) && return 0
+    return 1
+}
+
+busy() { # a game, a stream or a recording
+    pgrep -f 'steamapps/common|SteamLaunch|gamescope|reaper SteamLaunch' >/dev/null 2>&1 && return 0
+    pgrep -x obs >/dev/null 2>&1 && return 0
+    pgrep -f 'com.obsproject.Studio' >/dev/null 2>&1 && return 0
+    return 1
+}
+
+away() { # screen locked, or no keyboard or mouse for 30 minutes
+    local sid="${XDG_SESSION_ID:-}" locked idle_ms
+    if [[ -n "$sid" ]]; then
+        locked="$(loginctl show-session "$sid" -p LockedHint --value 2>/dev/null)"
+        [[ "$locked" == yes ]] && return 0
+    fi
+    idle_ms="$(gdbus call --session --dest org.freedesktop.ScreenSaver --object-path /org/freedesktop/ScreenSaver \
+        --method org.freedesktop.ScreenSaver.GetSessionIdleTime 2>/dev/null | grep -oE '[0-9]+' | head -1)"
+    [[ -n "$idle_ms" ]] && (( idle_ms >= 30 * 60 * 1000 ))
+}
+
+case "${1:-}" in
+    system)
+        staged || exit 0
+        # Anyone logged in (desktop or terminal)? Then their own check decides.
+        # The login screen's own session (user sddm) doesn't count.
+        users="$(loginctl list-sessions --no-legend 2>/dev/null | awk '$3 != "" && $3 != "sddm" && $3 != "gdm" {print $3}')"
+        [[ -n "$users" ]] && exit 0
+        on_mains || exit 0
+        echo "Steel OS: restarting to finish an update (nobody logged in)"
+        systemctl reboot
+        ;;
+    session)
+        STATE="${XDG_STATE_HOME:-$HOME/.local/state}/steel-os"
+        [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/steel-os/no-night-restart" ]] && exit 0
+        [[ "$(cat "$STATE/night-restart-skip" 2>/dev/null)" == "$(date +%F)" ]] && exit 0
+        staged || exit 0
+        on_mains && ! busy && away || exit 0
+        choice="$(timeout 900 notify-send --app-name="Steel OS" --icon=steel-os --urgency=critical --wait \
+            --action=later="Not now" \
+            "Restarting in 15 minutes to finish updating" \
+            "Steel OS will restart to finish installing an update. Save anything you're working on, or click Not now to skip tonight." \
+            2>/dev/null || true)"
+        if [[ "$choice" == later ]]; then
+            mkdir -p "$STATE"; date +%F > "$STATE/night-restart-skip"
+            exit 0
+        fi
+        # Still safe after 15 minutes? Someone may have come back.
+        on_mains && ! busy && away && staged || exit 0
+        systemctl reboot
+        ;;
+    *) echo "usage: steel-os-night-restart system|session" >&2; exit 2 ;;
+esac

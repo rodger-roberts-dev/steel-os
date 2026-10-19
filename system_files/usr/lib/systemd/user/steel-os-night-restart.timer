@@ -1,0 +1,9 @@
+[Unit]
+Description=Steel OS: check every 15 minutes between 2 and 5 am for an update waiting for a restart
+
+[Timer]
+OnCalendar=*-*-* 02..04:00/15
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target
