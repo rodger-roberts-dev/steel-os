@@ -1,14 +1,14 @@
 /* Steel OS progress windows (Update now, one-click app installs): a thick
    orange bar in the website colours, easy to see (T, 2026-10-19). */
 progressbar trough {
-    min-height: 14px;
-    border-radius: 7px;
+    min-height: 20px;
+    border-radius: 10px;
     background-color: #262E37;
     border: none;
 }
 progressbar progress {
-    min-height: 14px;
-    border-radius: 7px;
+    min-height: 20px;
+    border-radius: 10px;
     background-color: #F2641E;
     background-image: none;
     border: none;
