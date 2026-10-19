@@ -44,11 +44,29 @@ plain() { # uupd's step title -> plain English
     echo 0
     echo "# Checking for updates…"
     while kill -0 "$starter" 2>/dev/null; do
-        last="$(journalctl -u "$UNIT" --since "$since" -o cat --no-pager 2>/dev/null \
-            | jq -Rr 'fromjson? | select(.msg == "Updating") | "\(.overall // 0 | floor)\t\(.title // "")\t\(.progress // 0)\t\(.total // 0)"' 2>/dev/null \
-            | tail -1)"
+        journal="$(journalctl -u "$UNIT" --since "$since" -o cat --no-pager 2>/dev/null)"
+        last="$(jq -Rr 'fromjson? | select(.msg == "Updating") | "\(.overall // 0 | floor)\t\(.title // "")\t\(.progress // 0)\t\(.total // 0)"' \
+            <<< "$journal" 2>/dev/null | tail -1)"
+        # While Steel OS itself downloads, bootc reports bytes:
+        # {"bytes":183146058,...,"bytesTotal":602675186,...,"task":"pulling"}
+        # (sometimes inside a log line, with escaped quotes). Use them for an
+        # exact download bar (T, 2026-10-19, from a photo of the old update).
+        pull="$(grep -E 'bytesTotal' <<< "$journal" | tail -1)"
         if [[ -n "$last" ]]; then
             IFS=$'\t' read -r pct title step total <<< "$last"
+            if [[ -n "$pull" && "$title" == *[Ss]ystem* ]]; then
+                got="$(grep -oE '[\\]?"bytes[\\]?":[0-9]+' <<< "$pull" | head -1 | grep -oE '[0-9]+$')"
+                all="$(grep -oE '[\\]?"bytesTotal[\\]?":[0-9]+' <<< "$pull" | head -1 | grep -oE '[0-9]+$')"
+                if [[ -n "$got" && -n "$all" ]] && (( all > 0 && total > 0 )); then
+                    # This step's share of the whole bar, filled by the download.
+                    pct=$(( ( (step - 1) * 100 + got * 100 / all ) / total ))
+                    (( pct > 99 )) && pct=99
+                    echo "$pct"
+                    echo "# Downloading the new version of Steel OS… $(( got / 1000000 )) of $(( all / 1000000 )) MB"
+                    sleep 1
+                    continue
+                fi
+            fi
             (( pct > 99 )) && pct=99
             echo "$pct"
             if (( total > 0 )); then
