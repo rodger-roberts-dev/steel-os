@@ -24,12 +24,26 @@ chmod 0700 "$XDG_RUNTIME_DIR"
 export QT_QPA_PLATFORM=wayland
 export XDG_CURRENT_DESKTOP=KDE
 
-if command -v cage >/dev/null 2>&1 && cage -s -- "$UI" gui; then
-    exit 0
+# The reset window, full screen in a kiosk (cage). First with the graphics
+# card; if that can't start (a VM without 3D, an unusual card), again with
+# software drawing, which works on any screen (T, 2026-10-19: a VirtualBox VM
+# with 3D off got a screen of errors instead of the reset window).
+export WLR_NO_HARDWARE_CURSORS=1
+if command -v cage >/dev/null 2>&1; then
+    if cage -s -- "$UI" gui; then
+        exit 0
+    fi
+    echo "steel-os-recovery-reset: the graphics card couldn't start the kiosk; trying software drawing"
+    if WLR_RENDERER=pixman cage -s -- "$UI" gui; then
+        exit 0
+    fi
+    echo "steel-os-recovery-reset: the kiosk couldn't start; using text mode"
 fi
 
-# Fallback: text mode on the console.
+# Last resort: text mode, drawn on the console itself (not the log).
 export TERM=linux
-"$UI" text
-clear 2>/dev/null || true
+chvt 1 2>/dev/null || true
+clear > /dev/tty1 2>/dev/null || true
+"$UI" text < /dev/tty1 > /dev/tty1 2>&1
+clear > /dev/tty1 2>/dev/null || true
 exit 0

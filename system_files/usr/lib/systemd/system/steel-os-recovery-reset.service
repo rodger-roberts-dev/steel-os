@@ -19,7 +19,10 @@ TTYReset=yes
 TTYVHangup=yes
 TTYVTDisallocate=yes
 StandardInput=tty
-StandardOutput=journal+console
+# Messages go to the log only, so the screen shows the reset window (or the
+# text version), never a page of graphics errors.
+StandardOutput=journal
+StandardError=journal
 UtmpIdentifier=tty1
 TimeoutStartSec=30min
 
