@@ -1,0 +1,9 @@
+[Unit]
+Description=Steel OS: find a USB printer again after it is plugged in
+# Started by the udev rule 90-steel-os-usb-printer.rules.
+After=ipp-usb.service cups.service
+
+[Service]
+Type=oneshot
+# Give ipp-usb time to pick the printer up, then let cups-browsed rediscover it.
+ExecStart=/bin/sh -c 'sleep 10; systemctl try-restart cups-browsed.service'
