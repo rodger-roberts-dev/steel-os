@@ -60,18 +60,14 @@ def flatpak_action(app_id, name, description):
     # A small window, not a terminal (T, 2026-10-19): "Installing Name… 45%",
     # then "Name is installed" with an Open button. setsid -w waits, so the
     # Portal refreshes the row's Installed / Not installed when it's done.
-    def run(verb):
-        return f"nohup setsid -w /usr/libexec/steel-os-app {verb} {app_id} {shlex.quote(name)} >/dev/null 2>&1"
+    # One click (T, 2026-10-19): not installed -> installs; installed -> a
+    # window with Open, Uninstall and Close. No pop-up of choices first.
     return action(
         f"steel-app-{app_id}",
         name,
         f"{description}. One click, from Flathub.",
         status_script=f"flatpak info {app_id} >/dev/null 2>&1 && echo install || echo uninstall",
-        options=[
-            ("install", f"Install {name}", run("install")),
-            ("open", f"Open {name}", run("open")),
-            ("uninstall", f"Uninstall {name}", run("uninstall")),
-        ],
+        script=f"nohup setsid -w /usr/libexec/steel-os-app click {app_id} {shlex.quote(name)} >/dev/null 2>&1",
     )
 
 
