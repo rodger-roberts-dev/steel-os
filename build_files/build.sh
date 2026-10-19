@@ -709,6 +709,25 @@ chmod 0755 /usr/libexec/steel-shield-system /usr/libexec/steel-shield-quarantine
 # shows up here instead of as the plain menus on a user's PC.
 python3 -c 'import PySide6.QtSvgWidgets, PySide6.QtWidgets'     || { echo "Steel Shield: the app window can't load Qt for Python" >&2; exit 1; }
 python3 -c "import ast,sys; ast.parse(open(sys.argv[1]).read())" /usr/libexec/steel-shield-app
+# The scam checker (opt-in add-on, T 2026-10-19): rules only, tested against
+# sample scams and ordinary mail; the build stops if a scam slips through or
+# an ordinary message raises a false alarm.
+chmod 0755 /usr/libexec/steel-shield-scamcheck
+bash /ctx/tests/scamcheck/run.sh /usr/libexec/steel-shield-scamcheck
+# The "Is this a scam?" button for Thunderbird: the same rules, packaged as
+# an add-on. Steel Shield's "Add the button to Thunderbird" copies it into
+# Thunderbird's profile. Versioned like Steel OS.
+TB=/usr/share/steel-shield/thunderbird
+sed -i "s/\"version\": \"[0-9.]*\"/\"version\": \"$(cat /usr/share/steel-os/version)\"/" "$TB/manifest.json"
+python3 - "$TB" <<'PYEOF'
+import sys, zipfile, os
+d = sys.argv[1]
+with zipfile.ZipFile("/usr/share/steel-shield/steel-shield-scamcheck.xpi", "w", zipfile.ZIP_DEFLATED) as z:
+    for f in ["manifest.json", "scamcheck.js", "popup.html", "popup.js", "icon.svg"]:
+        z.write(os.path.join(d, f), f)
+PYEOF
+rm -f "$TB/test-run.js"
+ls -la /usr/share/steel-shield/steel-shield-scamcheck.xpi
 SEED=/usr/share/steel-shield/definitions
 mkdir -p "$SEED"
 chown clamupdate:clamupdate "$SEED" 2>/dev/null || true
