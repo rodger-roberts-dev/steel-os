@@ -363,12 +363,23 @@ if s.count(call) == 1 and s.count(method) == 1:
             return f"Could not start it: {e}"
 
 """ + method)
+    # The choices in a row's pop-up (Install, Open, Uninstall) run through a
+    # second call; the ones that start a window (steel-os-app) skip the
+    # terminal too (T, 2026-10-19).
+    option_call = "result = self.launch_terminal(script)"
+    if s.count(option_call) == 1:
+        s = s.replace(option_call, "result = self.launch_detached(script) if script.startswith(('nohup setsid ', 'xdg-open ')) else self.launch_terminal(script)")
+        print("Steel OS Portal: Install / Open / Uninstall choices open their own window, no terminal")
+    else:
+        print("Steel OS Portal: WARNING the choice pop-up changed; app installs still open a terminal")
     open(p, "w").write(s)
     compile(s, p, "exec")
     print("Steel OS Portal: buttons that open an app start it without a terminal")
 else:
     print("Steel OS Portal: WARNING engine changed; every button still opens a terminal")
 PYEOF2
+# The one-click install window the Steel Apps rows use.
+chmod 0755 /usr/libexec/steel-os-app
 if grep -qi bazzite "$PORTAL_ENGINE"; then
     echo "Steel OS Portal: the engine still mentions Bazzite:" >&2
     grep -ni bazzite "$PORTAL_ENGINE" >&2

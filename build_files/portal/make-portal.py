@@ -5,6 +5,7 @@ Reads the one-click app list (packages/steel-apps.txt) and the tabs adapted
 from Bazzite Portal (portal/base.yml), and writes the file the portal app
 opens: /usr/share/steel-os/portal.yml. Runs during the image build.
 """
+import shlex
 import json
 import os
 import sys
@@ -56,14 +57,20 @@ def screen(title, description, actions):
 
 
 def flatpak_action(app_id, name, description):
+    # A small window, not a terminal (T, 2026-10-19): "Installing Name… 45%",
+    # then "Name is installed" with an Open button. setsid -w waits, so the
+    # Portal refreshes the row's Installed / Not installed when it's done.
+    def run(verb):
+        return f"nohup setsid -w /usr/libexec/steel-os-app {verb} {app_id} {shlex.quote(name)} >/dev/null 2>&1"
     return action(
         f"steel-app-{app_id}",
         name,
         f"{description}. One click, from Flathub.",
         status_script=f"flatpak info {app_id} >/dev/null 2>&1 && echo install || echo uninstall",
         options=[
-            ("install", f"Install {name}", f"flatpak install -y flathub {app_id}{PAUSE}"),
-            ("uninstall", f"Uninstall {name}", f"flatpak uninstall -y {app_id}{PAUSE}"),
+            ("install", f"Install {name}", run("install")),
+            ("open", f"Open {name}", run("open")),
+            ("uninstall", f"Uninstall {name}", run("uninstall")),
         ],
     )
 
