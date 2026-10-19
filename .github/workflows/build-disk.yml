@@ -277,9 +277,17 @@ jobs:
 
           rclone copyto --s3-no-check-bucket --retries 5             --header-upload "Cache-Control: no-cache"             "$NOTES" "S3:$B/release-notes.json"
 
+          # Two tiny files Steel Shield fetches as count-only pings (a scam
+          # reported, a threat caught); the website counts those fetches like
+          # it counts installer downloads. Never cached, so every ping reaches R2.
+          for p in scam-reported threat-caught; do
+            printf 'ok\n' | rclone rcat --s3-no-check-bucket --retries 5 \
+              --header-upload "Cache-Control: no-store" "S3:$B/ping/$p"
+          done
+
           rclone lsf -R --files-only --exclude "shield/**" "S3:$B" | while read -r f; do
             case "$f" in
-              latest.json|release-notes.json|"$NAME"|"$NAME".*|"$old"|"$old".*) ;;
+              latest.json|release-notes.json|ping/*|"$NAME"|"$NAME".*|"$old"|"$old".*) ;;
               *) echo "Removing old file $f"; rclone deletefile --retries 5 "S3:$B/$f" ;;
             esac
           done
