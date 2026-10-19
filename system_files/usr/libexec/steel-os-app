@@ -1,0 +1,85 @@
+#!/usr/bin/bash
+# Steel OS: one-click app install, uninstall and open for the Steel OS Portal,
+# in a small window instead of a terminal (T, 2026-10-19).
+#
+#   steel-os-app install APP_ID "Name"
+#   steel-os-app uninstall APP_ID "Name"
+#   steel-os-app open APP_ID "Name"
+#
+# Apps come from Flathub, system-wide, like the App Store.
+
+set -uo pipefail
+
+action="${1:-}" app="${2:-}" name="${3:-${2:-the app}}"
+TITLE="Steel OS Portal"
+[[ "$app" =~ ^[A-Za-z0-9._-]+$ ]] || { echo "usage: steel-os-app install|uninstall|open APP_ID NAME" >&2; exit 2; }
+
+installed() { flatpak info "$app" >/dev/null 2>&1; }
+open_app() { nohup setsid flatpak run "$app" >/dev/null 2>&1 & }
+esc() { sed 's/&/\&amp;/g; s/</\&lt;/g' <<< "$1"; }
+
+done_box() { # done_box "html" -> offers Open
+    if yad --title="$TITLE" --window-icon=steel-os --image=steel-os --center --borders=16 --width=420 \
+        --text="$1" --button="Close:1" --button="Open $name:0" 2>/dev/null; then
+        open_app
+    fi
+}
+
+# Runs flatpak with a moving bar and its latest step; leaves the exit code in $rc.
+run_with_window() { # run_with_window "Installing Name" flatpak args...
+    local heading="$1"; shift
+    local log; log="$(mktemp)"
+    ( "$@" >"$log" 2>&1; echo $? > "$log.rc" ) &
+    local job=$!
+    (
+        while kill -0 "$job" 2>/dev/null; do
+            line="$(tr '\r' '\n' < "$log" | grep -vE '^\s*$' | tail -1)"
+            pct="$(grep -oE '[0-9]{1,3}%' <<< "$line" | tail -1)"
+            if [[ -n "$pct" ]]; then echo "# Downloading… $pct"; else echo "# Getting ready…"; fi
+            sleep 1
+        done
+        echo 100
+    ) | yad --progress --pulsate --auto-close --no-buttons --center --width=440 --borders=16 \
+            --title="$TITLE" --window-icon=steel-os --image=steel-os --text="<b>$heading</b>" 2>/dev/null &
+    local win=$!
+    wait "$job"; wait "$win" 2>/dev/null
+    rc="$(cat "$log.rc" 2>/dev/null || echo 1)"
+    out="$(tail -8 "$log")"
+    rm -f "$log" "$log.rc"
+}
+
+case "$action" in
+    install)
+        if installed; then
+            done_box "<b>$name is already installed.</b>\nFind it in the start menu."
+            exit 0
+        fi
+        run_with_window "Installing $name" flatpak install -y --noninteractive flathub "$app"
+        if [[ "$rc" == 0 ]] && installed; then
+            done_box "<b>$name is installed.</b>\nFind it in the start menu. It updates itself."
+        else
+            yad --title="$TITLE" --window-icon=steel-os --image=dialog-warning --center --borders=16 --width=520 \
+                --text="<b>$name couldn't be installed.</b>\nCheck the internet connection and try again. If it keeps failing, use <b>Report a Problem or Idea</b>.\n\n<small>$(esc "$out")</small>" \
+                --button="Close:0" 2>/dev/null
+        fi ;;
+    uninstall)
+        installed || { yad --title="$TITLE" --image=steel-os --center --borders=16 --text="<b>$name isn't installed.</b>" --button="Close:0" 2>/dev/null; exit 0; }
+        yad --title="$TITLE" --window-icon=steel-os --image=dialog-question --center --borders=16 --width=420 \
+            --text="<b>Uninstall $name?</b>\nYour own files stay where they are." \
+            --button="Cancel:1" --button="Uninstall:0" 2>/dev/null || exit 0
+        run_with_window "Uninstalling $name" flatpak uninstall -y --noninteractive "$app"
+        if [[ "$rc" == 0 ]]; then
+            notify-send --app-name="Steel OS" --icon=steel-os "$name was uninstalled" "Install it again any time from the Steel OS Portal." 2>/dev/null || true
+        else
+            yad --title="$TITLE" --image=dialog-warning --center --borders=16 --width=520 \
+                --text="<b>$name couldn't be uninstalled.</b>\n\n<small>$(esc "$out")</small>" --button="Close:0" 2>/dev/null
+        fi ;;
+    open)
+        if installed; then open_app
+        else
+            yad --title="$TITLE" --window-icon=steel-os --image=steel-os --center --borders=16 --width=420 \
+                --text="<b>$name isn't installed yet.</b>" --button="Close:1" --button="Install $name:0" 2>/dev/null \
+                && exec "$0" install "$app" "$name"
+        fi ;;
+    *) echo "usage: steel-os-app install|uninstall|open APP_ID NAME" >&2; exit 2 ;;
+esac
