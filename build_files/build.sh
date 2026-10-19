@@ -540,10 +540,14 @@ fi
 # waiting shows "Restart to finish updating"; only signed Steel OS images are
 # accepted; and an urgent fix can reach PCs the same day.
 chmod 0755 /usr/libexec/steel-os-update-notice /usr/libexec/steel-os-signed-updates \
-    /usr/libexec/steel-os-urgent-update
+    /usr/libexec/steel-os-urgent-update /usr/libexec/steel-os-night-restart /usr/libexec/steel-os-update-now
 systemctl enable steel-os-app-updates.timer steel-os-signed-updates.service \
-    steel-os-urgent-update.timer
-systemctl --global enable steel-os-app-updates.timer steel-os-update-notice.timer
+    steel-os-urgent-update.timer steel-os-night-restart.timer
+systemctl --global enable steel-os-app-updates.timer steel-os-update-notice.timer steel-os-night-restart.timer
+# Restart at night to finish an update (T, 2026-10-18), and "Update now" in
+# the Portal without a password or terminal: polkit lets an administrator at
+# the computer start uupd.service (system_files/usr/share/polkit-1/rules.d).
+systemctl cat uupd.service >/dev/null || { echo "Steel OS: uupd.service is missing" >&2; exit 1; }
 
 # Only images signed with the Steel OS key are accepted from
 # ghcr.io/steel-and-code (all three editions). Bazzite's own entries stay.

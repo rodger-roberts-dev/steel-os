@@ -1,0 +1,61 @@
+#!/usr/bin/bash
+# Steel OS: "Update now" from the Steel OS Portal, in a window instead of a
+# terminal, with no password (T, 2026-10-18).
+#
+# Starts the same update the Tuesday timer runs (uupd.service: the system,
+# apps and firmware). polkit lets an administrator at the computer start it
+# without a password (50-steel-os-updates.rules). Shows what it is doing while
+# it runs, then offers "Restart now" when a new version is waiting.
+
+set -uo pipefail
+
+TITLE="Update Steel OS"
+command -v yad >/dev/null 2>&1 || { systemctl start uupd.service; exit; }
+
+log="$(mktemp)"
+since="$(date '+%Y-%m-%d %H:%M:%S')"
+(
+    echo "# Checking for updates…"
+    systemctl start uupd.service >"$log" 2>&1
+    echo $? > "$log.rc"
+) &
+starter=$!
+
+# The window: a moving bar and the update's latest step, in plain words.
+(
+    while kill -0 "$starter" 2>/dev/null; do
+        line="$(journalctl -u uupd.service --since "$since" -o cat --no-pager 2>/dev/null | grep -vE '^\s*$' | tail -1)"
+        case "$line" in
+            *[Ff]latpak*|*[Aa]pp*) msg="Updating apps…" ;;
+            *[Ff]irmware*|*fwupd*) msg="Checking firmware…" ;;
+            *[Ss]ystem*|*bootc*|*rpm-ostree*|*[Ii]mage*|*[Ff]etch*|*[Dd]ownload*|*[Pp]ull*) msg="Downloading the new version of Steel OS…" ;;
+            "") msg="Checking for updates…" ;;
+            *) msg="Updating…" ;;
+        esac
+        echo "# $msg"
+        sleep 2
+    done
+    echo "100"
+) | yad --progress --pulsate --auto-close --no-buttons --center --width=460 --borders=16 \
+        --title="$TITLE" --window-icon=steel-os --image=steel-os \
+        --text="<b>Updating Steel OS</b>\nYou can keep working. Your files and apps stay as they are." 2>/dev/null &
+win=$!
+wait "$starter"
+wait "$win" 2>/dev/null
+
+rc="$(cat "$log.rc" 2>/dev/null || echo 1)"
+staged="$(rpm-ostree status --json 2>/dev/null | jq -r '[.deployments[] | select(.staged == true)] | length')"
+if [[ "$rc" != 0 ]]; then
+    details="$( (cat "$log"; journalctl -u uupd.service --since "$since" -o cat --no-pager -n 15) 2>/dev/null \
+        | sed 's/&/\&amp;/g; s/</\&lt;/g' | tail -15)"
+    kdialog --title "$TITLE" --icon steel-os --sorry "<h3>The update didn't finish</h3>
+<p>Steel OS tries again on Tuesday by itself. If this keeps happening, use <b>Report a Problem or Idea</b> in the start menu; these details help:</p><pre>$details</pre>" 2>/dev/null
+elif [[ "${staged:-0}" -gt 0 ]]; then
+    if kdialog --title "$TITLE" --icon steel-os --yes-label "Restart now" --no-label "Later" --yesno \
+        "<h3>The update is ready</h3><p>Restart to start the new version. Your files and apps stay as they are, and the previous version is kept in case you need it.</p>" 2>/dev/null; then
+        systemctl reboot
+    fi
+else
+    kdialog --title "$TITLE" --icon steel-os --msgbox "<h3>Steel OS is up to date</h3><p>Your apps were updated too.</p>" 2>/dev/null
+fi
+rm -f "$log" "$log.rc"

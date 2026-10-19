@@ -1,0 +1,6 @@
+[Unit]
+Description=Steel OS: restart at night to finish an update, when it's safe
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/steel-os-night-restart system
