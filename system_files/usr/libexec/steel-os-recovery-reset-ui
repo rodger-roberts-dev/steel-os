@@ -79,18 +79,65 @@ if (( count >= MAX_TRIES )); then
     exit 0
 fi
 
-# Ask the three questions.
+# One screen (T, 2026-10-19): the three questions with their answers, and the
+# new password typed twice. Wrong answers count against the 15-minute lock;
+# a password problem (empty, not matching) just shows the screen again, with
+# the answers kept.
+mapfile -t QUESTIONS < <(cut -f1 "$DIR/$user")
+mapfile -t HASHES < <(cut -f2 "$DIR/$user")
+(( ${#QUESTIONS[@]} == 3 )) || { say "<p>The security questions for $user can't be read. Please report this at steel-os.org/report.</p>"; exit 0; }
+
+one_page() { # one_page "problem text" a1 a2 a3 -> sets A1 A2 A3 P1 P2; returns 1 on Cancel
+    local problem="$1" out q=() i
+    for i in 0 1 2; do q[$i]="${QUESTIONS[$i]//:/ -}"; done
+    if [[ $MODE == gui ]]; then
+        local text="<b><big>Reset the password for $user</big></b>
+Answer your three security questions, then choose a new password."
+        [[ -n "$problem" ]] && text+="
+
+<span foreground='#F2641E'><b>$problem</b></span>"
+        out="$(yad --form --title="$TITLE" --window-icon=steel-os --image=steel-os --center --width=620 --borders=18 \
+            --separator=$'\x1f' --text="$text" \
+            --field="${q[0]}" "$2" --field="${q[1]}" "$3" --field="${q[2]}" "$4" \
+            --field="New password:H" "" --field="Type it again:H" "" \
+            --button="Cancel:1" --button="Reset password:0" 2>/dev/null)" || return 1
+        IFS=$'\x1f' read -r A1 A2 A3 P1 P2 _ <<< "$out"
+    else
+        local head="Reset the password for $user. Answer your three questions, then choose a new password (Tab moves between boxes)."
+        [[ -n "$problem" ]] && head="$problem  $head"
+        out="$(dialog --title "$TITLE" --stdout --insecure --mixedform "$head" 20 76 10 \
+            "${q[0]}" 1 1 "$2" 2 3 66 200 0 \
+            "${q[1]}" 3 1 "$3" 4 3 66 200 0 \
+            "${q[2]}" 5 1 "$4" 6 3 66 200 0 \
+            "New password:" 8 1 "" 8 20 40 200 1 \
+            "Type it again:" 9 1 "" 9 20 40 200 1)" || return 1
+        { IFS= read -r A1; IFS= read -r A2; IFS= read -r A3; IFS= read -r P1; IFS= read -r P2; } <<< "$out"
+    fi
+    return 0
+}
+
+A1="" A2="" A3="" problem=""
+while true; do
+    one_page "$problem" "$A1" "$A2" "$A3" || exit 0
+    problem=""
+    if [[ -z "$P1" ]]; then problem="Please type a new password."; continue; fi
+    if [[ "$P1" != "$P2" ]]; then problem="The two passwords didn't match. Please type them again."; continue; fi
+    if [[ "$P1" == *:* || "$P1" == *$'\n'* ]]; then problem="Please don't use a colon (:) in the password."; continue; fi
+    break
+done
+
 all_right=yes
-while IFS=$'\t' read -r question hash <&3; do
-    [[ -z "$question" ]] && continue
-    answer="$(ask_text "<b>$question</b>")" || exit 0
-    if ! printf '%s' "$answer" | "$CRYPT" verify "$hash"; then
+answers=("$A1" "$A2" "$A3")
+for i in 0 1 2; do
+    if ! printf '%s' "${answers[$i]}" | "$CRYPT" verify "${HASHES[$i]}"; then
         all_right=no
     fi
-done 3< "$DIR/$user"
+done
+unset A1 A2 A3 answers
 sleep 2
 
 if [[ $all_right != yes ]]; then
+    unset P1 P2
     count=$((count + 1)); (( since == 0 )) && since=$now
     printf '%s %s\n' "$count" "$since" > "$attempts_file"
     chmod 0600 "$attempts_file"
@@ -102,22 +149,7 @@ if [[ $all_right != yes ]]; then
     fi
     exit 0
 fi
-
-# New password, typed twice.
-while true; do
-    p1="$(ask_secret "New password for <b>$user</b>:")" || exit 0
-    p2="$(ask_secret "Type the new password again:")" || exit 0
-    if [[ -z "$p1" ]]; then
-        say "<p>The password can't be empty.</p>"; continue
-    fi
-    if [[ "$p1" != "$p2" ]]; then
-        say "<p>The two passwords didn't match. Please try again.</p>"; continue
-    fi
-    if [[ "$p1" == *:* || "$p1" == *$'\n'* ]]; then
-        say "<p>Please don't use a colon (:) in the password.</p>"; continue
-    fi
-    break
-done
+p1="$P1"; unset P1 P2
 
 if printf '%s:%s\n' "$user" "$p1" | chpasswd; then
     rm -f "$attempts_file"
