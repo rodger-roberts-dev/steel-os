@@ -27,7 +27,7 @@ if [[ -e /run/steel-os-secure-boot-key ]]; then
 2. Choose <b>Continue</b>, then <b>Yes</b>.
 3. Type the password <b>steelos</b> and press Enter.
 4. Choose <b>Reboot</b>. Steel OS then starts normally.\n
-Skipped it? Steel OS Help, <i>Something went wrong</i>, shows how to bring it back."
+<b>Don't choose "Continue boot"</b>: Steel OS can't start with Secure Boot on until the key is trusted."
 fi
 
 yad --on-top --center --buttons-layout=center --text-align=center \
