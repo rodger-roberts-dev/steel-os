@@ -42,6 +42,8 @@ com.heroicgameslauncher.hgl | Heroic | Epic Games, GOG, Amazon games | Games and
 io.github.hmlendea.geforcenow-electron | GeForce NOW | Cloud gaming | Games and Streaming
 com.discordapp.Discord | Discord | Voice and text chat | Games and Streaming
 com.chatterino.chatterino | Chatterino | Twitch chat in its own window | Games and Streaming
+tv.plex.PlexDesktop | Plex | Watch your Plex movies and shows (your Plex server stays where it is) | Games and Streaming
+tv.plex.PlexHTPC | Plex HTPC | Plex full screen, for a TV or living-room PC | Games and Streaming
 com.vysp3r.ProtonPlus | ProtonPlus | Install and update GE-Proton for Steam and Lutris | Games and Streaming
 org.freedesktop.Piper | Piper | Gaming mouse buttons, DPI and lights (Logitech G, SteelSeries and more) | Games and Streaming
 app.polychromatic.controller | Polychromatic | Razer keyboards, mice and keypads: lights and keys (needs Razer support from the Gaming tab) | Games and Streaming
