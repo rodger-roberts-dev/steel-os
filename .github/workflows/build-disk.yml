@@ -90,6 +90,8 @@ jobs:
           # The merge whose image build triggered this run, not whatever
           # master is by now.
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          # Full history: the release notes list every version since VERSION changed.
+          fetch-depth: 0
 
       # Each image build also publishes the image under names that include the
       # commit. Use that exact image, so this installer is the version of the merge that
@@ -178,6 +180,10 @@ jobs:
             name="$(basename "$ISO_PATH")"
           fi
           echo "name=$name" >> "$GITHUB_OUTPUT"
+          # What changed in each version, for steel-os.org/preview (T,
+          # 2026-10-18): one entry per merge, with its pull request title.
+          python3 .github/scripts/release-notes.py "$RUNNER_TEMP/release-notes.json" "$version"
+          echo "notes=$RUNNER_TEMP/release-notes.json" >> "$GITHUB_OUTPUT"
           mv "$ISO_PATH" "$OUT/$name"
           ( cd "$OUT" && sha256sum "$name" > "$name.sha256" )
           # Which Steel OS image this installer contains (STEEL-57). Installed
@@ -237,6 +243,7 @@ jobs:
           SOURCE_DIR: ${{ steps.files.outputs.dir }}
           NAME: ${{ steps.files.outputs.name }}
           VERSION: ${{ steps.files.outputs.version }}
+          NOTES: ${{ steps.files.outputs.notes }}
         run: |
           sudo apt-get update
           sudo apt-get install -y rclone
@@ -268,9 +275,11 @@ jobs:
             --header-upload "Cache-Control: no-cache" \
             "$RUNNER_TEMP/latest.json" "S3:$B/latest.json"
 
+          rclone copyto --s3-no-check-bucket --retries 5             --header-upload "Cache-Control: no-cache"             "$NOTES" "S3:$B/release-notes.json"
+
           rclone lsf -R --files-only --exclude "shield/**" "S3:$B" | while read -r f; do
             case "$f" in
-              latest.json|"$NAME"|"$NAME".*|"$old"|"$old".*) ;;
+              latest.json|release-notes.json|"$NAME"|"$NAME".*|"$old"|"$old".*) ;;
               *) echo "Removing old file $f"; rclone deletefile --retries 5 "S3:$B/$f" ;;
             esac
           done
