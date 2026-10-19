@@ -31,9 +31,17 @@
   <li>Type the password <b>steelos</b> and press Enter.</li>
   <li>Choose <b>Reboot</b>. Steel OS then starts normally.</li>
 </ol>
-<p>Skipped it, or turned Secure Boot on after installing? Steel OS still works, but some drivers (NVIDIA, for example) may not load. To get the blue screen back, open the terminal (<kbd>Super</kbd>+<kbd>Enter</kbd>) and type:</p>
-<pre><code>sudo mokutil --import /usr/share/ublue-os/sb_pubkey.der</code></pre>
-<p>It asks for your password, then for a new one-time password (twice). Restart and follow the steps above, typing that one-time password.</p>
+<p class="note">Don't choose <b>Continue boot</b> on the blue screen: with Secure Boot on, Steel OS can't start until the key is trusted.</p>
+<h3>Skipped the blue screen? ("bad shim signature")</h3>
+<p>With Secure Boot on, the computer then stops with <b>bad shim signature</b> and <b>you need to load the kernel first</b>. Nothing is lost; trust the key this way:</p>
+<ol>
+  <li>Start the computer from the <b>Steel OS USB stick</b> again (the live desktop starts as before).</li>
+  <li>Open the terminal (<kbd>Super</kbd>+<kbd>Enter</kbd>) and type: <code>sudo mokutil --import /etc/pki/akmods/certs/akmods-ublue.der</code></li>
+  <li>Make up a one-time password and type it twice (for example <b>steelos</b>).</li>
+  <li>Shut down, take out the USB stick, and turn the computer on. On the blue screen choose <b>Enroll MOK</b>, <b>Continue</b>, <b>Yes</b>, type that password, then <b>Reboot</b>.</li>
+</ol>
+<h3>Turning Secure Boot on after installing</h3>
+<p>If Steel OS was installed with Secure Boot off, trust the key <b>before</b> switching Secure Boot on: in Steel OS open the terminal and type <code>sudo mokutil --import /etc/pki/akmods/certs/akmods-ublue.der</code>, make up a one-time password, restart and follow the blue-screen steps above. Then switch Secure Boot on in the firmware (see <a href="steel-shield.html#secure-boot">Turn on Secure Boot</a>).</p>
 <h2>Something broke after an update</h2>
 <p>Restart and pick the <b>second</b> entry in the start-up menu. You are back on the version before. See <a href="updates.html">Updates and going back</a>.</p>
 <h2>No internet</h2>

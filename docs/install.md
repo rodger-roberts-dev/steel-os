@@ -112,7 +112,8 @@ That's it. Steel OS updates itself every Tuesday from now on.
 | What you see | What to do |
 |---|---|
 | The PC starts Windows instead of the USB stick | Restart and press the boot menu key again. Some PCs need **Secure Boot** or **Fast Boot** turned off in the firmware settings to see the stick. |
-| A blue screen about a key (MOK) | Choose **Enroll MOK**, **Continue**, **Yes**, type `steelos`, restart. |
+| A blue screen about a key (MOK) | Choose **Enroll MOK**, **Continue**, **Yes**, type `steelos`, restart. Don't choose Continue boot. |
+| **bad shim signature** at start-up (the blue screen was skipped) | Start from the USB stick, open Konsole, run `sudo mokutil --import /etc/pki/akmods/certs/akmods-ublue.der`, make up a password, then restart without the stick and choose **Enroll MOK** on the blue screen. |
 | The installer says the disk is too small | Steel OS needs 64 GB. Pick a bigger disk, or free up space. |
 | The default apps never appear | Check the internet connection, then restart. They retry by themselves. |
 
