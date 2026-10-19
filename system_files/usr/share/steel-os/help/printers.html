@@ -20,11 +20,29 @@
 <h2>Add a printer</h2>
 <ol>
   <li><b>USB:</b> plug the printer in and switch it on. Steel OS sets it up by itself within a few seconds.</li>
-  <li><b>Wi-Fi or network:</b> most printers appear by themselves. If yours doesn't, open <b>System Settings</b>, then <b>Printers</b>, click <b>Add</b> and pick it from the list.</li>
+  <li><b>Wi-Fi or network:</b> most printers appear by themselves within a minute of being on the same Wi-Fi. If yours doesn't, see <b>Add a printer by hand</b> below.</li>
   <li>Print a test page.</li>
 </ol>
 <p>HP, Canon, Brother and Epson printers work without downloading a driver, as do most printers made since about 2015.</p>
 <p>Printing to a PDF file works in every app, with no printer.</p>
+<h2>Add a printer by hand</h2>
+<p>For a printer that didn't appear by itself. Switch the printer on first; for Wi-Fi, make sure it is on the same Wi-Fi as the computer (its own menu or app shows that).</p>
+<ol>
+  <li>Open the start menu and search for <b>Printers</b>, or open <b>System Settings</b> and choose <b>Printers</b> in the list on the left.</li>
+  <li>Click <b>Add Printer</b> at the top. A list of printers the computer can see appears after a few seconds.</li>
+  <li>Click your printer. It is usually listed by make and model, for example <b>Canon MG3600 series</b>; the word <i>driverless</i> or <i>IPP</i> next to it is fine, choose that one.</li>
+  <li>Click <b>Next</b>. If it asks for a driver, keep the one it suggests (usually <b>IPP Everywhere</b> or the printer's own name) and click <b>Next</b> again.</li>
+  <li>Give it a name you'll recognise, such as <b>Canon upstairs</b>, and click <b>Finish</b>.</li>
+  <li>Click your new printer, then <b>Print Test Page</b>. If the page comes out, you are done.</li>
+</ol>
+<p><b>Not in the list?</b> Add it by its address:</p>
+<ol>
+  <li>Find the printer's address (IP) on the printer itself: in its menu under <b>Settings</b>, <b>Network</b> or <b>Wireless LAN</b>, or print its network settings page. It looks like <b>192.168.1.45</b>.</li>
+  <li>In <b>Add Printer</b>, choose <b>Manual</b> (or <b>Enter address</b>) and type <code>ipp://</code> followed by the address and <code>/ipp/print</code>, for example <code>ipp://192.168.1.45/ipp/print</code>. Click <b>Next</b> and finish as above.</li>
+  <li>Still nothing? Check that the printer is on the same Wi-Fi as the computer, restart both, and try again.</li>
+</ol>
+<h2>A printer you removed comes back</h2>
+<p>Printers that Steel OS found by itself are found again by themselves: within about two minutes of being removed while they are still on, or as soon as the USB cable is plugged back in. To stop a printer appearing, turn it off, or leave it and simply pick another printer when you print.</p>
 <h2>Scan</h2>
 <p>Open <b>Skanpage</b> from the start menu, pick your scanner, then <b>Scan</b>.</p>
 <h2>Open a shared folder on a Windows PC</h2>

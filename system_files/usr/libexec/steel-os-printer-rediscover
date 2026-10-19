@@ -1,0 +1,25 @@
+#!/usr/bin/bash
+# Steel OS (T, 2026-10-19): a printer that was removed is found again.
+#
+# Network and USB printers are added by cups-browsed when it discovers them,
+# and it discovers each one once. Remove a printer in System Settings and it
+# stays gone, even though it is still on the network. This runs every two
+# minutes (steel-os-printer-rediscover.timer): when a printer has vanished
+# from the list since last time, cups-browsed is restarted, so it discovers
+# every printer that is switched on afresh. Printers added by hand are not
+# touched by a restart.
+
+set -uo pipefail
+
+STATE=/run/steel-os/printers.list
+mkdir -p /run/steel-os
+
+now="$(lpstat -p 2>/dev/null | awk '{print $2}' | sort -u)"
+if [[ -r "$STATE" ]]; then
+    gone="$(comm -23 "$STATE" <(printf '%s\n' "$now"))"
+    if [[ -n "$gone" ]]; then
+        echo "Printer(s) removed since the last check: $(tr '\n' ' ' <<< "$gone"). Looking for printers again."
+        systemctl try-restart cups-browsed.service
+    fi
+fi
+printf '%s\n' "$now" > "$STATE"

@@ -1,0 +1,7 @@
+# Steel OS (T, 2026-10-19): a USB printer plugged in again is found again.
+# ipp-usb makes a USB printer look like a network printer and cups-browsed
+# adds it by itself, but only when it newly discovers it. After the printer
+# was removed in Printers and the cable plugged back in, nothing asked it to
+# look again. Ten seconds after a USB printer (interface class 7) appears,
+# cups-browsed is restarted, so it discovers the printer afresh.
+ACTION=="add", SUBSYSTEM=="usb", ENV{ID_USB_INTERFACES}=="*:0701*", TAG+="systemd", ENV{SYSTEMD_WANTS}+="steel-os-usb-printer-rediscover.service"
