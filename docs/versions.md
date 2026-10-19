@@ -26,3 +26,11 @@ gets an installer, so the list on steel-os.org/download can skip a number.
 |---|---|
 | 0.4.x to 0.9.x | Counts up by itself with every merge: tester fixes and features |
 | **1.0** | The release checklist passes, a stranger installs from the guide alone, and the main Download button goes live. Change `VERSION` to `1.0` |
+
+## Release notes
+
+Every installer build also publishes `release-notes.json` on
+downloads.steel-os.org (made by `.github/scripts/release-notes.py`): one entry
+per version with its date and pull request title. steel-os.org/preview shows
+it as **What's new**. So a pull request's title is its release note: write it
+in plain English, for people using Steel OS.
