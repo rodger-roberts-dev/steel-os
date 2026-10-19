@@ -1,0 +1,70 @@
+name: Daily rebuild
+
+# Every day: if Bazzite's base images (which carry Fedora's updates) have
+# changed since Steel OS was last built, record that as a change on master
+# and build. The version then counts up like any merge (T, 2026-10-19), the
+# installer follows, and "What's new" on steel-os.org shows the rebuild.
+# Nothing changed upstream: nothing happens, no identical installer.
+#
+# Replaces the build workflow's own daily schedule, which rebuilt silently
+# under the same version number.
+
+on:
+  schedule:
+    - cron: "05 10 * * *"   # 10:05 UTC every day
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: daily-rebuild
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: master
+
+      - name: Compare Bazzite's base images with the last build
+        id: bases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          sudo apt-get install -y -qq skopeo >/dev/null
+          # The bases the build uses (kept in sync with build.yml).
+          mapfile -t bases < <(grep -oE 'ghcr.io/ublue-os/[a-z-]+:stable' .github/workflows/build.yml | sort -u)
+          : > now.txt
+          for b in "${bases[@]}"; do
+            d="$(skopeo inspect --no-tags --format '{{.Digest}}' "docker://$b")"
+            echo "$b $d" >> now.txt
+          done
+          echo "Bazzite now:"; cat now.txt
+          if cmp -s now.txt packages/base-images.txt; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No change upstream since the last build."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            cp now.txt packages/base-images.txt
+          fi
+
+      - name: Record the rebuild on master and build
+        if: steps.bases.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name "steel-os bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add packages/base-images.txt
+          git commit -m "Daily rebuild: the newest Fedora and Bazzite updates" \
+            -m "Bazzite's base images changed; packages/base-images.txt records the new digests."
+          git push origin master
+          # A push made by the workflow's own token starts no builds, so start it.
+          gh workflow run build.yml --ref master
+          echo "::notice::Base images changed: recorded on master and the build started."

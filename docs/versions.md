@@ -16,6 +16,11 @@ installer's information panel, in `/usr/share/steel-os/version`, in the
 installer's file name (`steel-os-0.5.3-x86_64.iso`) and `.image.txt` record,
 and in the list of builds on steel-os.org/download.
 
+A daily rebuild on Bazzite's newest base (Fedora's updates) counts as a
+change too: when the base images have changed, the **Daily rebuild** workflow
+records it on `master` (`packages/base-images.txt`), so the version counts up
+and the installer follows. When nothing changed upstream, nothing is built.
+
 Every installer is built from the exact image of the merge that triggered it.
 When several merges land while an installer is building, only the newest one
 gets an installer, so the list on steel-os.org/download can skip a number.
