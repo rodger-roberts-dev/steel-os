@@ -45,7 +45,7 @@ SYSQ_INDEX = Path("/var/lib/steel-shield/quarantine.tsv")
 # The scam checker is an opt-in add-on (T, 2026-10-19): off until switched on.
 CONF = Path(os.environ.get("XDG_CONFIG_HOME", HOME / ".config")) / "steel-shield"
 SCAM_ON = CONF / "scamcheck-on"
-SCAMCHECK = "C:/Program Files/Git/usr/libexec/steel-shield-scamcheck"
+SCAMCHECK = "/usr/libexec/steel-shield-scamcheck"
 DEMO = not Path(SHIELD).exists()   # no steel-shield here: show sample data (for screenshots)
 
 BLUE, ORANGE = "#4A90D9", "#F2641E"
