@@ -384,16 +384,18 @@ if s.count(call) == 1 and s.count(method) == 1:
                 if status_script:
                     def _steel_wait(p=error_message, aid=action.get('id'), ss=status_script):
                         p.wait()
+                        _STEEL_FLATPAKS["at"] = 0.0
                         GLib.idle_add(self.fetch_and_update_single_status, aid, ss)
                     threading.Thread(target=_steel_wait, daemon=True).start()
                 return""")
         s = s.replace(focus, focus + "\n            GLib.idle_add(self.steel_refresh_rows)")
         s = s.replace(method, """    def steel_refresh_rows(self):
-        \"\"\"Steel OS: re-check the rows on screen when the window comes back.\"\"\"
+        \"\"\"Steel OS: re-check the rows on screen when the window comes back (one flatpak list).\"\"\"
         now = time.monotonic()
         if now - getattr(self, '_steel_rows_checked', 0.0) < 5:
             return False
         self._steel_rows_checked = now
+        _STEEL_FLATPAKS["at"] = 0.0
         try:
             actions = self.page_actions_map.get(self.current_page_name, []) if self.current_page_name else []
             for a in actions:
@@ -408,6 +410,48 @@ if s.count(call) == 1 and s.count(method) == 1:
         print("Steel OS Portal: rows re-check Installed / Not installed after a click and on focus")
     else:
         print("Steel OS Portal: WARNING engine changed; rows refresh only when the Portal is reopened")
+    # Every Steel Apps row used to run its own shell (bash -l, then flatpak info)
+    # through a 4-thread pool with a 3-second limit, so a page of 30 apps sat on
+    # "Checking..." for ages (T, 2026-10-19). Now one "flatpak list", kept for
+    # two seconds, answers every row at once; anything else still runs its own
+    # script.
+    fetch = "    def fetch_and_update_single_status(self, action_id, status_script):\n        \"\"\"Executes a single script and schedules a UI update.\"\"\"\n        status_token = \"unknown\"\n"
+    helper_anchor = "def escape_markup(text):"
+    popup_wait = "                def wait_and_refresh():\n                    result.wait()\n"
+    if s.count(fetch) == 1 and s.count(helper_anchor) == 1 and s.count(popup_wait) == 1:
+        s = s.replace(fetch, fetch + """        m = re.match(r'^flatpak info (\\S+) >/dev/null 2>&1 && echo install \\|\\| echo uninstall$', (status_script or '').strip())
+        if m:
+            ids = steel_installed_flatpaks()
+            if ids is not None:
+                GLib.idle_add(self._update_status_ui, action_id, 'install' if m.group(1) in ids else 'uninstall')
+                return
+""")
+        s = s.replace(helper_anchor, """_STEEL_FLATPAKS = {"at": 0.0, "ids": None}
+_STEEL_FLATPAKS_LOCK = threading.Lock()
+
+
+def steel_installed_flatpaks(max_age=2.0):
+    \"\"\"Steel OS: the ids of every installed app from one flatpak list, kept for a
+    couple of seconds so a page of rows is answered at once. None if flatpak failed.\"\"\"
+    with _STEEL_FLATPAKS_LOCK:
+        if time.monotonic() - _STEEL_FLATPAKS["at"] > max_age:
+            try:
+                r = subprocess.run(["flatpak", "list", "--app", "--columns=application"],
+                                   capture_output=True, text=True, timeout=30, check=False)
+                _STEEL_FLATPAKS["ids"] = set(r.stdout.split()) if r.returncode == 0 else None
+            except Exception:
+                _STEEL_FLATPAKS["ids"] = None
+            _STEEL_FLATPAKS["at"] = time.monotonic()
+        return _STEEL_FLATPAKS["ids"]
+
+
+""" + helper_anchor)
+        s = s.replace(popup_wait, popup_wait + "                    _STEEL_FLATPAKS[\"at\"] = 0.0\n")
+        if "\nimport re\n" not in s:
+            s = s.replace("import os\n", "import os\nimport re\n", 1)
+        print("Steel OS Portal: Steel Apps rows answered from one flatpak list")
+    else:
+        print("Steel OS Portal: WARNING engine changed; each row still runs its own check")
     open(p, "w").write(s)
     compile(s, p, "exec")
     print("Steel OS Portal: buttons that open an app start it without a terminal")
