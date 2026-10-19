@@ -1,0 +1,50 @@
+name: Build safety net
+
+# Every 30 minutes: if master's newest change has no successful image build
+# and none is running or queued, re-run the last build for it. GitHub's queue
+# cancels a build that was waiting its turn when a third request arrives
+# (T, 2026-10-19: #109 and #110 merged two minutes apart, both builds
+# cancelled, no installer). Nothing to click: this puts the build back.
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: build-safety-net
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Re-run the newest master build if it was cancelled
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          sha="$(gh api "repos/$REPO/commits/master" --jq .sha)"
+          runs="$(gh api "repos/$REPO/actions/workflows/build.yml/runs?branch=master&per_page=20" \
+            --jq "[.workflow_runs[] | select(.head_sha == \"$sha\") | {id, status, conclusion}]")"
+          echo "master is ${sha:0:7}; its image builds: $runs"
+          if [[ "$(jq 'length' <<< "$runs")" == 0 ]]; then
+            echo "No build for this commit yet (it may be a docs-only change)."; exit 0
+          fi
+          if jq -e '.[] | select(.conclusion == "success")' <<< "$runs" >/dev/null; then
+            echo "Already built."; exit 0
+          fi
+          if jq -e '.[] | select(.status == "in_progress" or .status == "queued" or .status == "waiting" or .status == "pending")' <<< "$runs" >/dev/null; then
+            echo "A build is running or queued."; exit 0
+          fi
+          if jq -e '.[] | select(.conclusion == "failure")' <<< "$runs" >/dev/null; then
+            echo "The build failed on its own; a re-run would fail again. Fix it with a pull request."; exit 0
+          fi
+          id="$(jq -r '.[0].id' <<< "$runs")"
+          echo "::notice::Re-running cancelled image build $id for master ${sha:0:7}"
+          gh api -X POST "repos/$REPO/actions/runs/$id/rerun"
