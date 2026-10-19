@@ -640,6 +640,9 @@ rpm -q hplip gutenprint-cups printer-driver-brlaser ipp-usb sane-airscan skanpag
 # A USB printer plugged in again is found again (udev rule + service).
 test -f /usr/lib/udev/rules.d/90-steel-os-usb-printer.rules
 systemctl cat steel-os-usb-printer-rediscover.service >/dev/null
+# A removed printer (USB or network) is found again within two minutes.
+chmod 0755 /usr/libexec/steel-os-printer-rediscover
+systemctl enable steel-os-printer-rediscover.timer
 
 ### 20. Gaming devices and game fixes (STEEL-32, STEEL-45, STEEL-46)
 # Drivers for the Xbox wireless adapter, Razer devices and racing wheels come

@@ -1,0 +1,7 @@
+[Unit]
+Description=Steel OS: find a removed printer again
+After=cups.service cups-browsed.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/steel-os-printer-rediscover

@@ -1,0 +1,10 @@
+[Unit]
+Description=Steel OS: every two minutes, find a removed printer again
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=2min
+AccuracySec=30s
+
+[Install]
+WantedBy=timers.target
