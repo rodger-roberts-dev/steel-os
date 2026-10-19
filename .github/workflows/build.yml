@@ -8,8 +8,8 @@ on:
       # Docs-only changes do not change the OS, so they do not rebuild it.
       - '*.md'
       - 'docs/**'
-  schedule:
-    - cron: '05 10 * * *'  # 10:05am UTC everyday
+  # The daily rebuild on Bazzite's newest base is .github/workflows/daily-rebuild.yml:
+  # it records the rebuild on master (so the version counts up) and starts this.
   push:
     branches:
       - master
