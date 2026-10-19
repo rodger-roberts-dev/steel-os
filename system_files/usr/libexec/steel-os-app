@@ -2,6 +2,9 @@
 # Steel OS: one-click app install, uninstall and open for the Steel OS Portal,
 # in a small window instead of a terminal (T, 2026-10-19).
 #
+#   steel-os-app click APP_ID "Name"      one click in the Portal (T, 2026-10-19):
+#                                         installs if it isn't installed, else a
+#                                         window with Open, Uninstall and Close
 #   steel-os-app install APP_ID "Name"
 #   steel-os-app uninstall APP_ID "Name"
 #   steel-os-app open APP_ID "Name"
@@ -69,6 +72,17 @@ run_with_window() { # run_with_window "Installing Name" flatpak args...
 }
 
 case "$action" in
+    click)
+        if ! installed; then
+            exec "$0" install "$app" "$name"
+        fi
+        yad --title="$TITLE" --window-icon=steel-os --image=steel-os --center --borders=16 --width=420 \
+            --text="<b>$name is installed.</b>" \
+            --button="Close:1" --button="Uninstall $name:2" --button="Open $name:0" 2>/dev/null
+        case $? in
+            0) open_app ;;
+            2) exec "$0" uninstall "$app" "$name" ;;
+        esac ;;
     install)
         if installed; then
             done_box "<b>$name is already installed.</b>\nFind it in the start menu."

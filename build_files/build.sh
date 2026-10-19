@@ -372,6 +372,42 @@ if s.count(call) == 1 and s.count(method) == 1:
         print("Steel OS Portal: Install / Open / Uninstall choices open their own window, no terminal")
     else:
         print("Steel OS Portal: WARNING the choice pop-up changed; app installs still open a terminal")
+    # After a one-click row's window closes, re-check that row's Installed /
+    # Not installed; and re-check every row on screen whenever the Portal
+    # window comes back into focus, in case an app was added or removed in
+    # the App Store (T, 2026-10-19).
+    plain_return = "            if isinstance(error_message, subprocess.Popen):\n                return"
+    focus = "            GLib.idle_add(self.refresh_active_dialog_if_needed)"
+    if s.count(plain_return) == 1 and s.count(focus) == 1:
+        s = s.replace(plain_return, """            if isinstance(error_message, subprocess.Popen):
+                status_script = (action.get('status_script') or "").strip()
+                if status_script:
+                    def _steel_wait(p=error_message, aid=action.get('id'), ss=status_script):
+                        p.wait()
+                        GLib.idle_add(self.fetch_and_update_single_status, aid, ss)
+                    threading.Thread(target=_steel_wait, daemon=True).start()
+                return""")
+        s = s.replace(focus, focus + "\n            GLib.idle_add(self.steel_refresh_rows)")
+        s = s.replace(method, """    def steel_refresh_rows(self):
+        \"\"\"Steel OS: re-check the rows on screen when the window comes back.\"\"\"
+        now = time.monotonic()
+        if now - getattr(self, '_steel_rows_checked', 0.0) < 5:
+            return False
+        self._steel_rows_checked = now
+        try:
+            actions = self.page_actions_map.get(self.current_page_name, []) if self.current_page_name else []
+            for a in actions:
+                ss = (a.get('status_script') or "").strip()
+                if ss and a.get('id') in self.action_status_widgets:
+                    self.executor.submit(self.fetch_and_update_single_status, a.get('id'), ss)
+        except Exception:
+            pass
+        return False
+
+""" + method)
+        print("Steel OS Portal: rows re-check Installed / Not installed after a click and on focus")
+    else:
+        print("Steel OS Portal: WARNING engine changed; rows refresh only when the Portal is reopened")
     open(p, "w").write(s)
     compile(s, p, "exec")
     print("Steel OS Portal: buttons that open an app start it without a terminal")
