@@ -101,11 +101,12 @@ welcome = screen("Welcome", "Get started with Steel OS", [
            script="nohup setsid /usr/libexec/steel-os-recovery-setup >/dev/null 2>&1"),
     action("night-restart", "Automatic restarts for updates",
            "When an update is waiting, Steel OS restarts between 2 and 5 am, only if nobody is using the computer and no game is running, with a 15-minute warning.",
-           status_script='test -f "$HOME/.config/steel-os/no-night-restart" && echo off || echo on',
+           # The Portal shows only its own status words: enable -> Enabled, disable -> Disabled.
+           status_script='test -f "$HOME/.config/steel-os/no-night-restart" && echo disable || echo enable',
            options=[
-               ("on", "On: restart at night when it's safe",
+               ("enable", "On: restart at night when it's safe",
                 'rm -f "$HOME/.config/steel-os/no-night-restart" && echo "Automatic restarts are on."' + PAUSE),
-               ("off", "Off: I'll restart myself",
+               ("disable", "Off: I'll restart myself",
                 'mkdir -p "$HOME/.config/steel-os" && touch "$HOME/.config/steel-os/no-night-restart" && echo "Automatic restarts are off."' + PAUSE),
            ]),
     action("setup-again", "Run Steel OS Setup again",
