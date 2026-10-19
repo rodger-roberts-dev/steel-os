@@ -119,6 +119,10 @@ mkdir -p /usr/share/steel-os
 echo "${STEEL_OS_BUILD:-local}" > /usr/share/steel-os/build
 echo "${STEEL_OS_VERSION:-0.0.0}" > /usr/share/steel-os/version
 echo "Steel OS version $(cat /usr/share/steel-os/version), build $(cat /usr/share/steel-os/build)"
+# steel-os-version: the version in plain English, for people (bootc status
+# shows image digests). It also prints under the terminal's welcome message.
+chmod 0755 /usr/bin/steel-os-version
+/usr/bin/steel-os-version --short
 # Bazzite rewrites Fedora's /usr/lib/os-release in its build (see Bazzite's
 # build_files/image-info). We do the same on top, changing only the fields
 # that name the OS. ID stays "bazzite" and image-info.json stays untouched,

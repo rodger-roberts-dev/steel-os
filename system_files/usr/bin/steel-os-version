@@ -1,0 +1,52 @@
+#!/usr/bin/bash
+# Steel OS: which version is running, which one is waiting for a restart, and
+# which one is kept to go back to, in plain English (T, 2026-10-19). No
+# password needed. `bootc status` shows the same thing as image digests.
+#
+#   steel-os-version           the full picture
+#   steel-os-version --short   one line, for the terminal's welcome message
+
+set -uo pipefail
+
+nice_date() { date -d "$1" '+%-d %B %Y' 2>/dev/null || echo "$1"; }
+
+version_of() { # version_of OSNAME CHECKSUM SERIAL
+    local f="/ostree/deploy/$1/deploy/$2.$3/usr/share/steel-os/version"
+    [[ -r "$f" ]] && cat "$f" || echo ""
+}
+
+current="$(cat /usr/share/steel-os/version 2>/dev/null || echo unknown)"
+build="$(cat /usr/share/steel-os/build 2>/dev/null)"      # e.g. 20261019-4cacbc2
+built=""; [[ "$build" =~ ^([0-9]{8}) ]] && built="$(nice_date "${BASH_REMATCH[1]}")"
+
+json="$(rpm-ostree status --json 2>/dev/null)"
+staged="" previous=""
+if [[ -n "$json" ]]; then
+    read -r so sc ss < <(jq -r '[.deployments[] | select(.staged == true)][0] | "\(.osname) \(.checksum) \(.serial)"' <<< "$json")
+    [[ "$so" != null && -n "$so" ]] && staged="$(version_of "$so" "$sc" "$ss")" && : "${staged:=a newer version}"
+    read -r ro rc rs < <(jq -r '[.deployments[] | select(.booted != true and .staged != true)][0] | "\(.osname) \(.checksum) \(.serial)"' <<< "$json")
+    [[ "$ro" != null && -n "$ro" ]] && previous="$(version_of "$ro" "$rc" "$rs")" && : "${previous:=an earlier version}"
+fi
+
+if [[ "${1:-}" == --short ]]; then
+    line="Steel OS $current"
+    [[ -n "$built" ]] && line+=" (built $built)"
+    if [[ -n "$staged" ]]; then
+        [[ "$staged" == "a newer version" ]] && line+=" · an update is ready: restart to finish" \
+                                              || line+=" · update to $staged ready: restart to finish"
+    fi
+    echo "$line"
+    exit 0
+fi
+
+echo "Running:   Steel OS $current${built:+, built $built}"
+if [[ -n "$staged" ]]; then
+    [[ "$staged" == "a newer version" ]] && echo "Next:      an update is downloaded. Restart to start using it." \
+                                         || echo "Next:      Steel OS $staged is downloaded. Restart to start using it."
+else
+    echo "Next:      no update waiting. Steel OS checks every Tuesday; Steel OS Portal, Update now, checks today."
+fi
+if [[ -n "$previous" ]]; then
+    [[ "$previous" == "an earlier version" ]] && echo "Previous:  kept in the start-up menu, in case you need to go back." \
+                                             || echo "Previous:  Steel OS $previous, kept in the start-up menu in case you need to go back."
+fi

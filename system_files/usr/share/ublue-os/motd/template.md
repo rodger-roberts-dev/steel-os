@@ -4,7 +4,7 @@
 |  Command | Description |
 | ------- | ----------- |
 | `fastfetch` | View system information |
-| `sudo bootc status` | Show which Steel OS version is installed |
+| `steel-os-version` | Which Steel OS version is running, and what comes next |
 | `sudo bootc upgrade` | Check for an update now (they also come every Tuesday) |
 | `ujust toggle-user-motd` | Turn this welcome message off |
 
