@@ -16,10 +16,9 @@ Steel OS is a [Steel & Code](https://steelandcode.com) project in partnership
 with [Blackbox Entertainment](https://blackbox-entertainment.com).
 Website and downloads: **[steel-os.org](https://steel-os.org)**.
 
-> **Status: 0.2.0 Preview for testers.** The system image builds, signs and
-> updates. The first installer ISO is in testing. The stable 1.0 release comes
-> when the guided installer, the Steel Apps screen and the core features below
-> are finished. See [docs/roadmap.md](docs/roadmap.md).
+> **Status: 1.0 released** (October 2026). Every merge to `master` is a new
+> version; installed PCs update themselves every Tuesday. See
+> [docs/versions.md](docs/versions.md) and [docs/roadmap.md](docs/roadmap.md).
 
 ## What you get
 
@@ -63,11 +62,12 @@ Nothing is built on anyone's PC. Details for contributors are in
 
 ## Try it
 
-The 0.2.0 Preview is for testers, in a virtual machine or on a spare PC.
-Download it from [steel-os.org](https://steel-os.org) when the preview link is
-live, or build the ISO yourself from the Actions tab ("Build disk images").
+Download the installer from [steel-os.org/download](https://steel-os.org/download),
+or build the ISO yourself from the Actions tab ("Build disk images"). The
+installation guide is at [steel-os.org/help/install](https://steel-os.org/help/install).
 
-Found a problem? [Open an issue](https://github.com/steel-and-code/steel-os/issues)
+Found a problem? Use **Report a problem** inside Steel OS (Portal, Welcome), or
+[steel-os.org/report](https://steel-os.org/report), or [open an issue](https://github.com/steel-and-code/steel-os/issues)
 with what you did, what you expected and what happened.
 
 ## Contributing
