@@ -153,6 +153,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # The tags PCs follow ("latest", "stable") are pushed last, after the
+      # image is signed: a PC that updated in the minute between the push and
+      # the signature got "a signature was required, but no signature exists"
+      # and its update failed (T's wife's laptop, STEEL-87, 2026-10-20).
+      # Signatures are stored by digest, so once the first tag is signed, the
+      # moving tags verify the moment they appear.
       - name: Push To GHCR
         if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
         id: push-image
@@ -160,13 +166,19 @@ jobs:
           ALIAS_TAGS: ${{ steps.gen-build-tags.outputs.alias_tags }}
         run: |
           set -euox pipefail
+          moving=""
           for tag in ${ALIAS_TAGS}; do
+            case "$tag" in
+              latest|stable|testing|unstable) moving="$moving $tag"; continue ;;
+            esac
             podman push --digestfile=/tmp/digestfile ${IMAGE_NAME}:${tag} ${IMAGE_REGISTRY}/${IMAGE_NAME}:${tag}
           done
+          [[ -s /tmp/digestfile ]] || { echo "no dated tag was pushed; the tag list is: ${ALIAS_TAGS}" >&2; exit 1; }
 
           digest=$(< /tmp/digestfile)
 
           echo "digest=${digest}" >> $GITHUB_OUTPUT
+          echo "moving_tags=${moving}" >> $GITHUB_OUTPUT
 
       # This section is optional and only needs to be enabled if you plan on distributing
       # your project for others to consume. You will need to create a public and private key
@@ -196,6 +208,16 @@ jobs:
       # Steel OS (STEEL-47): PCs refuse any image not signed with this key, so
       # check the signature just made with the public key they use. A failure
       # here means installed PCs would refuse this update.
+      - name: Publish the tags PCs follow
+        if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        env:
+          MOVING_TAGS: ${{ steps.push-image.outputs.moving_tags }}
+        run: |
+          set -euox pipefail
+          for tag in ${MOVING_TAGS}; do
+            podman push ${IMAGE_NAME}:${tag} ${IMAGE_REGISTRY}/${IMAGE_NAME}:${tag}
+          done
+
       - name: Verify the signature
         if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
         env:
