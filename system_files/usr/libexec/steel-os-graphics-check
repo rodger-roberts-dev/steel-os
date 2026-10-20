@@ -21,14 +21,29 @@ set -euo pipefail
 REGISTRY=ghcr.io/steel-and-code
 STATE_DIR=/var/lib/steel-os
 READY="$STATE_DIR/graphics-switch-ready"
+# Written when the edition this PC needs was started once and the system
+# rolled it back (the boot health check failed). The desktop tells the user
+# once; the switch is not tried again for a week, in case a newer image fixes
+# it. (S&C, 2026-10-19: a laptop with an RTX 5090 Mobile looped between the
+# two editions, the check switching and the health check rolling back.)
+ROLLED_BACK="$STATE_DIR/graphics-switch-rolled-back"
+RETRY_AFTER=$(( 7 * 24 * 3600 ))
 LOCK=/etc/steel-os/graphics-edition-locked
 
 [[ -e "$LOCK" ]] && { echo "Steel OS graphics: edition locked by $LOCK"; exit 0; }
 
 # Which edition is this PC following now?
-current_ref="$(bootc status --format json 2>/dev/null | jq -r '.spec.image.image // empty')"
+status_json="$(bootc status --format json 2>/dev/null || true)"
+current_ref="$(jq -r '.spec.image.image // empty' <<< "$status_json" 2>/dev/null || true)"
 if [[ -z "$current_ref" ]]; then
     echo "Steel OS graphics: could not read the current image; nothing to do."
+    exit 0
+fi
+# A new version already downloaded and waiting for a restart (an update, or
+# an earlier run of this check): never start a second download on top of it.
+staged="$(jq -r '.status.staged.image.image.image // empty' <<< "$status_json" 2>/dev/null || true)"
+if [[ -n "$staged" ]]; then
+    echo "Steel OS graphics: $staged is waiting for a restart; checking again after it."
     exit 0
 fi
 case "$current_ref" in
@@ -61,16 +76,39 @@ case "$support" in
 esac
 
 if [[ "$current" == "$wanted" ]]; then
-    rm -f "$READY"
+    rm -f "$READY" "$ROLLED_BACK"
     echo "Steel OS graphics: already on $current."
     exit 0
 fi
 
 target="$REGISTRY/$wanted:$tag"
+
+# Was the wanted edition started and rolled back? Then it is the rollback
+# deployment now. Don't switch to it again straight away: that only repeats
+# the failed boot and the rollback. Note it for the desktop and wait a week.
+rollback="$(jq -r '.status.rollback.image.image.image // empty' <<< "$status_json" 2>/dev/null || true)"
+if [[ -n "$rollback" && "$rollback" == "$REGISTRY/$wanted"* ]]; then
+    now="$(date +%s)"
+    if [[ -f "$ROLLED_BACK" ]] && (( now - $(stat -c %Y "$ROLLED_BACK") >= RETRY_AFTER )); then
+        echo "Steel OS graphics: $wanted was rolled back a week ago; trying once more in case it has been fixed."
+        rm -f "$ROLLED_BACK"
+    else
+        if [[ ! -f "$ROLLED_BACK" ]]; then
+            mkdir -p "$STATE_DIR"
+            printf '%s\n%s\n' "$wanted" "$(date -u +%Y-%m-%dT%H:%MZ)" > "$ROLLED_BACK"
+            chmod 0644 "$ROLLED_BACK"
+        fi
+        rm -f "$READY"
+        echo "Steel OS graphics: $wanted was started and the PC rolled back to $current (see 'journalctl -u greenboot-healthcheck'). Not switching again for a week."
+        exit 0
+    fi
+fi
+
 echo "Steel OS graphics: this PC needs $wanted; switching from $current to $target."
 bootc switch --enforce-container-sigpolicy "$target"
 
 mkdir -p "$STATE_DIR"
+rm -f "$ROLLED_BACK"
 printf '%s\n' "$wanted" > "$READY"
 chmod 0644 "$READY"
 echo "Steel OS graphics: $wanted is ready and starts at the next restart."
