@@ -55,6 +55,28 @@ escape() { sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g' <<< "$1"; }
 kind="Problem"; title=""; text=""; use_shot=TRUE; use_details=TRUE
 (( have_shot )) || use_shot=FALSE
 problem=""
+# What is attached: the screenshot taken just now, or a picture the user
+# chose instead (a screenshot they took, a phone photo of the screen).
+shot_label="the screenshot taken when you clicked"
+shot_type=image/png
+pick_picture() {
+    local f
+    f="$(kdialog --title "Choose a picture" --getopenfilename "$HOME/Pictures" \
+        "image/png image/jpeg|Pictures (PNG, JPEG)" 2>/dev/null)" || return 1
+    [[ -n "$f" && -r "$f" ]] || return 1
+    if (( $(stat -c %s "$f" 2>/dev/null || echo 0) > 5000000 )); then
+        problem="That picture is too large (5 MB at most). A screenshot or a smaller photo, please."
+        return 1
+    fi
+    case "${f,,}" in
+        *.jpg|*.jpeg) shot_type=image/jpeg ;;
+        *.png) shot_type=image/png ;;
+        *) problem="Please choose a PNG or JPEG picture."; return 1 ;;
+    esac
+    SHOT="$f"; have_shot=1; use_shot=TRUE
+    shot_label="$(basename "$f")"
+    problem=""
+}
 
 while true; do
     intro="<big><b>Report a problem or idea</b></big>
@@ -63,9 +85,15 @@ Tell the Steel OS team what went wrong, or what you would like. It goes straight
 
 <b>Computer details</b> (no names, no files):
 <small>$(escape "$DETAILS")</small>"
-    (( have_shot )) || intro+="
+    if (( have_shot )); then
+        intro+="
 
-<i>No screenshot could be taken.</i>"
+<b>Picture:</b> $(escape "$shot_label"). Click <b>Choose a picture</b> to send a different screenshot or a photo instead."
+    else
+        intro+="
+
+<i>No screenshot could be taken. Click <b>Choose a picture</b> to attach one.</i>"
+    fi
     [[ -n "$problem" ]] && intro+="
 
 <span foreground='#F2641E'><b>$(escape "$problem")</b></span>"
@@ -75,8 +103,8 @@ Tell the Steel OS team what went wrong, or what you would like. It goes straight
     [[ "$kind" == "Problem" ]] && combo="^Problem!Idea"
 
     buttons=(--button="Cancel:1")
-    (( have_shot )) && buttons+=(--button="See screenshot:2")
-    buttons+=(--button="Send:0")
+    (( have_shot )) && buttons+=(--button="See picture:2")
+    buttons+=(--button="Choose a picture:3" --button="Send:0")
 
     out="$(yad --form --title="$TITLE" --window-icon=tools-report-bug --image=tools-report-bug \
         --center --width=680 --height=640 --borders=16 --separator=$'\x1f' --item-separator='!' \
@@ -84,11 +112,11 @@ Tell the Steel OS team what went wrong, or what you would like. It goes straight
         --field="This is a:CB" "$combo" \
         --field="Title" "$title" \
         --field="What happened, or what would you like?:TXT" "$text" \
-        --field="Include the screenshot:CHK" "$use_shot" \
+        --field="Include the picture:CHK" "$use_shot" \
         --field="Include the computer details:CHK" "$use_details" \
         "${buttons[@]}")"
     rc=$?
-    [[ $rc -eq 0 || $rc -eq 2 ]] || exit 0
+    [[ $rc -eq 0 || $rc -eq 2 || $rc -eq 3 ]] || exit 0
 
     IFS=$'\x1f' read -r kind title text use_shot use_details _ <<< "$out"
     text="$(printf '%s' "$text" | sed 's/\\n/\n/g')"
@@ -96,6 +124,10 @@ Tell the Steel OS team what went wrong, or what you would like. It goes straight
     if [[ $rc -eq 2 ]]; then
         xdg-open "$SHOT" >/dev/null 2>&1 &
         problem=""
+        continue
+    fi
+    if [[ $rc -eq 3 ]]; then
+        pick_picture || true
         continue
     fi
 
@@ -113,7 +145,7 @@ Tell the Steel OS team what went wrong, or what you would like. It goes straight
         args+=(-F "details=<$WORK/details.txt")
     fi
     if [[ "$use_shot" == "TRUE" && $have_shot -eq 1 ]]; then
-        args+=(-F "screenshot=@$SHOT;type=image/png")
+        args+=(-F "screenshot=@$SHOT;type=$shot_type")
     fi
 
     answer="$(printf '%s' "$title" | curl "${args[@]}" "$ENDPOINT" 2>/dev/null)"
