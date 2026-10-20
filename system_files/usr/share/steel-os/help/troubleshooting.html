@@ -42,6 +42,9 @@
 </ol>
 <h3>Turning Secure Boot on after installing</h3>
 <p>If Steel OS was installed with Secure Boot off, trust the key <b>before</b> switching Secure Boot on: in Steel OS open the terminal and type <code>sudo mokutil --import /etc/pki/akmods/certs/akmods-ublue.der</code>, make up a one-time password, restart and follow the blue-screen steps above. Then switch Secure Boot on in the firmware (see <a href="steel-shield.html#secure-boot">Turn on Secure Boot</a>).</p>
+<h2>"Your PC is using the standard graphics driver"</h2>
+<p>PCs with an NVIDIA card get NVIDIA's own driver automatically: Steel OS downloads the NVIDIA edition in the background and asks you to restart. If the PC doesn't start properly with it, it goes back to the standard edition by itself and shows this message. Everything still works; games may run slower than they could. Steel OS tries again a week later. Click <b>Report a problem</b> on the message (or Portal, <b>Report a problem</b>): the report includes what the team needs.</p>
+<p><b>The "Restart to finish setting up your graphics" message keeps coming back</b> after you restart: that is the same problem on an older version of Steel OS, which kept trying. Click <b>Later</b>, open the Portal, click <b>Update now</b>, and restart once more; the newer version stops asking and shows the message above instead.</p>
 <h2>Something broke after an update</h2>
 <p>Restart and pick the <b>second</b> entry in the start-up menu. You are back on the version before. See <a href="updates.html">Updates and going back</a>.</p>
 <h2>No internet</h2>

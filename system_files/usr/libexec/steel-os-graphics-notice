@@ -5,6 +5,29 @@
 set -uo pipefail
 
 READY=/var/lib/steel-os/graphics-switch-ready
+ROLLED_BACK=/var/lib/steel-os/graphics-switch-rolled-back
+
+# The edition this PC needs was tried and the PC went back to the standard
+# one: say so once, in plain English, with a way to tell the team.
+if [[ -r "$ROLLED_BACK" ]]; then
+    stamp="${XDG_STATE_HOME:-$HOME/.local/state}/steel-os/graphics-rollback-told"
+    if [[ ! -f "$stamp" || "$ROLLED_BACK" -nt "$stamp" ]]; then
+        mkdir -p "$(dirname "$stamp")" && touch "$stamp"
+        if command -v kdialog >/dev/null 2>&1; then
+            if kdialog --title "Steel OS" --icon steel-os --yes-label "Report a problem" --no-label "OK" --yesno \
+"<h3>Your PC is using the standard graphics driver</h3>
+<p>Steel OS tried the NVIDIA driver edition, but the PC did not start properly with it, so it went back to the standard edition by itself. Everything works; games may run slower than they could.</p>
+<p>Steel OS will try again in a week. Telling the team helps them fix it sooner.</p>"; then
+                nohup setsid /usr/libexec/steel-os-report >/dev/null 2>&1 &
+            fi
+        else
+            notify-send --app-name="Steel OS" --icon=steel-os "Your PC is using the standard graphics driver" \
+                "The NVIDIA edition did not start properly, so Steel OS went back. It will try again in a week." || true
+        fi
+    fi
+    exit 0
+fi
+
 [[ -r "$READY" ]] || exit 0
 wanted="$(cat "$READY")"
 

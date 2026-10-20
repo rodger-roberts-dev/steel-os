@@ -6,6 +6,9 @@ Wants=network-online.target
 After=network-online.target
 # Wait for any first-boot app installs, so both downloads don't compete.
 After=steel-os-flatpak-install.service
+# Wait for the boot health check: it decides whether this boot counts as good
+# (or rolls back), and two bootc operations must never overlap.
+After=greenboot-healthcheck.service greenboot-task-runner.service
 ConditionPathExists=!/etc/steel-os/graphics-edition-locked
 
 [Service]
