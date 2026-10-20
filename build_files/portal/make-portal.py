@@ -284,10 +284,55 @@ steel_apps = screen("Steel Apps", "Popular apps by category, one click each", ap
 developer_tab = screen("Developer", "Code editors, AI coding tools and virtual machines, one click each", developer)
 ai_tab = screen("AI", "AI assistants: private ones that run on your PC, and Copilot, ChatGPT, Claude and Gemini", ai)
 
+# Troubleshoot: Steel OS's own rows first, in plain English, above the
+# inherited ones (T, 2026-10-19). The graphics row is for PCs with an NVIDIA
+# card where the NVIDIA edition did not start and Steel OS went back to the
+# standard driver, or kept asking to restart.
+GFX_STATUS = (
+    'if test -f /etc/steel-os/graphics-edition-locked; then echo "locked to this edition"; '
+    'elif test -f /var/lib/steel-os/graphics-switch-rolled-back; then echo "rolled back to the standard driver"; '
+    'else case "$(rpm-ostree status --booted --json 2>/dev/null | jq -r \'.deployments[0]["container-image-reference"] // empty\')" in '
+    '*steel-os-nvidia-legacy*) echo "nvidia legacy driver" ;; *steel-os-nvidia*) echo "nvidia driver" ;; '
+    '*steel-os*) echo "standard driver" ;; *) echo unknown ;; esac; fi'
+)
+troubleshoot_rows = [
+    action("help-troubleshooting", "Help: something's not working",
+           "Quick fixes in plain English: an app won't open, no internet, the blue screen after installing, going back a version.",
+           script="xdg-open /usr/share/steel-os/help/troubleshooting.html"),
+    action("graphics-edition", "Graphics driver edition",
+           "PCs with an NVIDIA card get NVIDIA's driver edition automatically. If it didn't start and Steel OS went back to the "
+           "standard driver, or it keeps asking you to restart, choose here. Asks for your password.",
+           status_script=GFX_STATUS,
+           options=[
+               ("retry", "Try the NVIDIA driver edition again",
+                "pkexec sh -c 'rm -f /etc/steel-os/graphics-edition-locked /var/lib/steel-os/graphics-switch-rolled-back; "
+                "systemctl restart steel-os-graphics-check.service' && echo \"Checking your graphics card. If a different "
+                "edition is needed, it downloads now and Steel OS asks you to restart.\"" + PAUSE),
+               ("standard", "Stay on the standard driver and stop asking",
+                "pkexec sh -c 'mkdir -p /etc/steel-os; touch /etc/steel-os/graphics-edition-locked; "
+                "rm -f /var/lib/steel-os/graphics-switch-ready' && echo \"Steel OS stays on the standard driver. "
+                "Choose 'Try the NVIDIA driver edition again' here whenever you want.\"" + PAUSE),
+           ]),
+    action("report-problem-troubleshoot", "Report a problem or idea",
+           "Tell the Steel OS team what went wrong, with a screenshot. No account needed; you get a reference number.",
+           script="nohup setsid /usr/libexec/steel-os-report >/dev/null 2>&1"),
+]
+
 with open(BASE_FILE, encoding="utf-8") as f:
     base = "".join(l for l in f if not l.startswith("#"))
 
 out = "\n".join(["title: Steel OS Portal", "screens:"] + welcome + steel_apps + ai_tab + developer_tab + gaming) + "\n" + base
+
+# Put the Steel OS rows at the top of the inherited Troubleshoot tab.
+doc = yaml.safe_load(out)
+ours = yaml.safe_load("\n".join(["actions:"] + [l for a in troubleshoot_rows for l in a]))["actions"]
+for scr in doc["screens"]:
+    if scr.get("title") == "Troubleshoot":
+        scr["actions"] = ours + (scr.get("actions") or [])
+        break
+else:
+    sys.exit("make-portal.py: no Troubleshoot tab in the base list")
+out = yaml.safe_dump(doc, sort_keys=False, allow_unicode=True, width=1000)
 
 # Fail the build rather than ship a broken or Bazzite-branded portal.
 parsed = yaml.safe_load(out)
@@ -296,4 +341,4 @@ if "bazzite" in out.lower():
     sys.exit("portal.yml still mentions Bazzite")
 with open(OUT_FILE, "w", encoding="utf-8") as f:
     f.write(out)
-print(f"Steel OS Portal: {len(apps)} Steel Apps, {len(ai)} AI apps, {len(developer)} developer apps; tabs: {', '.join(titles)}")
+print(f"Steel OS Portal: {len(apps)} Steel Apps, {len(ai)} AI apps, {len(developer)} developer apps; tabs: {', '.join(titles)}; Troubleshoot starts with {len(ours)} Steel OS rows")
