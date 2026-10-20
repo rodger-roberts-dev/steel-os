@@ -3,7 +3,9 @@
 Every merge to master is one version (see docs/versions.md): the n-th merge
 since VERSION last changed is MAJOR.(MINOR + n // 10).(n % 10). The title of
 each version is its pull request's title (the second paragraph of GitHub's
-merge commit message), which is written in plain English.
+merge commit message), which is written in plain English. A daily rebuild (a
+plain commit on master) keeps the version: it is listed as a "rebuilt" date
+under the version it rebuilt.
 
 usage: release-notes.py OUTPUT [CURRENT_VERSION]
 """
@@ -31,14 +33,21 @@ for rec in log.split("\x1e"):
     if not rec:
         continue
     sha, date, subject, body = rec.split("\x1f")
-    n += 1
     m = re.match(r"Merge pull request #(\d+)", subject)
+    if not m:
+        # A rebuild (or any plain commit): same version, newer build.
+        if not entries:
+            entries.append({"version": f"{major}.{minor}.0", "date": date[:10], "pr": None,
+                            "title": "Starting point", "commit": sha[:7]})
+        entries[-1].setdefault("rebuilt", []).append(date[:10])
+        continue
+    n += 1
     lines = [l for l in body.strip().splitlines() if l.strip() and not l.startswith("Co-Authored-By")]
-    title = lines[0] if m and lines else subject
+    title = lines[0] if lines else subject
     entries.append({
         "version": f"{major}.{minor + n // 10}.{n % 10}",
         "date": date[:10],
-        "pr": int(m.group(1)) if m else None,
+        "pr": int(m.group(1)),
         "title": title,
         "commit": sha[:7],
     })
