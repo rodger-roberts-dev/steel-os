@@ -1,0 +1,48 @@
+#!/usr/bin/bash
+# Steel OS: share this computer's printers with the other computers at home,
+# from the Steel OS Portal (Welcome, "Share this computer's printers").
+#
+#   steel-os-share-printers on       share every printer (needs admin: pkexec)
+#   steel-os-share-printers off      stop sharing
+#   steel-os-share-printers status   prints "enable" or "disable" for the Portal
+#
+# "on" tells the print system to share, marks each printer as shared, and
+# opens the printing and discovery ports in the firewall (Steel Shield keeps
+# the firewall on), so other Steel OS and Linux PCs find the printers by
+# themselves and Windows PCs can add them. Printers only work for the others
+# while this computer is on.
+
+set -uo pipefail
+
+case "${1:-status}" in
+    status)
+        if cupsctl 2>/dev/null | grep -q '^_share_printers=1'; then echo enable; else echo disable; fi
+        ;;
+    on)
+        cupsctl --share-printers || { echo "The print system refused. Is it running?"; exit 1; }
+        for p in $(lpstat -p 2>/dev/null | awk '/^printer/ {print $2}'); do
+            lpadmin -p "$p" -o printer-is-shared=true
+        done
+        if command -v firewall-cmd >/dev/null 2>&1 && systemctl is-active --quiet firewalld; then
+            firewall-cmd --permanent --add-service=ipp --add-service=mdns >/dev/null && firewall-cmd --reload >/dev/null \
+                || echo "Note: the firewall could not be opened for printing; other PCs may not reach the printer."
+        fi
+        n="$(lpstat -p 2>/dev/null | grep -c '^printer')"
+        echo "Shared: $n printer(s). Other Steel OS and Linux PCs find them by themselves within a minute;"
+        echo "Windows PCs: Settings, Printers & scanners, Add device. They work while this computer is on."
+        ;;
+    off)
+        for p in $(lpstat -p 2>/dev/null | awk '/^printer/ {print $2}'); do
+            lpadmin -p "$p" -o printer-is-shared=false
+        done
+        cupsctl --no-share-printers
+        if command -v firewall-cmd >/dev/null 2>&1 && systemctl is-active --quiet firewalld; then
+            firewall-cmd --permanent --remove-service=ipp >/dev/null 2>&1; firewall-cmd --reload >/dev/null 2>&1
+        fi
+        echo "This computer's printers are no longer shared."
+        ;;
+    *)
+        echo "usage: steel-os-share-printers on|off|status" >&2
+        exit 2
+        ;;
+esac

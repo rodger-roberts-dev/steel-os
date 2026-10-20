@@ -44,6 +44,33 @@
 </ol>
 <h2 id="a-printer-you-removed-comes-back">A printer you removed comes back</h2>
 <p>Printers that Steel OS found by itself are found again by themselves: within about two minutes of being removed while they are still on, or as soon as the USB cable is plugged back in. To stop a printer appearing, turn it off, or leave it and simply pick another printer when you print.</p>
+<h2 id="use-a-printer-that-is-plugged-into-a-windows-pc">Use a printer that is plugged into a Windows PC</h2>
+<p><b>First, check whether you need this at all.</b> Many printers that came with a USB cable are also on your Wi-Fi: the cable was only used to set them up. If the printer's Wi-Fi light is on (solid, not blinking), it is on the network by itself; skip this section and add it as in <b>Add a printer by hand</b>. That is the better setup: it works even when the Windows PC is off.</p>
+<p>If the printer really is only connected to the Windows PC, share it from there. On the <b>Windows PC</b>:</p>
+<ol>
+  <li><b>Settings</b>, <b>Bluetooth &amp; devices</b>, <b>Printers &amp; scanners</b>, click the printer, then <b>Printer properties</b>. On the <b>Sharing</b> tab tick <b>Share this printer</b> and give it a short name with no spaces, for example <b>MG3620</b>. Leave <i>Render print jobs on client computers</i> ticked. Click <b>OK</b>.</li>
+  <li><b>Settings</b>, <b>Network &amp; internet</b>, click your connection, and set <b>Network profile</b> to <b>Private</b>.</li>
+  <li><b>Settings</b>, <b>Network &amp; internet</b>, <b>Advanced network settings</b>, <b>Advanced sharing settings</b>: under <b>Private networks</b>, turn on <b>Network discovery</b> and <b>File and printer sharing</b>.</li>
+  <li><b>Settings</b>, <b>System</b>, <b>About</b>: note the <b>Device name</b>, for example <b>FAMILY-PC</b>.</li>
+</ol>
+<p>On <b>Steel OS</b>:</p>
+<ol>
+  <li>Open <b>System Settings</b>, <b>Printers</b>, <b>Add Printer</b>.</li>
+  <li>Choose <b>Windows Printer via SAMBA</b> (if it isn't offered, choose <b>Manual</b> or <b>Enter address</b>).</li>
+  <li>Type the address as <code>smb://</code>, the Windows PC's name, <code>/</code>, the share name: for example <code>smb://FAMILY-PC/MG3620</code>. If Steel OS can't find the PC by name, use its address instead, for example <code>smb://192.168.0.35/MG3620</code> (on Windows: Settings, Network &amp; internet, your connection, <b>IPv4 address</b>).</li>
+  <li>Enter the Windows sign-in: the account's email address and password if Windows uses a Microsoft account (not the PIN), or the Windows user name and password.</li>
+  <li>For the driver, pick the maker and model from the list, for example <b>Canon</b>, then <b>MG3600 series</b>. Click <b>Next</b>, name it, <b>Finish</b>, then <b>Print Test Page</b>.</li>
+</ol>
+<p>Limits of this: the Windows PC must be on and awake for anyone else to print (on Windows, <b>Settings</b>, <b>System</b>, <b>Power</b>, set sleep to <b>Never</b> when plugged in, or wake it first), and scanning can't be shared this way, only printing. If the Windows PC's address changes after a router restart and printing stops, use the name instead, or give the PC a fixed address in the router's settings.</p>
+<h2 id="share-a-printer-that-is-plugged-into-this-computer">Share a printer that is plugged into this computer</h2>
+<p>Any printer this Steel OS computer can print to (USB or network) can be shared with the other computers at home:</p>
+<ol>
+  <li>Open the <b>Steel OS Portal</b>, <b>Welcome</b>, <b>Share this computer's printers</b>, and choose <b>On</b>. It asks for your password once. That tells the print system to share, and opens the two ports the others need (Steel Shield keeps the firewall on).</li>
+  <li><b>Other Steel OS or Linux PCs:</b> the printer appears in their printer list by itself within a minute. Nothing to add.</li>
+  <li><b>Windows PCs:</b> <b>Settings</b>, <b>Bluetooth &amp; devices</b>, <b>Printers &amp; scanners</b>, <b>Add device</b>; the printer usually appears after a few seconds. If it doesn't, click <b>Add manually</b>, <b>Select a shared printer by name</b>, and type <code>http://</code>, this computer's address, <code>:631/printers/</code>, the printer's name: for example <code>http://192.168.0.40:631/printers/Canon_MG3600</code> (this computer's address: System Settings, <b>Wi-Fi &amp; Network</b>, your connection, <b>Details</b>; the printer's name as shown in System Settings, Printers, with spaces as underscores). Windows picks its own driver (<i>Microsoft IPP Class Driver</i>).</li>
+  <li><b>Phones and tablets:</b> the shared printer shows up in their print menus too (AirPrint, Mopria).</li>
+</ol>
+<p>The printer works for the others only while this computer is on. To stop sharing, choose <b>Off</b> on the same row.</p>
 <h2 id="scan">Scan</h2>
 <p>Open <b>Skanpage</b> from the start menu, pick your scanner, then <b>Scan</b>.</p>
 <h2 id="open-a-shared-folder-on-a-windows-pc">Open a shared folder on a Windows PC</h2>
