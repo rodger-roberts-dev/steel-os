@@ -286,7 +286,7 @@ jobs:
           # Two tiny files Steel Shield fetches as count-only pings (a scam
           # reported, a threat caught); the website counts those fetches like
           # it counts installer downloads. Never cached, so every ping reaches R2.
-          for p in scam-reported threat-caught; do
+          for p in scam-reported threat-caught sample-shared; do
             printf 'ok\n' > "$RUNNER_TEMP/$p"
             rclone copyto --s3-no-check-bucket --retries 5 \
               --header-upload "Cache-Control: no-store" "$RUNNER_TEMP/$p" "S3:$B/ping/$p"
