@@ -1,0 +1,45 @@
+name: Check Steel Apps
+# Every Monday, and on any PR that changes the app lists: ask Flathub whether
+# every one-click and preinstalled app still exists under that name. Flathub
+# retired org.mozilla.Thunderbird in favour of thunderbird_esr (2026-10-19)
+# and the one-click install silently broke; this catches the next one.
+#
+# On the weekly run a problem is filed with the Steel OS team through the
+# same report service the Report a problem window uses (steel-os.org/api/report),
+# so it lands in the tracker without anyone watching the logs.
+on:
+  schedule:
+    - cron: "15 8 * * 1"
+  pull_request:
+    branches: [master]
+    paths:
+      - packages/steel-apps.txt
+      - packages/flatpaks-default.txt
+      - tests/check-steel-apps.py
+      - .github/workflows/check-apps.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ask Flathub about every app
+        id: check
+        run: python3 tests/check-steel-apps.py packages/steel-apps.txt packages/flatpaks-default.txt
+      - name: File a problem report
+        if: failure() && github.event_name != 'pull_request'
+        run: |
+          problems="$(cat check-steel-apps-problems.txt 2>/dev/null || echo 'See the workflow run.')"
+          n="$(wc -l < check-steel-apps-problems.txt 2>/dev/null || echo 1)"
+          curl -sS --max-time 60 -F "kind=problem" -F "website=" \
+            -F "title=Steel Apps: $n app(s) missing, retired or renamed on Flathub" \
+            -F "description=The weekly Flathub check found:
+
+          $problems
+
+          Fix: update packages/steel-apps.txt or packages/flatpaks-default.txt (a renamed app keeps installing under the new name, but the list should use it). Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            https://steel-os.org/api/report || true
