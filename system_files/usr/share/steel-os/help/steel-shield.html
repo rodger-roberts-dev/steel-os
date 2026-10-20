@@ -45,6 +45,7 @@
   <li><b>Status:</b> the shield is blue when you are protected, and orange with a <b>Fix now</b> button when something needs attention. Below it, one card per protection (definitions, download scanning, behaviour watching, firewall and more), each with its own On/Off switch.</li>
   <li><b>Scan:</b> <b>Quick scan</b> (your files), <b>Full scan</b> (the whole computer: every user's files, settings, added programs and plugged-in drives; it can take an hour), <b>Scan a folder or drive</b>, or <b>Scan a file</b>. A progress bar shows how far it is, and you can keep working.</li>
   <li><b>Quarantine:</b> what was found, in plain English, with <b>Restore</b> and <b>Delete</b>.</li>
+  <li><b>Sharing with researchers:</b> when Steel Shield catches a <i>program, installer or script</i> in your own folders, it sends that one file to abuse.ch's MalwareBazaar, the public collection that antivirus makers and researchers learn from, so everyone's protection improves, and tells you with a notification. It first asks whether they already have the file; if so nothing is sent. The file becomes public; nothing about you goes with it. Documents, pictures, music and videos are never shared. To stop it: Status, the <b>Sharing with researchers</b> card, <b>Turn off</b>; you can still share a caught program by hand from Quarantine. Everything Steel OS sends is listed at <a href="https://steel-os.org/privacy">steel-os.org/privacy</a>.</li>
   <li><b>History:</b> every scan, fix and blocked file, newest first.</li>
 </ul>
 <p>Fix now and the scans don't ask for a password. Restoring or deleting a file that the full scan found outside your own folders does.</p>
@@ -95,7 +96,7 @@
 <h2 id="check-that-it-works">Check that it works</h2>
 <p>Open Steel Shield, <b>Scan</b>, <b>Test Steel Shield</b>. It puts the harmless <b>EICAR test file</b> (which every antivirus treats as a virus) in your Downloads folder; within seconds Steel Shield should catch it and say how long it took. Then delete it from Quarantine. You can also download the same file from <a href="https://www.eicar.org/download-anti-malware-testfile/">eicar.org</a> (it may refuse connections from a VPN).</p>
 <p class="note">Steel Shield uses ClamAV with definitions from Cisco Talos. It is strongest against known threats; Steel OS's read-only system, signed updates and app sandboxes protect against the rest.</p>
-<footer>Steel OS Help is built into Steel OS (start menu, Steel OS Help) and is also at steel-os.org/help. Something missing? Tell us at <a href="https://steel-os.org/report">steel-os.org/report</a>.</footer>
+<footer>Steel OS Help is built into Steel OS (start menu, Steel OS Help) and is also at steel-os.org/help. Something missing? Tell us at <a href="https://steel-os.org/report">steel-os.org/report</a>. What Steel OS sends and doesn't: <a href="https://steel-os.org/privacy">steel-os.org/privacy</a>.</footer>
 </div>
 <script src="help-search.js"></script>
 <script>(function () {
