@@ -119,6 +119,17 @@ staged="$(rpm-ostree status --json 2>/dev/null | jq -r '[.deployments[] | select
 if [[ "$rc" != 0 ]] && grep -q 'acquire lock' "$log" 2>/dev/null; then
     # The update finished (or started) between our check and the start: say so instead of an error.
     kdialog --title "$TITLE" --icon steel-os --msgbox "<h3>Steel OS was already updating</h3><p>Another update was running in the background. Wait a few minutes, then click <b>Update now</b> again to see where it got to.</p>" 2>/dev/null
+elif [[ "$rc" != 0 ]] && journalctl -u "$UNIT" --since "$since" -o cat --no-pager 2>/dev/null | grep -qi 'no signature exists\|signature was required'; then
+    # A new version was being published at that very moment (the build pushes
+    # the image a minute before its signature arrives). Not a fault on this
+    # PC: offer to try again shortly (STEEL-87, 2026-10-20).
+    if kdialog --title "$TITLE" --icon steel-os --yes-label "Try again" --no-label "Later" --yesno \
+        "<h3>A new version is being published right now</h3><p>Steel OS couldn't check the new version's signature because it was still being published. It usually takes a minute or two.</p><p>Try again in a minute? (Steel OS also tries by itself at night.)</p>" 2>/dev/null; then
+        ( sleep 75 ) | yad --progress "${STYLE[@]}" --pulsate --auto-close --no-buttons --center --width=420 --borders=16 \
+            --title="$TITLE" --window-icon=steel-os --image=steel-os --text="<b>Waiting a minute for the new version…</b>" 2>/dev/null
+        rm -f "$log" "$log.rc"
+        exec "$0"
+    fi
 elif [[ "$rc" != 0 ]]; then
     details="$( (cat "$log"; journalctl -u "$UNIT" --since "$since" -o cat --no-pager -n 15) 2>/dev/null \
         | sed 's/&/\&amp;/g; s/</\&lt;/g' | tail -15)"
