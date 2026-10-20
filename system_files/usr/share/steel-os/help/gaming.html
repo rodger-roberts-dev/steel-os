@@ -22,6 +22,14 @@
 <p>Steam is already installed. Sign in, install your games and press Play. Windows games run through Proton automatically. Check a game on <a href="https://www.protondb.com">ProtonDB</a> before you buy it.</p>
 <h2 id="ea-app-battle-net-and-ubisoft">EA app, Battle.net and Ubisoft</h2>
 <p>Install <b>Lutris</b> from the Steel OS Portal (Steel Apps, Games and Streaming). In Lutris, search for the store, click Install, then install your games from inside it.</p>
+<p>If one of these launchers stops opening after it updated itself: Portal, <b>Gaming</b>, <b>Repair EA app</b>, <b>Repair Ubisoft Connect</b> or <b>Repair Battle.net and World of Warcraft</b>. Each clears the launcher's own caches and nothing else; games, accounts and saves stay. If that doesn't help, in Lutris right-click the launcher, <b>Configure</b>, <b>Runner options</b>, and pick the newest Wine, or reinstall the launcher from Lutris (games are kept).</p>
+<h2 id="a-steam-game-stopped-working">A Steam game stopped working</h2>
+<ol>
+  <li><b>Verify the files:</b> in Steam, right-click the game, <b>Properties</b>, <b>Installed Files</b>, <b>Verify integrity of game files</b>. Steam replaces anything broken by an update. This fixes most cases.</li>
+  <li><b>Try another Proton version:</b> right-click the game, <b>Properties</b>, <b>Compatibility</b>, tick <b>Force the use of a specific Steam Play compatibility tool</b> and pick a different one; the newest <b>GE-Proton</b> (Portal, Gaming, <b>Get the newest GE-Proton</b>) helps many games.</li>
+  <li><b>Clear the shader cache:</b> Steam, <b>Settings</b>, <b>Downloads</b>, <b>Clear Download Cache</b>; and for the game, delete its folder under <code>~/.local/share/Steam/steamapps/shadercache/</code> (the folder is named by the game's number). The first start afterwards takes longer.</li>
+  <li>Still stuck? Look the game up on <a href="https://www.protondb.com">protondb.com</a>: other players post what worked, often a one-line launch option.</li>
+</ol>
 <h2 id="epic-games-and-gog">Epic Games and GOG</h2>
 <p>Install <b>Heroic</b> from the Portal, sign in, and install your games.</p>
 <h2 id="cloud-gaming-and-streaming">Cloud gaming and streaming</h2>

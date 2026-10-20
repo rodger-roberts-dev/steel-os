@@ -248,8 +248,12 @@ ai = []
 for category, entries in read_steel_apps(APPS_FILE).items():
     target = developer if category == "Developer" else ai if category == "AI" else apps
     for app_id, name, description in entries:
-        target.append(flatpak_action(app_id, name, f"{category} · {description}"))
-    target.extend(EXTRAS.get(category, []))
+        row = flatpak_action(app_id, name, f"{category} · {description}")
+        row.insert(3, f"        category: {q(category)}")   # the Portal's category chips read this
+        target.append(row)
+    for row in EXTRAS.get(category, []):
+        row.insert(3, f"        category: {q(category)}")
+        target.append(row)
 # Zed is installed by default; listing it here lets people remove or reinstall it.
 developer.insert(0, flatpak_action("dev.zed.Zed", "Zed", "Developer · Fast code editor, installed by default (zeditor in a terminal)"))
 
@@ -288,6 +292,15 @@ gaming = screen("Gaming", "Controllers, flight sticks, macros and game fixes", [
     action("repair-battlenet", "Repair Battle.net and World of Warcraft",
            "Clears Battle.net's own files and WoW's cache, the usual fix when Battle.net won't open or WoW won't start after a patch.",
            script=launch("/usr/libexec/steel-os-repair-game battlenet")),
+    action("repair-ea", "Repair EA app",
+           "Clears the EA app's own files and caches, the usual fix when it won't open or hangs after it updated itself. Games and saves are kept.",
+           script=launch("/usr/libexec/steel-os-repair-game ea")),
+    action("repair-ubisoft", "Repair Ubisoft Connect",
+           "Clears Ubisoft Connect's caches, the usual fix when it won't open, shows a blank window or keeps asking to update. Games and saves are kept.",
+           script=launch("/usr/libexec/steel-os-repair-game ubisoft")),
+    action("steam-game-broken", "A Steam game stopped working",
+           "The steps in plain English: verify the game's files, try another Proton version, clear the shader cache. Opens the Help.",
+           script="xdg-open /usr/share/steel-os/help/gaming.html#a-steam-game-stopped-working"),
     action("proton-ge", "Get the newest GE-Proton",
            "GE-Proton runs many Windows games better than the default, including Battle.net games. Opens ProtonPlus (installs it first if needed).",
            script="flatpak info com.vysp3r.ProtonPlus >/dev/null 2>&1 || flatpak install -y flathub com.vysp3r.ProtonPlus; nohup setsid flatpak run com.vysp3r.ProtonPlus >/dev/null 2>&1"),

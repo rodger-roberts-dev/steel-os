@@ -462,6 +462,55 @@ def steel_installed_flatpaks(max_age=2.0):
         print("Steel OS Portal: Steel Apps rows answered from one flatpak list")
     else:
         print("Steel OS Portal: WARNING engine changed; each row still runs its own check")
+    # Category chips (T, 2026-10-20): a tab whose rows carry a "category"
+    # (Steel Apps: Everyday, Work, Creative, Games and Streaming) gets a row
+    # of buttons at the top, All / Everyday / Work / ..., that show only that
+    # category's rows. No extra tabs.
+    page = """        scrolled.controller_targets = []
+        for action in screen.get('actions', []):
+            item = self.create_action_item(action)
+            page_box.append(item)
+            scrolled.controller_targets.append(item.get_child())
+"""
+    if s.count(page) == 1:
+        s = s.replace(page, """        actions = screen.get('actions', [])
+        cats = []
+        for a in actions:
+            c = a.get('category')
+            if c and c not in cats:
+                cats.append(c)
+        items = []
+        if len(cats) > 1:
+            chips = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+            chips.set_margin_bottom(4)
+            first = None
+            def steel_pick(btn, cat):
+                if not btn.get_active():
+                    return
+                for it in items:
+                    it.set_visible(cat is None or getattr(it, 'steel_category', None) == cat)
+            for label, cat in [("All", None)] + [(c, c) for c in cats]:
+                b = Gtk.ToggleButton(label=label)
+                b.add_css_class('pill')
+                if first is None:
+                    first = b
+                    b.set_active(True)
+                else:
+                    b.set_group(first)
+                b.connect('toggled', steel_pick, cat)
+                chips.append(b)
+            page_box.append(chips)
+        scrolled.controller_targets = []
+        for action in actions:
+            item = self.create_action_item(action)
+            item.steel_category = action.get('category')
+            items.append(item)
+            page_box.append(item)
+            scrolled.controller_targets.append(item.get_child())
+""")
+        print("Steel OS Portal: category chips on tabs with categories")
+    else:
+        print("Steel OS Portal: WARNING engine changed; no category chips")
     open(p, "w").write(s)
     compile(s, p, "exec")
     print("Steel OS Portal: buttons that open an app start it without a terminal")

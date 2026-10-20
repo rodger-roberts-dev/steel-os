@@ -4,6 +4,8 @@
 #
 #   steel-os-repair-game star-citizen   shader and DXVK caches
 #   steel-os-repair-game battlenet      Battle.net agent and caches, WoW cache
+#   steel-os-repair-game ea             EA app's own files and caches (Lutris)
+#   steel-os-repair-game ubisoft        Ubisoft Connect's caches (Lutris)
 set -uo pipefail
 
 ask() { kdialog --title "Repair" --icon applications-games --yes-label "Repair" --no-label "Cancel" --yesno "$1"; }
@@ -37,8 +39,35 @@ battlenet)
     find "$prefix/drive_c" -maxdepth 5 -type d -path '*/World of Warcraft/_*_/Cache' -exec rm -rf {} + 2>/dev/null
     say "<h3>Done</h3><p>Battle.net will set itself up again the next time it opens, and World of Warcraft rebuilds its cache. Start Battle.net from Lutris.</p><p>Still not working? Open ProtonPlus and install the newest GE-Proton, then pick it in Lutris for Battle.net.</p>"
     ;;
+ea)
+    prefix="${EA_PREFIX:-$HOME/Games/ea-app}"
+    [[ -d "$prefix/drive_c" ]] || prefix="$(ls -d "$HOME"/Games/*ea* 2>/dev/null | head -1)"
+    if [[ -z "$prefix" || ! -d "$prefix/drive_c" ]]; then
+        say "The EA app wasn't found in $HOME/Games.<br>Install it from Lutris first (search Lutris for EA app)."
+        exit 0
+    fi
+    ask "<h3>Repair EA app</h3><p>This clears the EA app's own files and caches (it downloads them again by itself), the usual fix when the EA app won't open or hangs on its loading screen after it updated itself. Games, your account and saves are kept.</p><p>Close the EA app and your games first.</p>" || exit 0
+    pkill -f 'EADesktop\|EABackgroundService\|EALocalHostSvc' 2>/dev/null || true
+    find "$prefix/drive_c/users" -maxdepth 5 -type d \( -path '*/AppData/Local/Electronic Arts' -o -path '*/AppData/Roaming/Electronic Arts' \) -exec rm -rf {} + 2>/dev/null
+    rm -rf "$prefix/drive_c/ProgramData/Electronic Arts/EA Services/License" 2>/dev/null
+    find "$prefix" -maxdepth 6 \( -name '*.dxvk-cache' -o -name 'dxvk_state_cache' \) -exec rm -rf {} + 2>/dev/null
+    say "<h3>Done</h3><p>The EA app sets itself up again the next time it opens (you may have to sign in again). Start it from Lutris.</p><p>Still not working? In Lutris, right-click EA app, Configure, Runner options, and pick the newest Wine; or reinstall the EA app from Lutris, which keeps your games.</p>"
+    ;;
+ubisoft)
+    prefix="${UBI_PREFIX:-$HOME/Games/ubisoft-connect}"
+    [[ -d "$prefix/drive_c" ]] || prefix="$(ls -d "$HOME"/Games/*ubisoft* 2>/dev/null | head -1)"
+    if [[ -z "$prefix" || ! -d "$prefix/drive_c" ]]; then
+        say "Ubisoft Connect wasn't found in $HOME/Games.<br>Install it from Lutris first (search Lutris for Ubisoft Connect)."
+        exit 0
+    fi
+    ask "<h3>Repair Ubisoft Connect</h3><p>This clears Ubisoft Connect's caches and logs, the usual fix when it won't open, shows a blank window or keeps saying it needs an update. Games, your account and saves are kept.</p><p>Close Ubisoft Connect and your games first.</p>" || exit 0
+    pkill -f 'UbisoftConnect\|UplayWebCore\|UbisoftGameLauncher' 2>/dev/null || true
+    find "$prefix/drive_c" -maxdepth 6 -type d \( -path '*/Ubisoft Game Launcher/cache' -o -path '*/Ubisoft Game Launcher/logs' -o -path '*/AppData/Local/Ubisoft Game Launcher' \) -exec rm -rf {} + 2>/dev/null
+    find "$prefix" -maxdepth 6 \( -name '*.dxvk-cache' -o -name 'dxvk_state_cache' \) -exec rm -rf {} + 2>/dev/null
+    say "<h3>Done</h3><p>Ubisoft Connect rebuilds its cache the next time it opens. Start it from Lutris.</p><p>Still not working? In Lutris, right-click Ubisoft Connect, Configure, Runner options, and pick the newest Wine; or reinstall Ubisoft Connect from Lutris, which keeps your games.</p>"
+    ;;
 *)
-    echo "usage: steel-os-repair-game star-citizen | battlenet" >&2
+    echo "usage: steel-os-repair-game star-citizen | battlenet | ea | ubisoft" >&2
     exit 2
     ;;
 esac
