@@ -99,6 +99,16 @@ welcome = screen("Welcome", "Get started with Steel OS", [
     action("printers", "Printers and scanners",
            "Add a printer (most are found in one click, USB printers set themselves up), or scan a document.",
            script="nohup setsid systemsettings kcm_printer_manager >/dev/null 2>&1"),
+    action("share-printers", "Share this computer's printers",
+           "Let the other computers at home print on a printer that is plugged into this one (or that this one uses). "
+           "Works while this computer is on. Asks for your password.",
+           status_script="/usr/libexec/steel-os-share-printers status",
+           options=[
+               ("enable", "On: share my printers",
+                "pkexec /usr/libexec/steel-os-share-printers on" + PAUSE),
+               ("disable", "Off: stop sharing",
+                "pkexec /usr/libexec/steel-os-share-printers off" + PAUSE),
+           ]),
     action("steel-shield", "Steel Shield (virus protection)",
            "See your protection, scan a file or folder, and manage quarantine. Downloads are scanned automatically.",
            script="nohup setsid /usr/bin/steel-shield >/dev/null 2>&1"),
