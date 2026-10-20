@@ -1,0 +1,56 @@
+#!/usr/bin/bash
+# Steel OS: "My reports" from the Steel OS Portal (Welcome tab).
+#
+# Every problem or idea sent with Report a problem is noted on this PC
+# (~/.local/state/steel-os/reports.json: reference, title, the report's
+# private key). This window lists them with their current status from
+# steel-os.org, and opens one in the browser: steel-os.org/my-report shows the
+# conversation and lets the person reply or add a picture, so a follow-up is
+# a reply on the same report instead of a new one (T, 2026-10-20).
+
+set -uo pipefail
+
+TITLE="My reports"
+SITE="${STEEL_OS_SITE:-https://steel-os.org}"
+STORE="${XDG_STATE_HOME:-$HOME/.local/state}/steel-os/reports.json"
+
+msg() { kdialog --title "$TITLE" --icon tools-report-bug "$@" 2>/dev/null; }
+
+if [[ ! -s "$STORE" ]] || [[ "$(jq 'length' "$STORE" 2>/dev/null || echo 0)" == 0 ]]; then
+    msg --msgbox "<h3>No reports yet</h3><p>When you send a problem or idea with <b>Report a problem</b>, it is listed here with its progress, and you can reply to the team on it.</p>"
+    exit 0
+fi
+command -v yad >/dev/null 2>&1 || { xdg-open "$SITE/help/troubleshooting"; exit 0; }
+
+status_of() { # key token -> "status<TAB>last activity"
+    local answer
+    answer="$(curl -sS --max-time 12 "$SITE/api/report-status?key=$1&token=$2" 2>/dev/null)"
+    jq -r 'if .ok then "\(.status)\t\(if (.comments|length) > 0 then .comments[-1].date else .updated end | .[0:10])" else "—\t" end' \
+        <<< "$answer" 2>/dev/null || printf '—\t\n'
+}
+
+while true; do
+    rows=()
+    while IFS=$'\t' read -r key token title kind date; do
+        [[ -n "$key" ]] || continue
+        IFS=$'\t' read -r status last <<< "$(status_of "$key" "$token")"
+        rows+=("$key" "$title" "$([[ "$kind" == idea ]] && echo Idea || echo Problem)" "$date" "${status:-—}" "${last:-}")
+    done < <(jq -r 'reverse | .[] | [.key, .token, .title, .kind, (.date // "")] | @tsv' "$STORE" 2>/dev/null)
+
+    out="$(yad --list --title="$TITLE" --window-icon=tools-report-bug --image=tools-report-bug --center --width=820 --height=420 --borders=12 \
+        --text="<big><b>My reports</b></big>\nProblems and ideas you sent to the Steel OS team, with their progress. Open one to read the team's answers and reply." \
+        --column="Reference" --column="What" --column="Kind" --column="Sent" --column="Status" --column="Last activity" \
+        --print-column=1 --separator="" --button="Open the selected report:0" --button="Refresh:2" --button="Close:1" \
+        "${rows[@]}")"
+    rc=$?
+    case $rc in
+        0)
+            key="$(tr -d '|' <<< "$out")"
+            [[ -n "$key" ]] || { msg --msgbox "Choose a report first."; continue; }
+            token="$(jq -r --arg k "$key" '.[] | select(.key == $k) | .token' "$STORE")"
+            xdg-open "$SITE/my-report?key=$key&token=$token" >/dev/null 2>&1 &
+            ;;
+        2) continue ;;
+        *) exit 0 ;;
+    esac
+done
