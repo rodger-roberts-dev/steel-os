@@ -14,37 +14,74 @@
 <header class="top">
   <a class="brand" href="index.html">STEEL <span class="os">OS</span> Help</a>
   <nav><a href="index.html">Help home</a><a href="install.html">Installing</a><a href="getting-started.html">Getting started</a><a href="updates.html">Updates</a><a href="network.html">Wi-Fi and home network</a><a href="printers.html">Printers and sharing</a><a href="shortcuts.html">Shortcuts</a><a href="gaming.html">Gaming</a><a href="steel-shield.html">Steel Shield</a><a href="troubleshooting.html">Something went wrong</a></nav>
+  <form class="search" role="search" autocomplete="off"><input type="search" id="q" placeholder="Search Help" aria-label="Search Help"><div class="results" id="results" hidden></div></form>
 </header>
 <h1>Installing and removing apps</h1>
 <p class="lede">Apps install with one click, update themselves, and never touch the system files.</p>
-<h2>The quickest way: Steel Apps</h2>
+<h2 id="the-quickest-way-steel-apps">The quickest way: Steel Apps</h2>
 <ol>
   <li>Open the <b>Steel OS Portal</b> from the taskbar.</li>
   <li>Click the <b>Steel Apps</b> tab. Apps are grouped: Everyday, Work, Creative, Games and Streaming. Code editors, AI coding tools (Steel &amp; Code Forge, Antigravity, VS Code) and virtual machines are on the <b>Developer</b> tab. AI assistants (Alpaca, Newelle, GPT4All, and Copilot, ChatGPT, Claude and Gemini) are on the <b>AI</b> tab.</li>
   <li>Click an app, then <b>Install</b>. A small window shows the download; press <kbd>Enter</kbd> to close it when it says so.</li>
   <li>The app appears in the start menu.</li>
 </ol>
-<h2>Thousands more: the App Store</h2>
+<h2 id="thousands-more-the-app-store">Thousands more: the App Store</h2>
 <p>Open <b>App Store</b> from the start menu or the taskbar. The <b>Curated</b> page starts with the Steel Apps; <b>Search</b> finds anything else. Click <b>Install</b>.</p>
-<h2>Keep apps up to date: install from the App Store or the Portal</h2>
+<h2 id="keep-apps-up-to-date-install-from-the-app-store-or-the-porta">Keep apps up to date: install from the App Store or the Portal</h2>
 <p><b>Install apps from the App Store or the Portal, not from websites, so they update themselves.</b> Steel OS checks every App Store and Portal app for updates once a day and installs them quietly in the background, Zoom, Chrome, Slack and Discord included. Nothing to click, no restart.</p>
 <p>A program downloaded from a company's own website (a <code>.deb</code>, <code>.rpm</code> or AppImage file) never updates by itself: you'd have to download it again every time. If an app is in the App Store, use that one.</p>
-<h2>Removing an app</h2>
+<h2 id="removing-an-app">Removing an app</h2>
 <ul>
   <li>In the Portal: click the app, then <b>Uninstall</b>.</li>
   <li>Or in the App Store: <b>Library</b>, find the app, <b>Remove</b>.</li>
 </ul>
-<h2>OneDrive, Google Drive and Dropbox</h2>
+<h2 id="onedrive-google-drive-and-dropbox">OneDrive, Google Drive and Dropbox</h2>
 <p>Microsoft doesn't make a OneDrive app for Linux, so Steel OS gives you two ways, both one click in the Steel OS Portal, <b>Steel Apps</b>, <b>Everyday</b>:</p>
 <ul>
   <li><b>OneDrive</b> adds OneDrive to the start menu. It opens in Firefox: all your files, plus Word, Excel and PowerPoint online. The simplest choice.</li>
   <li><b>RClone Manager</b> shows OneDrive, Google Drive, Dropbox and others as folders in the file manager. Open it, choose <b>Add remote</b>, pick OneDrive and sign in with your Microsoft account in the browser. Files open on demand rather than being kept as a full offline copy like on Windows, so you need to be online to open them.</li>
 </ul>
 <p>Dropbox also has its own app in Steel Apps, which keeps an offline copy.</p>
-<h2>Already installed for you</h2>
+<h2 id="already-installed-for-you">Already installed for you</h2>
 <p>Firefox and LibreOffice (Word, Excel and PowerPoint files) are there from the start. Obsidian, Zed and ProtonPlus install themselves a few minutes after your first start, as long as you are online. OBS Studio, Kdenlive and Moonlight are one click in the Steel OS Portal, Steel Apps.</p>
 <p class="note">Windows programs (.exe files) don't run directly. Most have a Linux version in the App Store. Windows games run through Steam or Lutris; see <a href="gaming.html">Gaming</a>.</p>
 <footer>Steel OS Help is built into Steel OS (start menu, Steel OS Help) and is also at steel-os.org/help. Something missing? Tell us at <a href="https://steel-os.org/report">steel-os.org/report</a>.</footer>
 </div>
+<script src="help-search.js"></script>
+<script>(function () {
+  var q = document.getElementById('q'), box = document.getElementById('results');
+  if (!q || !box || !window.STEEL_HELP) { return; }
+  var here = location.pathname.split('/').pop() || 'index.html';
+  function esc(s) { return s.replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function run() {
+    var words = q.value.toLowerCase().split(/\s+/).filter(function (w) { return w.length > 1; });
+    if (!words.length) { box.hidden = true; box.innerHTML = ''; return; }
+    var hits = [];
+    window.STEEL_HELP.forEach(function (e) {
+      var head = (e.p + ' ' + e.h).toLowerCase(), text = e.x.toLowerCase(), score = 0;
+      for (var i = 0; i < words.length; i++) {
+        var w = words[i];
+        if (head.indexOf(w) >= 0) { score += 3; } else if (text.indexOf(w) >= 0) { score += 1; } else { return; }
+      }
+      hits.push({ e: e, s: score + (e.h ? 0 : 0.5) });
+    });
+    hits.sort(function (a, b) { return b.s - a.s; });
+    if (!hits.length) { box.innerHTML = '<div class="none">Nothing found. Try another word, or <a href="https://steel-os.org/report">ask us</a>.</div>'; box.hidden = false; return; }
+    box.innerHTML = hits.slice(0, 8).map(function (h) {
+      var e = h.e, href = e.f + (e.id ? '#' + e.id : ''), w = words[0];
+      var at = e.x.toLowerCase().indexOf(w), from = at > 60 ? at - 60 : 0;
+      var snip = (from ? '…' : '') + e.x.slice(from, from + 150) + (e.x.length > from + 150 ? '…' : '');
+      return '<a href="' + href + '"><b>' + esc(e.p) + (e.h ? ' › ' + esc(e.h) : '') + '</b><span>' + esc(snip) + '</span></a>';
+    }).join('');
+    box.hidden = false;
+  }
+  q.addEventListener('input', run);
+  q.addEventListener('focus', run);
+  q.closest('form').addEventListener('submit', function (ev) { ev.preventDefault(); var a = box.querySelector('a'); if (a) { location.href = a.getAttribute('href'); } });
+  document.addEventListener('click', function (ev) { if (!ev.target.closest('.search')) { box.hidden = true; } });
+  document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { box.hidden = true; } });
+  // A section opened from a search result starts in view even with the sticky header.
+  if (location.hash && here !== 'index.html') { setTimeout(function () { var t = document.getElementById(location.hash.slice(1)); if (t) { t.scrollIntoView(); } }, 0); }
+})();</script>
 </body>
 </html>

@@ -14,16 +14,17 @@
 <header class="top">
   <a class="brand" href="index.html">STEEL <span class="os">OS</span> Help</a>
   <nav><a href="index.html">Help home</a><a href="install.html">Installing</a><a href="getting-started.html">Getting started</a><a href="apps.html">Apps</a><a href="updates.html">Updates</a><a href="network.html">Wi-Fi and home network</a><a href="printers.html">Printers and sharing</a><a href="shortcuts.html">Shortcuts</a><a href="gaming.html">Gaming</a><a href="steel-shield.html">Steel Shield</a></nav>
+  <form class="search" role="search" autocomplete="off"><input type="search" id="q" placeholder="Search Help" aria-label="Search Help"><div class="results" id="results" hidden></div></form>
 </header>
 <h1>Something went wrong</h1>
 <p class="lede">Quick fixes first, then how to get help.</p>
-<h2>An app won't open or misbehaves</h2>
+<h2 id="an-app-won-t-open-or-misbehaves">An app won't open or misbehaves</h2>
 <ol>
   <li>Close it and open it again.</li>
   <li>Restart the computer.</li>
   <li>Remove it and install it again from the Steel OS Portal or the App Store.</li>
 </ol>
-<h2>A blue screen after installing</h2>
+<h2 id="a-blue-screen-after-installing">A blue screen after installing</h2>
 <p>With Secure Boot on, the first start after installing shows a blue screen about a key, only once. With Secure Boot off, it doesn't appear. It asks the computer to trust the Steel OS driver key, which graphics and gaming drivers need. It is not an error.</p>
 <ol>
   <li>Press any key, then choose <b>Enroll MOK</b>.</li>
@@ -32,7 +33,7 @@
   <li>Choose <b>Reboot</b>. Steel OS then starts normally.</li>
 </ol>
 <p class="note">Don't choose <b>Continue boot</b> on the blue screen: with Secure Boot on, Steel OS can't start until the key is trusted.</p>
-<h3>Skipped the blue screen? ("bad shim signature")</h3>
+<h3 id="skipped-the-blue-screen-bad-shim-signature">Skipped the blue screen? ("bad shim signature")</h3>
 <p>With Secure Boot on, the computer then stops with <b>bad shim signature</b> and <b>you need to load the kernel first</b>. Nothing is lost; trust the key this way:</p>
 <ol>
   <li>Start the computer from the <b>Steel OS USB stick</b> again (the live desktop starts as before).</li>
@@ -40,24 +41,25 @@
   <li>Make up a one-time password and type it twice (for example <b>steelos</b>).</li>
   <li>Shut down, take out the USB stick, and turn the computer on. On the blue screen choose <b>Enroll MOK</b>, <b>Continue</b>, <b>Yes</b>, type that password, then <b>Reboot</b>.</li>
 </ol>
-<h3>Turning Secure Boot on after installing</h3>
+<h3 id="turning-secure-boot-on-after-installing">Turning Secure Boot on after installing</h3>
 <p>If Steel OS was installed with Secure Boot off, trust the key <b>before</b> switching Secure Boot on: in Steel OS open the terminal and type <code>sudo mokutil --import /etc/pki/akmods/certs/akmods-ublue.der</code>, make up a one-time password, restart and follow the blue-screen steps above. Then switch Secure Boot on in the firmware (see <a href="steel-shield.html#secure-boot">Turn on Secure Boot</a>).</p>
-<h2>"Your PC is using the standard graphics driver"</h2>
+<h2 id="your-pc-is-using-the-standard-graphics-driver">"Your PC is using the standard graphics driver"</h2>
 <p>PCs with an NVIDIA card get NVIDIA's own driver automatically: Steel OS downloads the NVIDIA edition in the background and asks you to restart. If the PC doesn't start properly with it, it goes back to the standard edition by itself and shows this message. Everything still works; games may run slower than they could. Steel OS tries again a week later. Click <b>Report a problem</b> on the message (or Portal, <b>Report a problem</b>): the report includes what the team needs.</p>
 <p><b>The "Restart to finish setting up your graphics" message keeps coming back</b> after you restart: that is the same problem on an older version of Steel OS, which kept trying. Click <b>Later</b>, open the Portal, click <b>Update now</b>, and restart once more; the newer version stops asking and shows the message above instead.</p>
-<h2>Something broke after an update</h2>
+<p>You choose, any time: Portal, <b>Troubleshoot</b>, <b>Graphics driver edition</b>. It shows which driver you are on, with <b>Try the NVIDIA driver edition again</b> and <b>Stay on the standard driver and stop asking</b>. Both ask for your password.</p>
+<h2 id="something-broke-after-an-update">Something broke after an update</h2>
 <p>Restart and pick the <b>second</b> entry in the start-up menu. You are back on the version before. See <a href="updates.html">Updates and going back</a>.</p>
-<h2>No internet</h2>
+<h2 id="no-internet">No internet</h2>
 <p>Click the network icon on the taskbar and pick your Wi-Fi. For a cable, check it is plugged in at both ends. System Settings, <b>Wi-Fi &amp; Networking</b> shows more. See <a href="network.html">Wi-Fi and home network</a> for step-by-step fixes.</p>
-<h2>A game stopped working</h2>
+<h2 id="a-game-stopped-working">A game stopped working</h2>
 <p>In the Portal, <b>Troubleshoot</b> has a button to stop stuck Wine and Proton games and to reset Steam.</p>
-<h2>Forgot your password</h2>
+<h2 id="forgot-your-password">Forgot your password</h2>
 <p>If you set up security questions, click <b>Forgot your password?</b> on the login screen, then click it again to confirm. The computer restarts into a reset window: answer your three questions and choose a new password. Your files and apps are untouched.</p>
 <p>No security questions? Another administrator on this computer can set a new password in System Settings, <b>Users</b>. Set up your questions any time from the Steel OS Portal, Welcome tab, <b>Security questions</b>.</p>
 <p class="note">A disk-encryption password can't be reset by anyone. Keep it somewhere safe.</p>
-<h2>Change or remove your security questions</h2>
+<h2 id="change-or-remove-your-security-questions">Change or remove your security questions</h2>
 <p>Open the Steel OS Portal, Welcome tab, <b>Security questions</b>. The window says when you already have questions and starts on the ones you chose. To <b>change</b> them, pick questions, type all three answers and click <b>Save</b>: the new set replaces the old one. To <b>remove</b> them, click <b>Remove my security questions</b>. Either way you are asked for your password first, so nobody else can change them on your unlocked computer.</p>
-<h2>Report a problem or idea</h2>
+<h2 id="report-a-problem-or-idea">Report a problem or idea</h2>
 <p>Open <b>Report a Problem or Idea</b> from the start menu, or the Steel OS Portal, Welcome tab. No account is needed.</p>
 <ol>
   <li>Choose <b>Problem</b> or <b>Idea</b>, give it a short title, and say what happened or what you would like.</li>
@@ -68,5 +70,41 @@
 <p>Reports go to the Steel OS team only; screenshots are never made public. Not on Steel OS? Use <a href="https://steel-os.org/report">steel-os.org/report</a>.</p>
 <footer>Steel OS Help is built into Steel OS (start menu, Steel OS Help) and is also at steel-os.org/help. Something missing? Tell us at <a href="https://steel-os.org/report">steel-os.org/report</a>.</footer>
 </div>
+<script src="help-search.js"></script>
+<script>(function () {
+  var q = document.getElementById('q'), box = document.getElementById('results');
+  if (!q || !box || !window.STEEL_HELP) { return; }
+  var here = location.pathname.split('/').pop() || 'index.html';
+  function esc(s) { return s.replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function run() {
+    var words = q.value.toLowerCase().split(/\s+/).filter(function (w) { return w.length > 1; });
+    if (!words.length) { box.hidden = true; box.innerHTML = ''; return; }
+    var hits = [];
+    window.STEEL_HELP.forEach(function (e) {
+      var head = (e.p + ' ' + e.h).toLowerCase(), text = e.x.toLowerCase(), score = 0;
+      for (var i = 0; i < words.length; i++) {
+        var w = words[i];
+        if (head.indexOf(w) >= 0) { score += 3; } else if (text.indexOf(w) >= 0) { score += 1; } else { return; }
+      }
+      hits.push({ e: e, s: score + (e.h ? 0 : 0.5) });
+    });
+    hits.sort(function (a, b) { return b.s - a.s; });
+    if (!hits.length) { box.innerHTML = '<div class="none">Nothing found. Try another word, or <a href="https://steel-os.org/report">ask us</a>.</div>'; box.hidden = false; return; }
+    box.innerHTML = hits.slice(0, 8).map(function (h) {
+      var e = h.e, href = e.f + (e.id ? '#' + e.id : ''), w = words[0];
+      var at = e.x.toLowerCase().indexOf(w), from = at > 60 ? at - 60 : 0;
+      var snip = (from ? '…' : '') + e.x.slice(from, from + 150) + (e.x.length > from + 150 ? '…' : '');
+      return '<a href="' + href + '"><b>' + esc(e.p) + (e.h ? ' › ' + esc(e.h) : '') + '</b><span>' + esc(snip) + '</span></a>';
+    }).join('');
+    box.hidden = false;
+  }
+  q.addEventListener('input', run);
+  q.addEventListener('focus', run);
+  q.closest('form').addEventListener('submit', function (ev) { ev.preventDefault(); var a = box.querySelector('a'); if (a) { location.href = a.getAttribute('href'); } });
+  document.addEventListener('click', function (ev) { if (!ev.target.closest('.search')) { box.hidden = true; } });
+  document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { box.hidden = true; } });
+  // A section opened from a search result starts in view even with the sticky header.
+  if (location.hash && here !== 'index.html') { setTimeout(function () { var t = document.getElementById(location.hash.slice(1)); if (t) { t.scrollIntoView(); } }, 0); }
+})();</script>
 </body>
 </html>
