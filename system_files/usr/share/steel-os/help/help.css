@@ -28,3 +28,15 @@ table { border-collapse: collapse; width: 100%; }
 th, td { text-align: left; padding: 8px 10px; border-top: 1px solid var(--line); vertical-align: top; }
 th { color: var(--muted); font-size: .85rem; text-transform: uppercase; letter-spacing: .05em; border-top: 0; }
 footer { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 14px; color: var(--muted); font-size: .9rem; }
+/* Search: a box in the header, results drop down under it. */
+.search { position: relative; margin-left: auto; flex: 1 1 220px; max-width: 340px; }
+.search input { width: 100%; background: var(--raised); border: 1px solid var(--line); border-radius: 8px; color: var(--fg); padding: 8px 12px; font: inherit; font-size: .95rem; }
+.search input:focus { outline: none; border-color: var(--blue); }
+.results { position: absolute; top: calc(100% + 6px); right: 0; left: 0; min-width: min(520px, calc(100vw - 32px)); background: var(--raised); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 12px 32px rgba(0,0,0,.45); z-index: 20; max-height: 70vh; overflow-y: auto; }
+.results a, .results .none { display: block; padding: 10px 14px; border-top: 1px solid var(--line); color: var(--fg); text-decoration: none; }
+.results a:first-child, .results .none { border-top: 0; }
+.results a:hover, .results a:focus { background: var(--bg); }
+.results a b { display: block; font-size: .95rem; }
+.results a span { display: block; color: var(--muted); font-size: .85rem; line-height: 1.4; }
+.results .none { color: var(--muted); font-size: .9rem; }
+@media (max-width: 560px) { .search { max-width: none; flex-basis: 100%; } .results { left: 0; right: 0; min-width: 0; } }

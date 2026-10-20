@@ -14,19 +14,20 @@
 <header class="top">
   <a class="brand" href="index.html">STEEL <span class="os">OS</span> Help</a>
   <nav><a href="index.html">Help home</a><a href="install.html">Installing</a><a href="getting-started.html">Getting started</a><a href="apps.html">Apps</a><a href="network.html">Wi-Fi and home network</a><a href="printers.html">Printers and sharing</a><a href="shortcuts.html">Shortcuts</a><a href="gaming.html">Gaming</a><a href="steel-shield.html">Steel Shield</a><a href="troubleshooting.html">Something went wrong</a></nav>
+  <form class="search" role="search" autocomplete="off"><input type="search" id="q" placeholder="Search Help" aria-label="Search Help"><div class="results" id="results" hidden></div></form>
 </header>
 <h1>Updates and going back</h1>
 <p class="lede">Steel OS keeps itself up to date, and always keeps the version before.</p>
-<h2>How updates work</h2>
+<h2 id="how-updates-work">How updates work</h2>
 <ul>
   <li>Every <b>Tuesday morning</b>, Steel OS downloads the new version in the background. If the computer was off, it does it at the next start.</li>
   <li>The new version starts the <b>next time you restart</b>. Nothing changes while you are working. A notification says <b>Restart to finish updating</b>, with <b>Restart now</b> and <b>Later</b>.</li>
   <li>If you don't restart, Steel OS <b>restarts by itself at night</b>, between 2 and 5 am, but only when nobody is using the computer (screen locked or untouched for 30 minutes), no game or OBS is running, and a laptop is plugged in. It warns 15 minutes first; <b>Not now</b> skips that night. To switch this off: Steel OS Portal, Welcome, <b>Automatic restarts for updates</b>.</li>
   <li>Your apps update themselves too.</li>
 </ul>
-<h2>Update now</h2>
+<h2 id="update-now">Update now</h2>
 <p>Open the <b>Steel OS Portal</b>, then <b>Welcome</b>, then <b>Update now</b>. A window shows what it is doing; no password and no terminal. When a new version is ready it offers <b>Restart now</b>.</p>
-<h2>Going back to the previous version</h2>
+<h2 id="going-back-to-the-previous-version">Going back to the previous version</h2>
 <p>If something looks wrong after an update:</p>
 <ol>
   <li>Restart the computer.</li>
@@ -34,9 +35,45 @@
   <li>Steel OS starts as it was. Your files, settings and apps are untouched.</li>
 </ol>
 <p>Or from the Portal: <b>Troubleshoot</b>, then <b>Roll back to the previous Steel OS version</b>.</p>
-<h2>Which version am I on?</h2>
+<h2 id="which-version-am-i-on">Which version am I on?</h2>
 <p>System Settings, <b>About this System</b>. The terminal (<kbd>Super</kbd>+<kbd>Enter</kbd>) shows it under its welcome message. For the full picture type <code>steel-os-version</code>: the version you are running, an update waiting for a restart, and the previous version kept in the start-up menu.</p>
 <footer>Steel OS Help is built into Steel OS (start menu, Steel OS Help) and is also at steel-os.org/help. Something missing? Tell us at <a href="https://steel-os.org/report">steel-os.org/report</a>.</footer>
 </div>
+<script src="help-search.js"></script>
+<script>(function () {
+  var q = document.getElementById('q'), box = document.getElementById('results');
+  if (!q || !box || !window.STEEL_HELP) { return; }
+  var here = location.pathname.split('/').pop() || 'index.html';
+  function esc(s) { return s.replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function run() {
+    var words = q.value.toLowerCase().split(/\s+/).filter(function (w) { return w.length > 1; });
+    if (!words.length) { box.hidden = true; box.innerHTML = ''; return; }
+    var hits = [];
+    window.STEEL_HELP.forEach(function (e) {
+      var head = (e.p + ' ' + e.h).toLowerCase(), text = e.x.toLowerCase(), score = 0;
+      for (var i = 0; i < words.length; i++) {
+        var w = words[i];
+        if (head.indexOf(w) >= 0) { score += 3; } else if (text.indexOf(w) >= 0) { score += 1; } else { return; }
+      }
+      hits.push({ e: e, s: score + (e.h ? 0 : 0.5) });
+    });
+    hits.sort(function (a, b) { return b.s - a.s; });
+    if (!hits.length) { box.innerHTML = '<div class="none">Nothing found. Try another word, or <a href="https://steel-os.org/report">ask us</a>.</div>'; box.hidden = false; return; }
+    box.innerHTML = hits.slice(0, 8).map(function (h) {
+      var e = h.e, href = e.f + (e.id ? '#' + e.id : ''), w = words[0];
+      var at = e.x.toLowerCase().indexOf(w), from = at > 60 ? at - 60 : 0;
+      var snip = (from ? '…' : '') + e.x.slice(from, from + 150) + (e.x.length > from + 150 ? '…' : '');
+      return '<a href="' + href + '"><b>' + esc(e.p) + (e.h ? ' › ' + esc(e.h) : '') + '</b><span>' + esc(snip) + '</span></a>';
+    }).join('');
+    box.hidden = false;
+  }
+  q.addEventListener('input', run);
+  q.addEventListener('focus', run);
+  q.closest('form').addEventListener('submit', function (ev) { ev.preventDefault(); var a = box.querySelector('a'); if (a) { location.href = a.getAttribute('href'); } });
+  document.addEventListener('click', function (ev) { if (!ev.target.closest('.search')) { box.hidden = true; } });
+  document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { box.hidden = true; } });
+  // A section opened from a search result starts in view even with the sticky header.
+  if (location.hash && here !== 'index.html') { setTimeout(function () { var t = document.getElementById(location.hash.slice(1)); if (t) { t.scrollIntoView(); } }, 0); }
+})();</script>
 </body>
 </html>

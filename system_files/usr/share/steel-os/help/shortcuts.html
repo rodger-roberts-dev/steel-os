@@ -14,6 +14,7 @@
 <header class="top">
   <a class="brand" href="index.html">STEEL <span class="os">OS</span> Help</a>
   <nav><a href="index.html">Help home</a><a href="install.html">Installing</a><a href="getting-started.html">Getting started</a><a href="apps.html">Apps</a><a href="updates.html">Updates</a><a href="network.html">Wi-Fi and home network</a><a href="printers.html">Printers and sharing</a><a href="gaming.html">Gaming</a><a href="steel-shield.html">Steel Shield</a><a href="troubleshooting.html">Something went wrong</a></nav>
+  <form class="search" role="search" autocomplete="off"><input type="search" id="q" placeholder="Search Help" aria-label="Search Help"><div class="results" id="results" hidden></div></form>
 </header>
 <h1>Keyboard shortcuts</h1>
 <p class="lede">Super is the Windows key. Every shortcut can be changed in System Settings, Shortcuts.</p>
@@ -38,5 +39,41 @@
 </table></div>
 <footer>Steel OS Help is built into Steel OS (start menu, Steel OS Help) and is also at steel-os.org/help. Something missing? Tell us at <a href="https://steel-os.org/report">steel-os.org/report</a>.</footer>
 </div>
+<script src="help-search.js"></script>
+<script>(function () {
+  var q = document.getElementById('q'), box = document.getElementById('results');
+  if (!q || !box || !window.STEEL_HELP) { return; }
+  var here = location.pathname.split('/').pop() || 'index.html';
+  function esc(s) { return s.replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function run() {
+    var words = q.value.toLowerCase().split(/\s+/).filter(function (w) { return w.length > 1; });
+    if (!words.length) { box.hidden = true; box.innerHTML = ''; return; }
+    var hits = [];
+    window.STEEL_HELP.forEach(function (e) {
+      var head = (e.p + ' ' + e.h).toLowerCase(), text = e.x.toLowerCase(), score = 0;
+      for (var i = 0; i < words.length; i++) {
+        var w = words[i];
+        if (head.indexOf(w) >= 0) { score += 3; } else if (text.indexOf(w) >= 0) { score += 1; } else { return; }
+      }
+      hits.push({ e: e, s: score + (e.h ? 0 : 0.5) });
+    });
+    hits.sort(function (a, b) { return b.s - a.s; });
+    if (!hits.length) { box.innerHTML = '<div class="none">Nothing found. Try another word, or <a href="https://steel-os.org/report">ask us</a>.</div>'; box.hidden = false; return; }
+    box.innerHTML = hits.slice(0, 8).map(function (h) {
+      var e = h.e, href = e.f + (e.id ? '#' + e.id : ''), w = words[0];
+      var at = e.x.toLowerCase().indexOf(w), from = at > 60 ? at - 60 : 0;
+      var snip = (from ? '…' : '') + e.x.slice(from, from + 150) + (e.x.length > from + 150 ? '…' : '');
+      return '<a href="' + href + '"><b>' + esc(e.p) + (e.h ? ' › ' + esc(e.h) : '') + '</b><span>' + esc(snip) + '</span></a>';
+    }).join('');
+    box.hidden = false;
+  }
+  q.addEventListener('input', run);
+  q.addEventListener('focus', run);
+  q.closest('form').addEventListener('submit', function (ev) { ev.preventDefault(); var a = box.querySelector('a'); if (a) { location.href = a.getAttribute('href'); } });
+  document.addEventListener('click', function (ev) { if (!ev.target.closest('.search')) { box.hidden = true; } });
+  document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { box.hidden = true; } });
+  // A section opened from a search result starts in view even with the sticky header.
+  if (location.hash && here !== 'index.html') { setTimeout(function () { var t = document.getElementById(location.hash.slice(1)); if (t) { t.scrollIntoView(); } }, 0); }
+})();</script>
 </body>
 </html>

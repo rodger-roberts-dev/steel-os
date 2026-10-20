@@ -14,10 +14,11 @@
 <header class="top">
   <a class="brand" href="index.html">STEEL <span class="os">OS</span> Help</a>
   <nav><a href="index.html">Help home</a><a href="install.html">Installing</a><a href="getting-started.html">Getting started</a><a href="apps.html">Apps</a><a href="updates.html">Updates</a><a href="network.html">Wi-Fi and home network</a><a href="shortcuts.html">Shortcuts</a><a href="gaming.html">Gaming</a><a href="steel-shield.html">Steel Shield</a><a href="troubleshooting.html">Something went wrong</a></nav>
+  <form class="search" role="search" autocomplete="off"><input type="search" id="q" placeholder="Search Help" aria-label="Search Help"><div class="results" id="results" hidden></div></form>
 </header>
 <h1>Printers, scanners and sharing</h1>
 <p class="lede">USB printers set themselves up, network printers are found by themselves, and the common brands need no driver download.</p>
-<h2>Add a printer</h2>
+<h2 id="add-a-printer">Add a printer</h2>
 <ol>
   <li><b>USB:</b> plug the printer in and switch it on. Steel OS sets it up by itself within a few seconds.</li>
   <li><b>Wi-Fi or network:</b> most printers appear by themselves within a minute of being on the same Wi-Fi. If yours doesn't, see <b>Add a printer by hand</b> below.</li>
@@ -25,7 +26,7 @@
 </ol>
 <p>HP, Canon, Brother and Epson printers work without downloading a driver, as do most printers made since about 2015.</p>
 <p>Printing to a PDF file works in every app, with no printer.</p>
-<h2>Add a printer by hand</h2>
+<h2 id="add-a-printer-by-hand">Add a printer by hand</h2>
 <p>For a printer that didn't appear by itself. Switch the printer on first; for Wi-Fi, make sure it is on the same Wi-Fi as the computer (its own menu or app shows that).</p>
 <ol>
   <li>Open the start menu and search for <b>Printers</b>, or open <b>System Settings</b> and choose <b>Printers</b> in the list on the left.</li>
@@ -41,26 +42,62 @@
   <li>In <b>Add Printer</b>, choose <b>Manual</b> (or <b>Enter address</b>) and type <code>ipp://</code> followed by the address and <code>/ipp/print</code>, for example <code>ipp://192.168.1.45/ipp/print</code>. Click <b>Next</b> and finish as above.</li>
   <li>Still nothing? Check that the printer is on the same Wi-Fi as the computer, restart both, and try again.</li>
 </ol>
-<h2>A printer you removed comes back</h2>
+<h2 id="a-printer-you-removed-comes-back">A printer you removed comes back</h2>
 <p>Printers that Steel OS found by itself are found again by themselves: within about two minutes of being removed while they are still on, or as soon as the USB cable is plugged back in. To stop a printer appearing, turn it off, or leave it and simply pick another printer when you print.</p>
-<h2>Scan</h2>
+<h2 id="scan">Scan</h2>
 <p>Open <b>Skanpage</b> from the start menu, pick your scanner, then <b>Scan</b>.</p>
-<h2>Open a shared folder on a Windows PC</h2>
+<h2 id="open-a-shared-folder-on-a-windows-pc">Open a shared folder on a Windows PC</h2>
 <ol>
   <li>Open <b>Dolphin</b>, the file manager (<kbd>Super</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd>).</li>
   <li>Click <b>Network</b> on the left. Other computers often appear there.</li>
   <li>If the Windows PC isn't listed, type <code>smb://</code> followed by its name in the address bar, for example <code>smb://office-pc</code>, and press <kbd>Enter</kbd>.</li>
   <li>Sign in with the Windows account name and password.</li>
 </ol>
-<h2>Share a folder with Windows PCs</h2>
+<h2 id="share-a-folder-with-windows-pcs">Share a folder with Windows PCs</h2>
 <ol>
   <li>In Dolphin, right-click the folder, then <b>Properties</b>, then the <b>Share</b> tab.</li>
   <li>Tick <b>Share with Microsoft Windows (SMB)</b>, and choose who can open it and whether they can change files.</li>
   <li>On the Windows PC, open File Explorer, then <b>Network</b>, then this computer. Sign in with your Steel OS user name and password.</li>
 </ol>
-<h2>A printer or scanner that still doesn't work</h2>
+<h2 id="a-printer-or-scanner-that-still-doesn-t-work">A printer or scanner that still doesn't work</h2>
 <p>A few models need the maker's own driver, which Steel OS can't include: some Brother scanners over USB (Brother's <i>brscan</i>) and some Canon laser printers (Canon's <i>CAPT</i>). Download the Linux driver from the maker's website, or report the model at <a href="https://steel-os.org/report">steel-os.org/report</a> and we'll look into it.</p>
 <footer>Steel OS Help is built into Steel OS (start menu, Steel OS Help) and is also at steel-os.org/help. Something missing? Tell us at <a href="https://steel-os.org/report">steel-os.org/report</a>.</footer>
 </div>
+<script src="help-search.js"></script>
+<script>(function () {
+  var q = document.getElementById('q'), box = document.getElementById('results');
+  if (!q || !box || !window.STEEL_HELP) { return; }
+  var here = location.pathname.split('/').pop() || 'index.html';
+  function esc(s) { return s.replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function run() {
+    var words = q.value.toLowerCase().split(/\s+/).filter(function (w) { return w.length > 1; });
+    if (!words.length) { box.hidden = true; box.innerHTML = ''; return; }
+    var hits = [];
+    window.STEEL_HELP.forEach(function (e) {
+      var head = (e.p + ' ' + e.h).toLowerCase(), text = e.x.toLowerCase(), score = 0;
+      for (var i = 0; i < words.length; i++) {
+        var w = words[i];
+        if (head.indexOf(w) >= 0) { score += 3; } else if (text.indexOf(w) >= 0) { score += 1; } else { return; }
+      }
+      hits.push({ e: e, s: score + (e.h ? 0 : 0.5) });
+    });
+    hits.sort(function (a, b) { return b.s - a.s; });
+    if (!hits.length) { box.innerHTML = '<div class="none">Nothing found. Try another word, or <a href="https://steel-os.org/report">ask us</a>.</div>'; box.hidden = false; return; }
+    box.innerHTML = hits.slice(0, 8).map(function (h) {
+      var e = h.e, href = e.f + (e.id ? '#' + e.id : ''), w = words[0];
+      var at = e.x.toLowerCase().indexOf(w), from = at > 60 ? at - 60 : 0;
+      var snip = (from ? '…' : '') + e.x.slice(from, from + 150) + (e.x.length > from + 150 ? '…' : '');
+      return '<a href="' + href + '"><b>' + esc(e.p) + (e.h ? ' › ' + esc(e.h) : '') + '</b><span>' + esc(snip) + '</span></a>';
+    }).join('');
+    box.hidden = false;
+  }
+  q.addEventListener('input', run);
+  q.addEventListener('focus', run);
+  q.closest('form').addEventListener('submit', function (ev) { ev.preventDefault(); var a = box.querySelector('a'); if (a) { location.href = a.getAttribute('href'); } });
+  document.addEventListener('click', function (ev) { if (!ev.target.closest('.search')) { box.hidden = true; } });
+  document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { box.hidden = true; } });
+  // A section opened from a search result starts in view even with the sticky header.
+  if (location.hash && here !== 'index.html') { setTimeout(function () { var t = document.getElementById(location.hash.slice(1)); if (t) { t.scrollIntoView(); } }, 0); }
+})();</script>
 </body>
 </html>
