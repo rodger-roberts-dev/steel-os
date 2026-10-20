@@ -132,8 +132,18 @@ chmod 0755 /usr/bin/steel-os-version
 # how Steel OS machines are counted (STEEL-33).
 OS_RELEASE="/usr/lib/os-release"
 sed -i 's/^NAME=.*/NAME="Steel OS"/' "$OS_RELEASE"
-# The version shows in About this System: "Steel OS 0.5.3".
-sed -i "s/^PRETTY_NAME=.*/PRETTY_NAME=\"Steel OS ${STEEL_OS_VERSION:-}\"/" "$OS_RELEASE"
+# The version shows in About this System and in the boot menu: "Steel OS 0.5.3".
+# The NVIDIA images say so, because the boot menu lists every installed
+# version and nothing else told them apart (S&C, 2026-10-19). The base image
+# records its flavour in /usr/share/ublue-os/image-info.json.
+flavour="$(jq -r '."image-flavor" // ."image-name" // ""' /usr/share/ublue-os/image-info.json 2>/dev/null || true)"
+case "$flavour" in
+    *nvidia-open*) variant=" NVIDIA" ;;
+    *nvidia*)      variant=" NVIDIA legacy" ;;
+    *)             variant="" ;;
+esac
+echo "Steel OS edition from image flavour '${flavour}': 'Steel OS ${STEEL_OS_VERSION:-}${variant}'"
+sed -i "s/^PRETTY_NAME=.*/PRETTY_NAME=\"Steel OS ${STEEL_OS_VERSION:-}${variant}\"/" "$OS_RELEASE"
 grep -q '^STEEL_OS_VERSION=' "$OS_RELEASE" || echo "STEEL_OS_VERSION=${STEEL_OS_VERSION:-0.0.0}" >> "$OS_RELEASE"
 sed -i 's/^VARIANT_ID=.*/VARIANT_ID=steel-os/' "$OS_RELEASE"
 sed -i 's|^HOME_URL=.*|HOME_URL="https://steel-os.org"|' "$OS_RELEASE"
