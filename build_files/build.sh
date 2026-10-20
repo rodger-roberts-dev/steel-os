@@ -580,7 +580,7 @@ gtk-update-icon-cache -f /usr/share/icons/hicolor 2>/dev/null || true
 # window that checks the answers and sets a new password.
 # "Report a problem or idea": a window that sends a report, with an optional
 # screenshot and computer details, to steel-os.org/api/report.
-chmod 0755 /usr/libexec/steel-os-report
+chmod 0755 /usr/libexec/steel-os-report /usr/libexec/steel-os-my-reports
 
 chmod 0755 /usr/libexec/steel-os-recovery-crypt /usr/libexec/steel-os-recovery-enrol \
     /usr/libexec/steel-os-recovery-setup /usr/libexec/steel-os-recovery-reset \

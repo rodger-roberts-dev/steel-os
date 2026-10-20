@@ -13,6 +13,16 @@ set -uo pipefail
 
 TITLE="Report a problem or idea"
 ENDPOINT="${STEEL_OS_REPORT_URL:-https://steel-os.org/api/report}"
+SITE="${STEEL_OS_SITE:-https://steel-os.org}"
+# Every report sent from this PC, with its private key, for My reports.
+STORE="${XDG_STATE_HOME:-$HOME/.local/state}/steel-os/reports.json"
+remember_report() { # key token title kind
+    mkdir -p "$(dirname "$STORE")"
+    [[ -s "$STORE" ]] || echo '[]' > "$STORE"
+    jq --arg k "$1" --arg t "$2" --arg s "$3" --arg kind "$4" --arg d "$(date +%Y-%m-%d)" \
+        '. + [{key: $k, token: $t, title: $s, kind: $kind, date: $d}]' "$STORE" > "$STORE.tmp" && mv "$STORE.tmp" "$STORE"
+    chmod 0600 "$STORE"
+}
 WORK="${XDG_RUNTIME_DIR:-/tmp}/steel-os-report"
 SHOT="$WORK/screenshot.png"
 
@@ -152,7 +162,15 @@ Tell the Steel OS team what went wrong, or what you would like. It goes straight
     ok="$(jq -r '.ok // false' <<< "$answer" 2>/dev/null)"
     if [[ "$ok" == "true" ]]; then
         key="$(jq -r '.key // empty' <<< "$answer")"
-        msg --msgbox "<h3>Thank you!</h3><p>Your report reached the Steel OS team.${key:+ Its reference is <b>$key</b>.}</p>"
+        token="$(jq -r '.token // empty' <<< "$answer")"
+        if [[ -n "$key" && -n "$token" ]]; then
+            remember_report "$key" "$token" "$title" "$([[ "$kind" == "Idea" ]] && echo idea || echo problem)"
+            if msg --yes-label "See it" --no-label "OK" --yesno "<h3>Thank you!</h3><p>Your report reached the Steel OS team. Its reference is <b>$key</b>.</p><p>Follow it and reply to the team under <b>My reports</b> in the Steel OS Portal, or open it now.</p>"; then
+                xdg-open "$SITE/my-report?key=$key&token=$token" >/dev/null 2>&1 &
+            fi
+        else
+            msg --msgbox "<h3>Thank you!</h3><p>Your report reached the Steel OS team.${key:+ Its reference is <b>$key</b>.}</p>"
+        fi
         rm -rf "$WORK"
         exit 0
     fi
