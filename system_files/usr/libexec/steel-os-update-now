@@ -25,11 +25,34 @@ yad --help-all 2>/dev/null | grep -q -- '--css' && [[ -r /usr/share/steel-os/pro
 
 log="$(mktemp)"
 since="$(date '+%Y-%m-%d %H:%M:%S')"
-(
-    systemctl start "$UNIT" >"$log" 2>&1
-    echo $? > "$log.rc"
-) &
-starter=$!
+# An update may already be running: the Tuesday one starts when a laptop
+# that slept through 4 am wakes up, and a second one would only fail with
+# "could not acquire lock" (T's wife's laptop, STEEL-81, 2026-10-20). Then
+# this window follows the running update instead of starting another.
+running=""
+for u in uupd-manual.service uupd.service; do
+    systemctl is-active --quiet "$u" 2>/dev/null && { running="$u"; break; }
+done
+if [[ -n "$running" ]]; then
+    UNIT="$running"
+    started="$(systemctl show -p ActiveEnterTimestamp --value "$UNIT" 2>/dev/null)"
+    [[ -n "$started" ]] && since="$(date -d "$started" '+%Y-%m-%d %H:%M:%S' 2>/dev/null || echo "$since")"
+    HEADING="Steel OS is already updating"
+    SUB="It started in the background$( [[ -n "$started" ]] && echo " at $(date -d "$started" '+%H:%M' 2>/dev/null)" ). This window follows it."
+    (
+        while systemctl is-active --quiet "$UNIT" 2>/dev/null; do sleep 2; done
+        [[ "$(systemctl show -p Result --value "$UNIT" 2>/dev/null)" == success ]] && echo 0 > "$log.rc" || echo 1 > "$log.rc"
+    ) &
+    starter=$!
+else
+    HEADING="Updating Steel OS"
+    SUB="You can keep working. Your files and apps stay as they are."
+    (
+        systemctl start "$UNIT" >"$log" 2>&1
+        echo $? > "$log.rc"
+    ) &
+    starter=$!
+fi
 
 # The window: a real percentage bar and the step in plain words (T,
 # 2026-10-19). uupd logs its progress as JSON lines in the journal:
@@ -86,14 +109,17 @@ plain() { # uupd's step title -> plain English
     echo 100
 ) | yad --progress "${STYLE[@]}" --percentage=0 --auto-close --no-buttons --center --width=480 --borders=16 \
         --title="$TITLE" --window-icon=steel-os --image=steel-os \
-        --text="<b>Updating Steel OS</b>\nYou can keep working. Your files and apps stay as they are." 2>/dev/null &
+        --text="<b>$HEADING</b>\n$SUB" 2>/dev/null &
 win=$!
 wait "$starter"
 wait "$win" 2>/dev/null
 
 rc="$(cat "$log.rc" 2>/dev/null || echo 1)"
 staged="$(rpm-ostree status --json 2>/dev/null | jq -r '[.deployments[] | select(.staged == true)] | length')"
-if [[ "$rc" != 0 ]]; then
+if [[ "$rc" != 0 ]] && grep -q 'acquire lock' "$log" 2>/dev/null; then
+    # The update finished (or started) between our check and the start: say so instead of an error.
+    kdialog --title "$TITLE" --icon steel-os --msgbox "<h3>Steel OS was already updating</h3><p>Another update was running in the background. Wait a few minutes, then click <b>Update now</b> again to see where it got to.</p>" 2>/dev/null
+elif [[ "$rc" != 0 ]]; then
     details="$( (cat "$log"; journalctl -u "$UNIT" --since "$since" -o cat --no-pager -n 15) 2>/dev/null \
         | sed 's/&/\&amp;/g; s/</\&lt;/g' | tail -15)"
     kdialog --title "$TITLE" --icon steel-os --sorry "<h3>The update didn't finish</h3>
