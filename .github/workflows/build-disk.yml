@@ -295,3 +295,39 @@ jobs:
           rclone rmdirs --leave-root "S3:$B" --exclude "shield/**" 2>/dev/null || true
           echo "Kept: $NAME (newest) and $old (the build before)"
           rclone lsl "S3:$B"
+
+      - name: Announce on Discord
+        # One post in the Steel OS server's #announcements for every new
+        # installer. Needs the DISCORD_ANNOUNCE_WEBHOOK secret (in Discord:
+        # Edit #announcements > Integrations > Webhooks > New Webhook > Copy
+        # Webhook URL; in GitHub: Settings > Secrets and variables > Actions).
+        # Without it this step says so and does nothing.
+        if: (github.event_name == 'workflow_run' || inputs.upload-to-s3 == true) && success()
+        shell: bash
+        env:
+          HOOK: ${{ secrets.DISCORD_ANNOUNCE_WEBHOOK }}
+          VERSION: ${{ steps.files.outputs.version }}
+          NOTES: ${{ steps.files.outputs.notes }}
+        run: |
+          if [[ -z "$HOOK" ]]; then
+            echo "No DISCORD_ANNOUNCE_WEBHOOK secret; not announcing."
+            exit 0
+          fi
+          python3 - "$NOTES" "$VERSION" <<'PYEOF'
+          import json, os, sys, urllib.request
+          notes, version = json.load(open(sys.argv[1])), sys.argv[2]
+          cur = next((v for v in notes.get("versions", []) if v.get("version") == version), {})
+          title = cur.get("title", "")
+          body = (f"**Steel OS {version}** is out."
+                  + (f"\nWhat changed: {title}" if title else "")
+                  + "\nInstalled PCs get it with the next update (Portal > Update now, or by itself overnight)."
+                  + "\nNew installer: <https://steel-os.org/get/preview> · everything that changed: <https://steel-os.org/preview>")
+          data = json.dumps({"content": body, "username": "Steel OS", "allowed_mentions": {"parse": []}}).encode()
+          req = urllib.request.Request(os.environ["HOOK"], data=data,
+                                       headers={"Content-Type": "application/json", "User-Agent": "steel-os-build"})
+          try:
+              with urllib.request.urlopen(req, timeout=30) as r:
+                  print("Announced on Discord:", r.status)
+          except Exception as e:  # noqa: BLE001
+              print("Discord did not take the announcement:", e)
+          PYEOF
