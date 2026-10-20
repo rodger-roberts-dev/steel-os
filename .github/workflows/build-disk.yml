@@ -173,6 +173,7 @@ jobs:
           build="$(sudo podman run --rm --entrypoint cat "${IMAGE_REF}" /usr/share/steel-os/build 2>/dev/null || echo unknown)"
           version="$(sudo podman run --rm --entrypoint cat "${IMAGE_REF}" /usr/share/steel-os/version 2>/dev/null || echo unknown)"
           echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "build=$build" >> "$GITHUB_OUTPUT"
           # The file is named by its version: steel-os-0.5.3-x86_64.iso (T).
           if [[ "$version" =~ ^[0-9]+(\.[0-9]+)+$ ]]; then
             name="steel-os-${version}-x86_64.iso"
@@ -228,6 +229,7 @@ jobs:
           overwrite: true
 
       - name: Upload to S3
+        id: upload
         if: github.event_name == 'workflow_run' || inputs.upload-to-s3 == true
         shell: bash
         env:
@@ -243,6 +245,7 @@ jobs:
           SOURCE_DIR: ${{ steps.files.outputs.dir }}
           NAME: ${{ steps.files.outputs.name }}
           VERSION: ${{ steps.files.outputs.version }}
+          BUILD: ${{ steps.files.outputs.build }}
           NOTES: ${{ steps.files.outputs.notes }}
         run: |
           sudo apt-get update
@@ -261,6 +264,9 @@ jobs:
           rclone copy --s3-no-check-bucket --retries 5 "$SOURCE_DIR" "S3:$B"
 
           old="$(rclone cat "S3:$B/latest.json" 2>/dev/null | jq -r '.current // empty' 2>/dev/null || true)"
+          # The version that was current before this upload: a rebuild keeps
+          # the version (only the build date moves), and is not announced.
+          echo "prev_version=$(rclone cat "S3:$B/latest.json" 2>/dev/null | jq -r '.version // empty' 2>/dev/null || true)" >> "$GITHUB_OUTPUT"
           if [[ -z "$old" ]]; then
             # First run with latest.json: the installer before used the old fixed name.
             old=steel-os-preview-x86_64.iso
@@ -268,8 +274,8 @@ jobs:
             # The same build uploaded again: keep the previous one as it was.
             old="$(rclone cat "S3:$B/latest.json" | jq -r '.previous // empty')"
           fi
-          jq -n --arg c "$NAME" --arg p "$old" --arg v "$VERSION" --arg t "$(date -u +%Y-%m-%dT%H:%MZ)" \
-            '{current: $c, previous: $p, version: $v, updated: $t}' > "$RUNNER_TEMP/latest.json"
+          jq -n --arg c "$NAME" --arg p "$old" --arg v "$VERSION" --arg b "$BUILD" --arg t "$(date -u +%Y-%m-%dT%H:%MZ)" \
+            '{current: $c, previous: $p, version: $v, build: $b, updated: $t}' > "$RUNNER_TEMP/latest.json"
           cat "$RUNNER_TEMP/latest.json"
           rclone copyto --s3-no-check-bucket --retries 5 \
             --header-upload "Cache-Control: no-cache" \
@@ -302,7 +308,9 @@ jobs:
         # Edit #announcements > Integrations > Webhooks > New Webhook > Copy
         # Webhook URL; in GitHub: Settings > Secrets and variables > Actions).
         # Without it this step says so and does nothing.
-        if: (github.event_name == 'workflow_run' || inputs.upload-to-s3 == true) && success()
+        # A rebuild of the same version (newest Fedora and Bazzite updates,
+        # nothing changed in Steel OS) is not announced.
+        if: (github.event_name == 'workflow_run' || inputs.upload-to-s3 == true) && success() && steps.upload.outputs.prev_version != steps.files.outputs.version
         shell: bash
         env:
           HOOK: ${{ secrets.DISCORD_ANNOUNCE_WEBHOOK }}

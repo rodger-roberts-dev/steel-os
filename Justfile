@@ -115,10 +115,13 @@ build $target_image=image_name $tag=default_tag:
     # one up, and the last number rolls over after 9 (T, 2026-10-18):
     # 0.4.8, 0.4.9, 0.5.0, 0.5.1 ... 0.9.9, 0.10.0. Reaching 1.0 is a decision,
     # made by changing VERSION, never automatic.
+    # A daily rebuild (a plain commit, not a merge) keeps the version and only
+    # refreshes the build date: a year of rebuilds with no changes is still the
+    # same version (T, 2026-10-20).
     STEEL_OS_MILESTONE="$(tr -d '[:space:]' < VERSION 2>/dev/null || echo 0.0)"
     VERSION_COMMIT="$(git log -1 --first-parent --format=%H -- VERSION 2>/dev/null || true)"
     if [[ -n "$VERSION_COMMIT" ]]; then
-        MERGES="$(git rev-list --count --first-parent "${VERSION_COMMIT}..HEAD" 2>/dev/null || echo 0)"
+        MERGES="$(git rev-list --count --first-parent --merges "${VERSION_COMMIT}..HEAD" 2>/dev/null || echo 0)"
     else
         MERGES=0
     fi
