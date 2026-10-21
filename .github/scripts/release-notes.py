@@ -22,36 +22,56 @@ def git(*args):
 
 out = sys.argv[1]
 current = sys.argv[2] if len(sys.argv) > 2 else None
-major, minor = (int(x) for x in open("VERSION").read().strip().split(".")[:2])
-since = git("log", "-1", "--first-parent", "--format=%H", "--", "VERSION").strip()
-log = git("log", "--first-parent", "--reverse", "--format=%H%x1f%cI%x1f%s%x1f%b%x1e", f"{since}..HEAD")
 
-entries = []
-n = 0
-for rec in log.split("\x1e"):
-    rec = rec.strip("\n")
-    if not rec:
-        continue
-    sha, date, subject, body = rec.split("\x1f")
+
+def version_of(major, minor, n):
+    """The n-th merge since VERSION was set to major.minor: every number rolls over
+    after 9, the middle one into the first (0.9.9 -> 1.0.0)."""
+    mt = minor + n // 10
+    return f"{major + mt // 10}.{mt % 10}.{n % 10}"
+
+
+def merges(rng):
+    """[(sha, date, subject, body)] oldest first for a git range."""
+    log = git("log", "--first-parent", "--reverse", "--format=%H%x1f%cI%x1f%s%x1f%b%x1e", rng)
+    out = []
+    for rec in log.split("\x1e"):
+        rec = rec.strip("\n")
+        if rec:
+            out.append(rec.split("\x1f"))
+    return out
+
+
+def title_of(subject, body):
     m = re.match(r"Merge pull request #(\d+)", subject)
-    if not m:
-        # A rebuild (or any plain commit): same version, newer build.
-        if not entries:
-            entries.append({"version": f"{major}.{minor}.0", "date": date[:10], "pr": None,
-                            "title": "Starting point", "commit": sha[:7]})
-        entries[-1].setdefault("rebuilt", []).append(date[:10])
-        continue
-    n += 1
     lines = [l for l in body.strip().splitlines() if l.strip() and not l.startswith("Co-Authored-By")]
-    title = lines[0] if lines else subject
-    entries.append({
-        # Every number rolls over after 9, the middle one into the first: 0.9.9 -> 1.0.0.
-        "version": f"{major + (minor + n // 10) // 10}.{(minor + n // 10) % 10}.{n % 10}",
-        "date": date[:10],
-        "pr": int(m.group(1)),
-        "title": title,
-        "commit": sha[:7],
-    })
+    return (int(m.group(1)) if m else None), (lines[0] if m and lines else subject)
+
+
+# Every commit that set VERSION, oldest first: each starts a series. The
+# commit itself is that series' x.y.0 (the build at that commit counts zero
+# merges), and the merges after it count up until the next VERSION change.
+# The whole history stays in the list across version changes (T, 2026-10-20:
+# the list was empty right after 1.0).
+version_commits = [c for c in git("log", "--first-parent", "--reverse", "--format=%H", "--", "VERSION").split() if c]
+entries = []
+for i, vc in enumerate(version_commits):
+    major, minor = (int(x) for x in git("show", f"{vc}:VERSION").strip().split(".")[:2])
+    sha, date, subject, body = merges(f"{vc}~1..{vc}")[0] if git("rev-list", "--count", vc).strip() != "1" else merges(vc)[0]
+    pr, title = title_of(subject, body)
+    entries.append({"version": version_of(major, minor, 0), "date": date[:10], "pr": pr, "title": title, "commit": sha[:7]})
+    end = version_commits[i + 1] if i + 1 < len(version_commits) else "HEAD"
+    n = 0
+    for sha, date, subject, body in merges(f"{vc}..{end}"):
+        if sha == end:
+            break
+        pr, title = title_of(subject, body)
+        if pr is None:
+            # A rebuild (or any plain commit): same version, newer build.
+            entries[-1].setdefault("rebuilt", []).append(date[:10])
+            continue
+        n += 1
+        entries.append({"version": version_of(major, minor, n), "date": date[:10], "pr": pr, "title": title, "commit": sha[:7]})
 
 entries.reverse()
 with open(out, "w") as f:
