@@ -3,7 +3,11 @@
 Every Steel OS build has a version like **0.5.3**, and every merge to
 `master` counts one up. The last number rolls over after 9:
 
-0.4.8, 0.4.9, **0.5.0**, 0.5.1 ... 0.5.9, **0.6.0** ... 0.9.9, 0.10.0
+0.4.8, 0.4.9, **0.5.0**, 0.5.1 ... 0.5.9, **0.6.0** ... 0.9.8, **0.9.9**
+
+It never goes past x.9.9: once there, further merges keep the number (with a
+newer build date) until `VERSION` is raised by hand. So 0.9.9 is the last
+0.x number and the next one is 1.0.0, never 0.10.0.
 
 - The `VERSION` file at the top of this repository holds the starting point
   (now `0.4`). Counting starts from it: the first build after `VERSION`
