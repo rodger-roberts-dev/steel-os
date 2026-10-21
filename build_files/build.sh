@@ -511,6 +511,29 @@ def steel_installed_flatpaks(max_age=2.0):
         print("Steel OS Portal: category chips on tabs with categories")
     else:
         print("Steel OS Portal: WARNING engine changed; no category chips")
+    # One click means one click (T, 2026-10-21): the engine opens its choices
+    # window for any row that has a status check, so the Steel Apps rows
+    # (Installed / Not installed pill, plus one script) showed a window with
+    # only Close and never installed anything. A row with its own script and
+    # no choices runs the script straight away; the pill stays.
+    modal = """    def action_uses_modal(self, action):
+        \"\"\"Return True when the action should open the management modal.\"\"\"
+        if self.get_action_options(action):
+            return True
+        return bool((action.get('status_script') or "").strip())
+"""
+    if s.count(modal) == 1:
+        s = s.replace(modal, """    def action_uses_modal(self, action):
+        \"\"\"Return True when the action should open the management modal.\"\"\"
+        if self.get_action_options(action):
+            return True
+        if (action.get('script') or "").strip():
+            return False   # Steel OS: a row with its own script runs on one click
+        return bool((action.get('status_script') or "").strip())
+""")
+        print("Steel OS Portal: one-click rows run their script instead of opening a choices window")
+    else:
+        sys.exit("Steel OS Portal: the engine's action_uses_modal changed; one-click rows would open a choices window")
     open(p, "w").write(s)
     compile(s, p, "exec")
     print("Steel OS Portal: buttons that open an app start it without a terminal")
