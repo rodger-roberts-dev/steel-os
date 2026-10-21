@@ -38,11 +38,12 @@ malware researchers unless the person turns that off.
 - **Scam checker:** checked on the PC. Online, it asks Quad9 whether a link's
   website is a known scam site, sending only the website name. **Report this
   scam** (one click) sends the message, as received, to steel-os.org, which
-  passes it straight on to Netcraft's reporting service and, by email, to the
-  Anti-Phishing Working Group (APWG), and keeps nothing. The message is what
-  they get: its sender, links and text, and the address it was sent to.
-  Nothing about the person's PC goes with it, and the report is made in
-  Steel Shield's name, not theirs.
+  passes it straight on to Netcraft's reporting service and keeps nothing. The
+  message is what they get: its sender, links and text, and the address it
+  was sent to. Nothing about the person's PC goes with it, and the report is
+  made in Steel Shield's name, not theirs. An email to the Anti-Phishing
+  Working Group (APWG) opens as well, from the person's own mail app; nothing
+  goes to APWG unless they press Send.
 - **Dangerous-website blocking (optional, off by default):** every app looks
   up website names through Quad9, which does not keep the address.
 
