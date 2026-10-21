@@ -3,13 +3,16 @@
 Every Steel OS build has a version like **0.5.3**, and every merge to
 `master` counts one up. The last number rolls over after 9:
 
-0.4.8, 0.4.9, **0.5.0**, 0.5.1 ... 0.5.9, **0.6.0** ... 0.9.9, 0.10.0
+0.4.8, 0.4.9, **0.5.0**, 0.5.1 ... 0.9.9, **1.0.0**, 1.0.1 ... 1.9.9, **2.0.0**
+
+Every number rolls over after 9, and the middle one rolls into the first:
+0.9.9 is followed by 1.0.0 and 1.9.9 by 2.0.0, never 0.10.0.
 
 - The `VERSION` file at the top of this repository holds the starting point
   (now `0.4`). Counting starts from it: the first build after `VERSION`
   changes is that number with `.0` (for example 1.0.0).
-- **1.0 is never reached automatically.** It is a decision: a one-line pull
-  request that changes `VERSION` to `1.0` when the release checklist passes.
+- `VERSION` can also be raised by hand (a one-line pull request) to start a
+  new series at once, as was done for 1.0 on 20 October 2026.
 
 The version shows in **About this System** ("Steel OS 0.5.3"), on the
 installer's information panel, in `/usr/share/steel-os/version`, in the

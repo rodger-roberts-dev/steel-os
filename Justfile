@@ -113,8 +113,8 @@ build $target_image=image_name $tag=default_tag:
     # Version: VERSION holds the starting point (major.minor, changed by hand,
     # e.g. to 1.0 for the release). Every merge to master since then counts
     # one up, and the last number rolls over after 9 (T, 2026-10-18):
-    # 0.4.8, 0.4.9, 0.5.0, 0.5.1 ... 0.9.9, 0.10.0. Reaching 1.0 is a decision,
-    # made by changing VERSION, never automatic.
+    # 0.4.8, 0.4.9, 0.5.0, 0.5.1 ... 0.9.9, 1.0.0, 1.0.1 ... 1.9.9, 2.0.0. VERSION
+    # can also be raised by hand to start a new series at once.
     # A daily rebuild (a plain commit, not a merge) keeps the version and only
     # refreshes the build date: a year of rebuilds with no changes is still the
     # same version (T, 2026-10-20).
@@ -128,7 +128,10 @@ build $target_image=image_name $tag=default_tag:
     STEEL_OS_MAJOR="${STEEL_OS_MILESTONE%%.*}"
     STEEL_OS_MINOR="${STEEL_OS_MILESTONE#*.}"
     STEEL_OS_MINOR="${STEEL_OS_MINOR%%.*}"
-    STEEL_OS_VERSION="${STEEL_OS_MAJOR}.$(( STEEL_OS_MINOR + MERGES / 10 )).$(( MERGES % 10 ))"
+    # Every number rolls over after 9, the middle one into the first: 0.9.9 is
+    # followed by 1.0.0 and 1.9.9 by 2.0.0, never 0.10.0 (T, 2026-10-20).
+    MINOR_TOTAL=$(( STEEL_OS_MINOR + MERGES / 10 ))
+    STEEL_OS_VERSION="$(( STEEL_OS_MAJOR + MINOR_TOTAL / 10 )).$(( MINOR_TOTAL % 10 )).$(( MERGES % 10 ))"
     echo "Steel OS version: ${STEEL_OS_VERSION}"
     BUILD_ARGS+=("--build-arg" "STEEL_OS_VERSION=${STEEL_OS_VERSION}")
     # Same number as an image label, so an installer's .image.txt can name it.
