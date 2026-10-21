@@ -37,8 +37,14 @@ malware researchers unless the person turns that off.
   Sharing by hand: Quarantine, **Share with researchers**.
 - **Scam checker:** checked on the PC. Online, it asks Quad9 whether a link's
   website is a known scam site, sending only the website name. **Report this
-  scam** opens a message the person sends (APWG, Netcraft) and Google's
-  report page; nothing goes until they press Send.
+  scam** (one click) sends the message, as received, to steel-os.org, which
+  passes it straight on to Netcraft's reporting service and keeps nothing. The
+  message is what they get: its sender, links and text, and the address it
+  was sent to. Nothing about the person's PC goes with it, and the report is
+  made in Steel Shield's name, not theirs. An email to the Anti-Phishing
+  Working Group (APWG) opens as well, from the person's own mail app, and
+  Google's report page with the scam link filled in, in their browser; nothing
+  goes to APWG or Google unless they press Send or Submit.
 - **Dangerous-website blocking (optional, off by default):** every app looks
   up website names through Quad9, which does not keep the address.
 
