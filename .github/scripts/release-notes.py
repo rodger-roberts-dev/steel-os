@@ -45,8 +45,8 @@ for rec in log.split("\x1e"):
     lines = [l for l in body.strip().splitlines() if l.strip() and not l.startswith("Co-Authored-By")]
     title = lines[0] if lines else subject
     entries.append({
-        # Never past x.9.9: it holds there until VERSION is raised by hand.
-        "version": f"{major}.{minor + n // 10}.{n % 10}" if minor + n // 10 <= 9 else f"{major}.9.9",
+        # Every number rolls over after 9, the middle one into the first: 0.9.9 -> 1.0.0.
+        "version": f"{major + (minor + n // 10) // 10}.{(minor + n // 10) % 10}.{n % 10}",
         "date": date[:10],
         "pr": int(m.group(1)),
         "title": title,
