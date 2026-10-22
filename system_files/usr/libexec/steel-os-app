@@ -42,10 +42,11 @@ run_with_window() { # run_with_window "Installing Name" flatpak args...
     # a terminal; written to a plain file it says nothing until the end, so the
     # bar sat empty on "Getting ready…" (T, 2026-10-21). script lends it a
     # terminal and keeps the output in the log.
+    # (script, or Python's pty module when script isn't there.)
     if command -v script >/dev/null 2>&1; then
         ( script -qefc "$(printf '%q ' "$@")" "$log" >/dev/null 2>&1; echo $? > "$log.rc" ) &
     else
-        ( "$@" >"$log" 2>&1; echo $? > "$log.rc" ) &
+        ( python3 -c 'import pty, sys; sys.exit(pty.spawn(sys.argv[1:]))' "$@" >"$log" 2>&1; echo $? > "$log.rc" ) &
     fi
     local job=$!
     (
@@ -96,7 +97,9 @@ case "$action" in
             done_box "<b>$name is already installed.</b>\nFind it in the start menu."
             exit 0
         fi
-        run_with_window "Installing $name" flatpak install -y --noninteractive flathub "$app"
+        # -y answers the questions; --noninteractive would also silence the
+        # progress, which is what kept the bar empty (T, 2026-10-22).
+        run_with_window "Installing $name" flatpak install -y flathub "$app"
         # Flathub sometimes retires an app under a new name and installs that
         # instead ("end-of-life, in favor of app/NEW/..."). That is a success.
         renamed="$(grep -oE 'in favor of app/[^/ ]+' <<< "$out" | head -1 | sed 's#.*app/##')"
@@ -118,7 +121,7 @@ Find it in the start menu. It updates itself."
         yad --title="$TITLE" --window-icon=steel-os --image=dialog-question --center --borders=16 --width=420 \
             --text="<b>Uninstall $name?</b>\nYour own files stay where they are." \
             --button="Cancel:1" --button="Uninstall:0" 2>/dev/null || exit 0
-        run_with_window "Uninstalling $name" flatpak uninstall -y --noninteractive "$app"
+        run_with_window "Uninstalling $name" flatpak uninstall -y "$app"
         if [[ "$rc" == 0 ]]; then
             notify-send --app-name="Steel OS" --icon=steel-os "$name was uninstalled" "Install it again any time from the Steel OS Portal." 2>/dev/null || true
         else
