@@ -358,6 +358,16 @@ for scr in doc["screens"]:
         break
 else:
     sys.exit("make-portal.py: no Troubleshoot tab in the base list")
+
+# Rows that can only ever say "Unknown" on Steel OS are left out (T,
+# 2026-10-22): the Steam Deck / living-room Game Mode settings (Steel OS
+# starts in the desktop), and the NVIDIA Flatpak libraries row on the
+# editions without the NVIDIA driver (STEEL_OS_NVIDIA=1 from build.sh keeps it).
+NOT_HERE = {"default-deck-session", "configure-opengamepadui"}
+if os.environ.get("STEEL_OS_NVIDIA") != "1":
+    NOT_HERE.add("update-nvidia-runtime")
+for scr in doc["screens"]:
+    scr["actions"] = [a for a in (scr.get("actions") or []) if a.get("id") not in NOT_HERE]
 out = yaml.safe_dump(doc, sort_keys=False, allow_unicode=True, width=1000)
 
 # Fail the build rather than ship a broken or Bazzite-branded portal.
