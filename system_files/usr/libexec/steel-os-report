@@ -65,27 +65,36 @@ escape() { sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g' <<< "$1"; }
 kind="Problem"; title=""; text=""; use_shot=TRUE; use_details=TRUE
 (( have_shot )) || use_shot=FALSE
 problem=""
-# What is attached: the screenshot taken just now, or a picture the user
-# chose instead (a screenshot they took, a phone photo of the screen).
+# What is attached: the screenshot taken just now, or the pictures the user
+# chose instead (screenshots they took, phone photos of the screen); several
+# at once (T, 2026-10-21), 6 at most, 5 MB each.
+SHOTS=(); auto_only=0
+(( have_shot )) && { SHOTS=("$SHOT"); auto_only=1; }
 shot_label="the screenshot taken when you clicked"
-shot_type=image/png
+MAX_SHOTS=6
+mime_of() { case "${1,,}" in *.jpg|*.jpeg) echo image/jpeg ;; *) echo image/png ;; esac; }
 pick_picture() {
-    local f
-    f="$(kdialog --title "Choose a picture" --getopenfilename "$HOME/Pictures" \
-        "image/png image/jpeg|Pictures (PNG, JPEG)" 2>/dev/null)" || return 1
-    [[ -n "$f" && -r "$f" ]] || return 1
-    if (( $(stat -c %s "$f" 2>/dev/null || echo 0) > 5000000 )); then
-        problem="That picture is too large (5 MB at most). A screenshot or a smaller photo, please."
-        return 1
-    fi
-    case "${f,,}" in
-        *.jpg|*.jpeg) shot_type=image/jpeg ;;
-        *.png) shot_type=image/png ;;
-        *) problem="Please choose a PNG or JPEG picture."; return 1 ;;
-    esac
-    SHOT="$f"; have_shot=1; use_shot=TRUE
-    shot_label="$(basename "$f")"
+    local f chosen=() added=0
+    # The first choice replaces the automatic screenshot; later ones add to it.
+    mapfile -t chosen < <(kdialog --title "Choose pictures" --multiple --separate-output \
+        --getopenfilename "$HOME/Pictures" "image/png image/jpeg|Pictures (PNG, JPEG)" 2>/dev/null)
+    (( ${#chosen[@]} )) || return 1
+    (( auto_only )) && { SHOTS=(); auto_only=0; }
     problem=""
+    for f in "${chosen[@]}"; do
+        [[ -n "$f" && -r "$f" ]] || continue
+        case "${f,,}" in *.jpg|*.jpeg|*.png) ;; *) problem="Only PNG or JPEG pictures, please; $(basename "$f") was left out."; continue ;; esac
+        if (( $(stat -c %s "$f" 2>/dev/null || echo 0) > 5000000 )); then
+            problem="$(basename "$f") is too large (5 MB at most) and was left out."; continue
+        fi
+        if (( ${#SHOTS[@]} >= MAX_SHOTS )); then problem="Six pictures at most; the rest were left out."; break; fi
+        local dup=0 s; for s in "${SHOTS[@]}"; do [[ "$s" == "$f" ]] && dup=1; done
+        (( dup )) || { SHOTS+=("$f"); added=1; }
+    done
+    (( ${#SHOTS[@]} )) && { have_shot=1; use_shot=TRUE; } || { have_shot=0; use_shot=FALSE; }
+    shot_label="$(for s in "${SHOTS[@]}"; do basename "$s"; done | paste -sd ', ' -)"
+    (( ${#SHOTS[@]} > 1 )) && shot_label="${#SHOTS[@]} pictures: $shot_label"
+    return 0
 }
 
 while true; do
@@ -98,11 +107,11 @@ Tell the Steel OS team what went wrong, or what you would like. It goes straight
     if (( have_shot )); then
         intro+="
 
-<b>Picture:</b> $(escape "$shot_label"). Click <b>Choose a picture</b> to send a different screenshot or a photo instead."
+<b>Picture:</b> $(escape "$shot_label"). Click <b>Choose pictures</b> to send other screenshots or photos instead; pick several at once if you like."
     else
         intro+="
 
-<i>No screenshot could be taken. Click <b>Choose a picture</b> to attach one.</i>"
+<i>No screenshot could be taken. Click <b>Choose pictures</b> to attach some.</i>"
     fi
     [[ -n "$problem" ]] && intro+="
 
@@ -113,16 +122,19 @@ Tell the Steel OS team what went wrong, or what you would like. It goes straight
     [[ "$kind" == "Problem" ]] && combo="^Problem!Idea"
 
     buttons=(--button="Cancel:1")
-    (( have_shot )) && buttons+=(--button="See picture:2")
-    buttons+=(--button="Choose a picture:3" --button="Send:0")
+    (( have_shot )) && buttons+=(--button="See pictures:2")
+    buttons+=(--button="Choose pictures:3" --button="Send:0")
 
+    # --always-print-result: the typed text comes back for See / Choose too, so
+    # it is still there when the window reopens (it was lost, T, 2026-10-21).
     out="$(yad --form --title="$TITLE" --window-icon=tools-report-bug --image=tools-report-bug \
         --center --width=680 --height=640 --borders=16 --separator=$'\x1f' --item-separator='!' \
+        --always-print-result \
         --text="$intro" \
         --field="This is a:CB" "$combo" \
         --field="Title" "$title" \
         --field="What happened, or what would you like?:TXT" "$text" \
-        --field="Include the picture:CHK" "$use_shot" \
+        --field="Include the pictures:CHK" "$use_shot" \
         --field="Include the computer details:CHK" "$use_details" \
         "${buttons[@]}")"
     rc=$?
@@ -132,7 +144,7 @@ Tell the Steel OS team what went wrong, or what you would like. It goes straight
     text="$(printf '%s' "$text" | sed 's/\\n/\n/g')"
 
     if [[ $rc -eq 2 ]]; then
-        xdg-open "$SHOT" >/dev/null 2>&1 &
+        for s in "${SHOTS[@]}"; do xdg-open "$s" >/dev/null 2>&1 & done
         problem=""
         continue
     fi
@@ -155,7 +167,7 @@ Tell the Steel OS team what went wrong, or what you would like. It goes straight
         args+=(-F "details=<$WORK/details.txt")
     fi
     if [[ "$use_shot" == "TRUE" && $have_shot -eq 1 ]]; then
-        args+=(-F "screenshot=@$SHOT;type=$shot_type")
+        for s in "${SHOTS[@]}"; do args+=(-F "screenshot=@$s;type=$(mime_of "$s")"); done
     fi
 
     answer="$(printf '%s' "$title" | curl "${args[@]}" "$ENDPOINT" 2>/dev/null)"
