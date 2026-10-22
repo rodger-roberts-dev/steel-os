@@ -554,7 +554,7 @@ install -D -m 0644 /ctx/branding/portal/steel-os-portal.svg \
 install -D -m 0644 /ctx/branding/portal/steel-os-portal.svg \
     /usr/share/icons/hicolor/scalable/apps/io.github.ublue_os.yafti_gtk.svg
 mkdir -p /usr/share/steel-os
-python3 /ctx/portal/make-portal.py /ctx/packages/steel-apps.txt /ctx/portal/base.yml \
+STEEL_OS_NVIDIA="$([[ -n "$variant" ]] && echo 1 || echo 0)" python3 /ctx/portal/make-portal.py /ctx/packages/steel-apps.txt /ctx/portal/base.yml \
     /usr/share/steel-os/portal.yml
 # At a new user's first login the Steel OS Setup steps run first
 # (/usr/libexec/steel-os-setup, STEEL-35) and end by offering to open the
