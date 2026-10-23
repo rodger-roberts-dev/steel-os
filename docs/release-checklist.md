@@ -29,7 +29,7 @@ a virtual machine. Nothing is built on a contributor's own PC.
 Use a fresh virtual machine: UEFI firmware, 8 GB of memory, 64 GB disk.
 
 - [ ] The ISO boots to the Steel OS live desktop. Nothing says Bazzite or Fedora.
-- [ ] The installer runs in Steel OS colours, with **Use entire disk** selected.
+- [ ] The installer runs in Steel OS colors, with **Use entire disk** selected.
 - [ ] The last installer screen has no Fedora feedback QR code. **Finish**
       closes it, and the **Steel OS is installed** window's **Restart now**
       restarts into Steel OS.
@@ -38,7 +38,7 @@ Use a fresh virtual machine: UEFI firmware, 8 GB of memory, 64 GB disk.
 - [ ] Choosing one app in Setup installs it, and a notification says so.
 - [ ] Firefox and LibreOffice are in the start menu at once; within a few
       minutes Obsidian, Zed and ProtonPlus are too.
-- [ ] The Steel OS Portal is on the taskbar and in the start-menu favourites.
+- [ ] The Steel OS Portal is on the taskbar and in the start-menu favorites.
 - [ ] Super+Enter opens the terminal, Super+Shift+Enter opens Firefox, and
       Super+2 switches desktops.
 - [ ] "Visit steel-os.org" in the Portal opens in Firefox.

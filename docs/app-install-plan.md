@@ -33,7 +33,7 @@ Install Applications, Get Media Apps, Manage Bazzite, Tweak Systems and
 Troubleshoot, each row with a one-line description and an install action, plus
 its own store called Bazaar. So Steel OS does not build a Steel Apps screen.
 It keeps Bazzite Portal, renames it, and adds a **Steel Apps** section at the
-top with the must-haves from `steel-apps.txt`. Bazzite's own catalogue (DaVinci
+top with the must-haves from `steel-apps.txt`. Bazzite's own catalog (DaVinci
 Resolve, Antigravity, CoolerControl, ASUS tools, and the media web apps such as
 Prime Video, Apple TV, Disney Plus and HBO Max, which BBE asked to keep) stays
 below it. How the Portal's list is defined in the image, and whether a section
@@ -168,7 +168,7 @@ image is built:
 |---|---|---|
 | `packages/image.txt` | `build.sh` at image build | rpm packages added to the system image: printer drivers, wsdd, anything Plasma lacks |
 | `packages/flatpaks-default.txt` | first-boot script | Flatpaks installed on every machine |
-| `packages/steel-apps.txt` | the Steel Apps screen | One-click catalogue: Flatpak ID, display name, one-line description |
+| `packages/steel-apps.txt` | the Steel Apps screen | One-click catalog: Flatpak ID, display name, one-line description |
 | `packages/brew.txt` | the developer setup entry | Homebrew tools |
 | `packages/remove.txt` | `build.sh` | Things Bazzite ships that Steel OS removes; filled in after the first boot |
 

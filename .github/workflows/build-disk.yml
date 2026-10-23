@@ -96,7 +96,7 @@ jobs:
       # Each image build also publishes the image under names that include the
       # commit. Use that exact image, so this installer is the version of the merge that
       # triggered it (T, 2026-10-18: when merges land quickly, taking
-      # "latest" skipped numbers and labelled builds with a later merge).
+      # "latest" skipped numbers and labeled builds with a later merge).
       # Locally it is tagged "latest" again, because the installer tells the
       # installed PC to follow the tag it was built from: installed PCs must
       # keep following :latest for their updates.

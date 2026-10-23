@@ -1,7 +1,7 @@
 name: Check Steel Apps
 # Every Monday, and on any PR that changes the app lists: ask Flathub whether
 # every one-click and preinstalled app still exists under that name. Flathub
-# retired org.mozilla.Thunderbird in favour of thunderbird_esr (2026-10-19)
+# retired org.mozilla.Thunderbird in favor of thunderbird_esr (2026-10-19)
 # and the one-click install silently broke; this catches the next one.
 #
 # On the weekly run a problem is filed with the Steel OS team through the

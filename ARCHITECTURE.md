@@ -42,7 +42,7 @@ Steel OS machine runs that one image and updates to the next one as a whole.
 | Person | Role |
 |---|---|
 | Steel & Code (S&C) | Project lead. Owns the repo. Final say on every merge. |
-| Blackbox Entertainment (BBE) | Product director. Plans the work, tests builds, reviews behaviour. Not a coder. |
+| Blackbox Entertainment (BBE) | Product director. Plans the work, tests builds, reviews behavior. Not a coder. |
 | Claude Code | Development assistant. Works only on branches, opens pull requests, never merges. Rules are in `CLAUDE.md`. |
 
 ---
@@ -205,7 +205,7 @@ What the switch changes, for S&C to confirm:
 
 Why Plasma helps the other goals: System Settings has a Printers page, the
 Dolphin file manager can find Windows PCs on the network, and KDE's Discover is
-a store screen Windows users recognise. The app install path is revisited in
+a store screen Windows users recognize. The app install path is revisited in
 `docs/app-install-plan.md`.
 
 ### 5.2 What does "Forge-powered development" mean? Answered

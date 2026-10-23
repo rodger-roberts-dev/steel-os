@@ -17,7 +17,7 @@ Claude Code reads this file at the start of every session.
     and has the final say on merges. S&C also makes Steel & Code Forge, an AI
     development platform offered as an optional one-click install.
   - **Blackbox Entertainment (BBE)** is the product director. BBE plans the
-    work, tests builds and reviews behaviour, not code.
+    work, tests builds and reviews behavior, not code.
 - Repo: `github.com/steel-and-code/steel-os` (public). Default branch:
   **`master`**.
 - Work is planned in a private issue tracker. Outside contributors use GitHub
@@ -50,7 +50,7 @@ Claude Code reads this file at the start of every session.
 ### Layout (Universal Blue image template)
 ```
 Containerfile             FROM ghcr.io/ublue-os/bazzite:stable, runs build.sh
-image-template.env        image name, organisation, description
+image-template.env        image name, organization, description
 build_files/build.sh      adds packages, settings and branding to the image
 build_files/portal/       the Steel OS Portal tabs and the script that builds them
 system_files/             files copied verbatim into the image at /

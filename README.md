@@ -42,7 +42,7 @@ desktop by [Universal Blue](https://universal-blue.org):
 3. GitHub Actions builds the image every day and publishes it, signed, to
    `ghcr.io/steel-and-code/steel-os:latest`. Installed machines update from there.
 4. The installer ISO is built from the same image on demand, the same way
-   Bazzite builds its own (live desktop plus Fedora's web installer), in Steel OS colours.
+   Bazzite builds its own (live desktop plus Fedora's web installer), in Steel OS colors.
 
 Nothing is built on anyone's PC. Details for contributors are in
 [docs/building.md](docs/building.md) and [ARCHITECTURE.md](ARCHITECTURE.md).
@@ -78,7 +78,7 @@ before it is merged. Found a bug or have an idea?
 contributors and for any AI assistant used on the project are in
 [CLAUDE.md](CLAUDE.md).
 
-## Credits and licence
+## Credits and license
 
 Built on [Bazzite](https://github.com/ublue-os/bazzite) and the
 [Universal Blue image template](https://github.com/ublue-os/image-template),
@@ -88,11 +88,11 @@ with or endorsed by Fedora or Universal Blue.
 
 The Steel OS build recipe is licensed under the [Apache License 2.0](LICENSE).
 The Steel OS name, logo and artwork belong to Steel & Code and are not covered
-by that licence; see [NOTICE](NOTICE) and [branding/README.md](branding/README.md).
+by that license; see [NOTICE](NOTICE) and [branding/README.md](branding/README.md).
 
 ## Source code
 
-Steel OS contains free and open-source software under its own licences,
+Steel OS contains free and open-source software under its own licenses,
 including the GNU GPL. The source is available here:
 
 | Part | Source |
@@ -102,4 +102,4 @@ including the GNU GPL. The source is available here:
 | Fedora packages | [src.fedoraproject.org](https://src.fedoraproject.org) |
 
 Proprietary apps such as Obsidian are downloaded from Flathub after
-installation under their own licences.
+installation under their own licenses.

@@ -18,7 +18,7 @@ TITLE="Security questions"
 QUESTIONS=(
     "What was the name of your first pet?"
     "In which city were you born?"
-    "What was the name of your favourite teacher?"
+    "What was the name of your favorite teacher?"
     "What was the first car you owned?"
     "What is your oldest cousin's first name?"
     "What was the name of the street you grew up on?"
@@ -64,7 +64,8 @@ combo() { # combo default-index -> "a!^b!c" with the default marked
     echo "$out"
 }
 
-index_of() { local i; for i in "${!QUESTIONS[@]}"; do [[ "${QUESTIONS[$i]}" == "$1" ]] && { echo "$i"; return; }; done; echo 0; }
+# (Questions saved before 2026-10-23 may say "favourite": American spelling since.)
+index_of() { local i q="${1//favourite/favorite}"; for i in "${!QUESTIONS[@]}"; do [[ "${QUESTIONS[$i]}" == "$q" ]] && { echo "$i"; return; }; done; echo 0; }
 
 d=(0 1 2)       # chosen question for each row
 a=("" "" "")    # answers typed so far

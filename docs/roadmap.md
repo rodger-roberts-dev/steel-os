@@ -20,7 +20,7 @@ the polish a Windows user expects.
 - **The image.** Built and signed by GitHub Actions every day and after every
   merged change, published at `ghcr.io/steel-and-code/steel-os`.
 - **The installer ISO.** Boots to a Steel OS live desktop with Bazzite's modern
-  installer in Steel OS colours. Default apps are preloaded.
+  installer in Steel OS colors. Default apps are preloaded.
 - **Steel OS everywhere.** The name, logo, boot splash, login and lock screens,
   wallpapers, start button, terminal welcome and hostname say Steel OS, not
   Bazzite or Fedora.
@@ -45,7 +45,7 @@ the polish a Windows user expects.
 - **Updates and security.** Apps update daily, a "Restart to finish updating"
   notice, only signed updates accepted, and a same-day emergency channel. See
   [security-policy.md](security-policy.md).
-- **Licences and credits.** Apache-2.0, a NOTICE file crediting Bazzite,
+- **Licenses and credits.** Apache-2.0, a NOTICE file crediting Bazzite,
   Universal Blue and Fedora, and links to all source code.
 
 ## Next: 0.2.0 Preview for testers (target: early November 2026)

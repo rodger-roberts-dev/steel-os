@@ -12,7 +12,7 @@
 #
 # The installer ships as one minified JavaScript file whose variable names
 # change between versions, so each change matches a pattern rather than exact
-# names. If a pattern is not found, the installer keeps its own behaviour and
+# names. If a pattern is not found, the installer keeps its own behavior and
 # the build log says so; nothing breaks.
 #
 # Usage: patch-anaconda-webui.py [/usr/share/cockpit/anaconda-webui]
