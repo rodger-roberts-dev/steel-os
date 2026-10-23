@@ -7,7 +7,10 @@
 # the computer details listed in the window). "See screenshot" opens it first.
 # Send posts it to steel-os.org/api/report, which files it in the Steel OS
 # team's private tracker and answers with a reference number. Nothing is sent
-# without clicking Send, and no account is needed.
+# without clicking Send, and no account is needed. An email or Discord name is
+# optional (only so the team can ask a question). Each report carries the
+# installation's anonymous ID, so someone who abuses reports can be banned
+# without anyone having to sign up (T, 2026-10-23; see install_id below).
 
 set -uo pipefail
 
@@ -24,6 +27,13 @@ remember_report() { # key token title kind
     chmod 0600 "$STORE"
 }
 WORK="${XDG_RUNTIME_DIR:-/tmp}/steel-os-report"
+# The installation's anonymous ID: the PC's random machine ID, hashed with this
+# app's own name so it matches nothing else and can't be turned back into it
+# (the way systemd recommends using the machine ID). A reinstall gives a new one.
+install_id() {
+    [[ -r /etc/machine-id ]] || return 0
+    printf 'steel-os-report:%s' "$(tr -d '[:space:]' < /etc/machine-id)" | sha256sum | cut -c1-32
+}
 SHOT="$WORK/screenshot.png"
 
 command -v yad >/dev/null 2>&1 || { xdg-open https://steel-os.org/report; exit 0; }
@@ -62,7 +72,7 @@ DETAILS="$(details)"
 
 escape() { sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g' <<< "$1"; }
 
-kind="Problem"; title=""; text=""; use_shot=TRUE; use_details=TRUE
+kind="Problem"; title=""; text=""; contact=""; use_shot=TRUE; use_details=TRUE
 (( have_shot )) || use_shot=FALSE
 problem=""
 # What is attached: the screenshot taken just now, or the pictures the user
@@ -134,13 +144,14 @@ Tell the Steel OS team what went wrong, or what you would like. It goes straight
         --field="This is a:CB" "$combo" \
         --field="Title" "$title" \
         --field="What happened, or what would you like?:TXT" "$text" \
+        --field="How can we reach you? (optional, an email or Discord name, only to ask you something)" "$contact" \
         --field="Include the pictures:CHK" "$use_shot" \
         --field="Include the computer details:CHK" "$use_details" \
         "${buttons[@]}")"
     rc=$?
     [[ $rc -eq 0 || $rc -eq 2 || $rc -eq 3 ]] || exit 0
 
-    IFS=$'\x1f' read -r kind title text use_shot use_details _ <<< "$out"
+    IFS=$'\x1f' read -r kind title text contact use_shot use_details _ <<< "$out"
     text="$(printf '%s' "$text" | sed 's/\\n/\n/g')"
 
     if [[ $rc -eq 2 ]]; then
@@ -162,6 +173,8 @@ Tell the Steel OS team what went wrong, or what you would like. It goes straight
     # Text goes through files so quotes, semicolons and new lines arrive as typed.
     printf '%s' "$text" > "$WORK/description.txt"
     args+=(-F "description=<$WORK/description.txt")
+    printf '%s' "$contact" > "$WORK/contact.txt"
+    args+=(-F "contact=<$WORK/contact.txt" -F "install_id=$(install_id)")
     if [[ "$use_details" == "TRUE" ]]; then
         printf '%s' "$DETAILS" > "$WORK/details.txt"
         args+=(-F "details=<$WORK/details.txt")
