@@ -28,6 +28,17 @@ installer replaces the one with the same name. A year of rebuilds with no
 changes is still the same version. When nothing changed upstream, nothing is
 built. Rebuilds are not announced on Discord; new versions are.
 
+An **important** change underneath is the exception: a new Fedora version, a
+new Linux kernel series, a new KDE Plasma series, a new Mesa (graphics driver)
+series, a new NVIDIA driver series, or an urgent Fedora security fix for a
+package in the image. Then the Daily rebuild records it as a merge (made by the
+bot, no pull request) titled in plain English, for example "Under the hood:
+Fedora 45 and Linux kernel 7.3". That counts the version up like any merge, so
+it shows in "What's new" on steel-os.org and is announced on Discord.
+`.github/scripts/upstream-notes.py` decides, from the base's own release notes
+and Fedora's update system; `packages/upstream.json` remembers what was
+underneath at the last check.
+
 Every installer is built from the exact image of the merge that triggered it.
 When several merges land while an installer is building, only the newest one
 gets an installer, so the list on steel-os.org/download can skip a number.

@@ -5,7 +5,9 @@ since VERSION last changed is MAJOR.(MINOR + n // 10).(n % 10). The title of
 each version is its pull request's title (the second paragraph of GitHub's
 merge commit message), which is written in plain English. A daily rebuild (a
 plain commit on master) keeps the version: it is listed as a "rebuilt" date
-under the version it rebuilt.
+under the version it rebuilt. A daily rebuild with something important
+underneath is a merge made by the bot (daily-rebuild.yml): a version of its
+own, titled by its first line, with no pull request.
 
 usage: release-notes.py OUTPUT [CURRENT_VERSION]
 """
@@ -32,13 +34,14 @@ def version_of(major, minor, n):
 
 
 def merges(rng):
-    """[(sha, date, subject, body)] oldest first for a git range."""
-    log = git("log", "--first-parent", "--reverse", "--format=%H%x1f%cI%x1f%s%x1f%b%x1e", rng)
+    """[(sha, date, subject, body, is_merge)] oldest first for a git range."""
+    log = git("log", "--first-parent", "--reverse", "--format=%H%x1f%cI%x1f%s%x1f%b%x1f%P%x1e", rng)
     out = []
     for rec in log.split("\x1e"):
         rec = rec.strip("\n")
         if rec:
-            out.append(rec.split("\x1f"))
+            sha, date, subject, body, parents = rec.split("\x1f")
+            out.append((sha, date, subject, body, len(parents.split()) > 1))
     return out
 
 
@@ -57,16 +60,17 @@ version_commits = [c for c in git("log", "--first-parent", "--reverse", "--forma
 entries = []
 for i, vc in enumerate(version_commits):
     major, minor = (int(x) for x in git("show", f"{vc}:VERSION").strip().split(".")[:2])
-    sha, date, subject, body = merges(f"{vc}~1..{vc}")[0] if git("rev-list", "--count", vc).strip() != "1" else merges(vc)[0]
+    sha, date, subject, body, _ = merges(f"{vc}~1..{vc}")[0] if git("rev-list", "--count", vc).strip() != "1" else merges(vc)[0]
     pr, title = title_of(subject, body)
     entries.append({"version": version_of(major, minor, 0), "date": date[:10], "pr": pr, "title": title, "commit": sha[:7]})
     end = version_commits[i + 1] if i + 1 < len(version_commits) else "HEAD"
     n = 0
-    for sha, date, subject, body in merges(f"{vc}..{end}"):
+    for sha, date, subject, body, is_merge in merges(f"{vc}..{end}"):
         if sha == end:
             break
         pr, title = title_of(subject, body)
-        if pr is None:
+        # Every merge counts, as in the Justfile (git rev-list --merges).
+        if not is_merge:
             # A rebuild (or any plain commit): same version, newer build.
             entries[-1].setdefault("rebuilt", []).append(date[:10])
             continue

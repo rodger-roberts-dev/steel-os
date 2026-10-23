@@ -61,9 +61,33 @@ jobs:
           set -euo pipefail
           git config user.name "steel-os bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Something important underneath (a new Fedora, kernel, desktop or
+          # graphics driver series, or an urgent security fix)? Then this
+          # rebuild is a new Steel OS version of its own, with a plain-English
+          # title: like a merged pull request it counts the version up, shows
+          # in "What's new" on steel-os.org and is announced on Discord (T,
+          # 2026-10-22). Otherwise it keeps the version, as before.
+          base="ghcr.io/ublue-os/bazzite:stable"
+          base_version="$(skopeo inspect --no-tags --format '{{index .Labels "org.opencontainers.image.version"}}' "docker://$base")"
+          echo "Base version: $base_version"
+          python3 .github/scripts/upstream-notes.py "$base_version" packages/upstream.json "$RUNNER_TEMP/upstream.json" \
+            || echo '{"title": "", "lines": []}' > "$RUNNER_TEMP/upstream.json"
+          title="$(jq -r '.title' "$RUNNER_TEMP/upstream.json")"
           git add packages/base-images.txt
-          git commit -m "Daily rebuild: the newest Fedora and Bazzite updates" \
-            -m "Bazzite's base images changed; packages/base-images.txt records the new digests."
+          if [[ -f packages/upstream.json ]]; then git add packages/upstream.json; fi
+          if [[ -z "$title" ]]; then
+            git commit -m "Daily rebuild: the newest Fedora and Bazzite updates" \
+              -m "Bazzite's base images changed; packages/base-images.txt records the new digests."
+          else
+            # A merge commit is what counts as a version (Justfile and
+            # release-notes.py); its first line is the title people see.
+            git checkout -q -b upstream-update
+            git commit -m "Daily rebuild: the newest Fedora and Bazzite updates" \
+              -m "Bazzite's base images changed; packages/base-images.txt records the new digests."
+            git checkout -q master
+            git merge --no-ff upstream-update -m "$title" -m "$(jq -r '.lines | join("\n")' "$RUNNER_TEMP/upstream.json")"
+            echo "::notice::Important update underneath: $title"
+          fi
           git push origin master
           # A push made by the workflow's own token starts no builds, so start it.
           gh workflow run build.yml --ref master
