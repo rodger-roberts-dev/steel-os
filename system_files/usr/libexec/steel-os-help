@@ -17,7 +17,8 @@ listening() {
 }
 
 if ! listening; then
-    nohup setsid timeout 4h python3 -m http.server "$PORT" --bind 127.0.0.1 --directory "$DIR" >/dev/null 2>&1 &
+    # Like python3 -m http.server, plus "Tell us" opening Report a problem.
+    nohup setsid timeout 4h /usr/libexec/steel-os-help-server "$PORT" "$DIR" >/dev/null 2>&1 &
     for _ in $(seq 25); do
         listening && break
         sleep 0.2

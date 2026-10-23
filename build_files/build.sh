@@ -566,7 +566,7 @@ install -D -m 0644 /ctx/packages/forge-source.txt /usr/share/steel-os/forge-sour
 chmod 0755 /usr/libexec/steel-os-forge
 python3 -c 'import sys, venv, ensurepip; sys.exit(0 if sys.version_info >= (3, 11) else 1)'     || { echo "Steel OS: Python 3.11+ with venv is needed for Forge" >&2; exit 1; }
 echo "Steel OS: Forge prerequisites present ($(python3 --version), curl, tar)"
-chmod 0755 /usr/libexec/steel-os-setup /usr/libexec/steel-os-help
+chmod 0755 /usr/libexec/steel-os-setup /usr/libexec/steel-os-help /usr/libexec/steel-os-help-server
 
 # One installer for every PC (STEEL-30): at boot, move the PC to the Steel OS
 # edition that matches its graphics card, then ask for a restart at login.
