@@ -152,7 +152,7 @@ sed -i 's|^SUPPORT_URL=.*|SUPPORT_URL="https://steel-os.org"|' "$OS_RELEASE"
 sed -i 's|^BUG_REPORT_URL=.*|BUG_REPORT_URL="https://steel-os.org"|' "$OS_RELEASE"
 sed -i 's/^LOGO=.*/LOGO=steel-os/' "$OS_RELEASE"
 sed -i 's/^DEFAULT_HOSTNAME=.*/DEFAULT_HOSTNAME="steel-os"/' "$OS_RELEASE"
-# Orange, the brand colour, for the terminal banner that reads ANSI_COLOR
+# Orange, the brand color, for the terminal banner that reads ANSI_COLOR
 sed -i 's/^ANSI_COLOR=.*/ANSI_COLOR="0;38;2;242;100;30"/' "$OS_RELEASE"
 # The boot menu entry name
 sed -i 's/^BOOTLOADER_NAME=.*/BOOTLOADER_NAME="Steel OS"/' "$OS_RELEASE"
@@ -338,7 +338,7 @@ fi
 ### 16. Steel OS Portal: welcome, one-click Steel Apps, system tools (STEEL-40)
 # Bazzite Portal's engine (yafti-gtk, GPL-3.0, github.com/ublue-os/yafti-gtk)
 # shows whatever its settings file lists. Steel OS gives it its own file,
-# built from packages/steel-apps.txt, and its own name, colour and icon.
+# built from packages/steel-apps.txt, and its own name, color and icon.
 PORTAL_ENGINE=/usr/bin/yafti_gtk.py
 if [[ ! -f "$PORTAL_ENGINE" ]]; then
     echo "Steel OS Portal: the portal engine is missing from the base image" >&2
@@ -558,7 +558,7 @@ STEEL_OS_NVIDIA="$([[ -n "$variant" ]] && echo 1 || echo 0)" python3 /ctx/portal
     /usr/share/steel-os/portal.yml
 # At a new user's first login the Steel OS Setup steps run first
 # (/usr/libexec/steel-os-setup, STEEL-35) and end by offering to open the
-# Portal. The Portal is in the start menu, the favourites and on the taskbar;
+# Portal. The Portal is in the start menu, the favorites and on the taskbar;
 # its "Launch at startup" switch makes it open at every login.
 # Steel & Code Forge one-click install (STEEL-25): the installer script, the
 # package address it uses, and a check that what it needs is in the image.
@@ -613,7 +613,7 @@ else
 fi
 grep -n 'addWidget' "$LAYOUT" | head -12
 
-# Start menu favourites for new users: the Steel OS Portal replaces
+# Start menu favorites for new users: the Steel OS Portal replaces
 # Bazzite Portal in the list Bazzite ships.
 FAVS=/usr/share/kde-settings/kde-profile/default/xdg/kicker-extra-favoritesrc
 if [[ -f "$FAVS" ]]; then
@@ -879,7 +879,7 @@ fi
 systemctl enable steel-shield-definitions.service
 systemctl --global enable steel-shield-downloads.service steel-shield-usb.path steel-shield-weekly.timer
 
-# Behaviour watching (STEEL-60): startup changes, file scrambling, hidden
+# Behavior watching (STEEL-60): startup changes, file scrambling, hidden
 # miners and newly runnable downloads, for every user; the extra threat list
 # from abuse.ch, daily; and the optional "block dangerous websites" switch.
 chmod 0755 /usr/libexec/steel-shield-guard /usr/libexec/steel-shield-dns /usr/libexec/steel-shield-extra

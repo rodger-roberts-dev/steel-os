@@ -18,7 +18,7 @@ UNIT=uupd.service
 systemctl cat uupd-manual.service >/dev/null 2>&1 && UNIT=uupd-manual.service
 
 # A thick orange bar (/usr/share/steel-os/progress.css), when this yad can
-# style its window (T, 2026-10-19: the default bar was a thin grey line).
+# style its window (T, 2026-10-19: the default bar was a thin gray line).
 STYLE=()
 yad --help-all 2>/dev/null | grep -q -- '--css' && [[ -r /usr/share/steel-os/progress.css ]] \
     && STYLE=(--css=/usr/share/steel-os/progress.css)

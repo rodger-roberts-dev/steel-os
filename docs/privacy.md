@@ -18,7 +18,7 @@ malware researchers unless the person turns that off.
 | Weekly count | Fedora's mirrors | Fedora's standard anonymous count (DNF Count Me), once a week with the update check: the Steel OS version and the age of the install in weeks, nothing else. This is the homepage's "installs" number. |
 | Virus definitions | ClamAV (Cisco Talos), downloads.steel-os.org | Downloads of the threat lists. Nothing about the person goes up. |
 | Counts | downloads.steel-os.org | When Steel Shield quarantines a threat, shares a file or the person reports a scam, it fetches a tiny file (`ping/<name>`) so the numbers on steel-os.org/steel-shield go up by one. Steel Shield installed on its own, on another Linux system, does the same once on its first start (the "installs" number); on Steel OS it doesn't, because Fedora's weekly count already covers that. No file name, no email, nothing else. |
-| Time | Fedora's time servers | Clock synchronisation. |
+| Time | Fedora's time servers | Clock synchronization. |
 
 ## What Steel Shield sends
 

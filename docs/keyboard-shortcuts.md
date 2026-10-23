@@ -37,8 +37,8 @@ An app's shortcut does nothing until that app is installed.
 | Super+F11 | Full screen |
 | Super+T | Show or auto-hide the taskbar |
 | Super+Shift+D | Virtual desktops off (one desktop, no boxes on the taskbar) or on (four) |
-| Super+Alt+F | Maximise |
-| Super+M | Minimise |
+| Super+Alt+F | Maximize |
+| Super+M | Minimize |
 | Super+O | Keep the window above others |
 | Super+Left, Right, Up or Down | Move focus to the window in that direction |
 | Alt+Tab, Alt+Shift+Tab | Switch between windows |

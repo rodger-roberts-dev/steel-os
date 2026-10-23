@@ -15,7 +15,7 @@ Windows as Linux allows.
 
 1. **Setting it up.** One optional page in Steel OS Setup at first login:
    - Choose three questions from a list (first pet, city you were born in,
-     favourite teacher and so on) and type the answers.
+     favorite teacher and so on) and type the answers.
    - Confirm with your password.
 
    It can be changed later from "Security questions" in the Steel OS Portal.

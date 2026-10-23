@@ -39,7 +39,7 @@ What the Steel OS image contains
 -------------------------------------------------------------------------
 
 The Steel OS image is built on Bazzite, which is built on Fedora. The
-software inside it keeps its own licences, including the GNU General Public
+software inside it keeps its own licenses, including the GNU General Public
 License for the Linux kernel and many other parts. Its source code is
 available from:
 
@@ -49,7 +49,7 @@ available from:
 
 The Steel OS Portal app is yafti-gtk (https://github.com/ublue-os/yafti-gtk),
 licensed under the GNU General Public License, version 3. The Steel OS build
-changes its name, colour, icon and settings file; build_files/build.sh
+changes its name, color, icon and settings file; build_files/build.sh
 section 16 lists every change.
 
 Fedora is a trademark of Red Hat, Inc. Bazzite is a project of Universal
@@ -58,4 +58,4 @@ their names only to credit them.
 
 Proprietary apps are not copied onto the Steel OS installer ISO. Where a
 proprietary app is a default (for example Obsidian), it is downloaded from
-Flathub after installation under its own licence.
+Flathub after installation under its own license.

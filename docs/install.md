@@ -40,7 +40,7 @@ point. It takes about 30 minutes.
 3. Click **SELECT** and choose the Steel OS file.
 4. A box says **ISOHybrid image detected**. That is normal: click **OK**. (If
    Rufus asks instead, choose **Write in DD Image mode**.)
-5. Leave the rest as it is: **GPT** and **UEFI** are right, and the greyed-out
+5. Leave the rest as it is: **GPT** and **UEFI** are right, and the grayed-out
    settings are not used.
 6. Click **START**, then **OK** on the warning that the stick will be erased.
 7. When it says **READY**, click **CLOSE** and take the stick out. Windows may
@@ -61,7 +61,7 @@ and skip to step 4.
    **F8** or **Esc**; the PC's start-up screen often says which.
 3. Pick the USB stick from the list.
 
-**Secure Boot** can stay on. If a blue screen asks to **enrol a key**, choose
+**Secure Boot** can stay on. If a blue screen asks to **enroll a key**, choose
 **Enroll MOK**, then **Continue**, then **Yes**, type the password
 `steelos`, and restart.
 

@@ -4,7 +4,7 @@ name: Build safety net
 # and none is running or queued, re-run the last build for it. GitHub's queue
 # cancels a build that was waiting its turn when a third request arrives
 # (T, 2026-10-19: #109 and #110 merged two minutes apart, both builds
-# cancelled, no installer). Nothing to click: this puts the build back.
+# canceled, no installer). Nothing to click: this puts the build back.
 
 on:
   schedule:
@@ -23,7 +23,7 @@ jobs:
   check:
     runs-on: ubuntu-24.04
     steps:
-      - name: Re-run the newest master build if it was cancelled
+      - name: Re-run the newest master build if it was canceled
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -46,5 +46,5 @@ jobs:
             echo "The build failed on its own; a re-run would fail again. Fix it with a pull request."; exit 0
           fi
           id="$(jq -r '.[0].id' <<< "$runs")"
-          echo "::notice::Re-running cancelled image build $id for master ${sha:0:7}"
+          echo "::notice::Re-running canceled image build $id for master ${sha:0:7}"
           gh api -X POST "repos/$REPO/actions/runs/$id/rerun"

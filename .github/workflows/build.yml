@@ -25,7 +25,7 @@ env:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}-${{ inputs.brand_name}}-${{ inputs.stream_name }}
   # A new commit replaces an older check on the same pull request, but a
-  # master build is never cancelled: it finishes and publishes, and the next
+  # master build is never canceled: it finishes and publishes, and the next
   # master build waits its turn.
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 

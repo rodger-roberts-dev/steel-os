@@ -10,11 +10,11 @@ A blue hexagon with an orange stencil S inside. The wordmark is STEEL in white
 (or black on light backgrounds) and OS in orange, followed by a blue cursor
 bar: `STEEL OS_`. The S is the hex mark on its own for icons.
 
-## Colours
+## Colors
 
 | Name | Hex | Use |
 |---|---|---|
-| Steel Blue | `#4A90D9` | Hexagon, cursor bar, Plasma accent colour |
+| Steel Blue | `#4A90D9` | Hexagon, cursor bar, Plasma accent color |
 | Forge Orange | `#F2641E` | The S, the OS wordmark, highlights |
 | White | `#FFFFFF` | STEEL wordmark on dark backgrounds |
 | Black | `#000000` | STEEL wordmark on light backgrounds, icon tile |
@@ -44,7 +44,7 @@ Font License, free for commercial use).
 ## Rules
 
 - Keep clear space around the logo of at least half the hexagon's height.
-- Do not recolour, stretch, rotate or add shadows. On busy photos use a mono
+- Do not recolor, stretch, rotate or add shadows. On busy photos use a mono
   version.
 - Smallest sizes: mark 16 px, horizontal logo 120 px wide.
 
@@ -60,14 +60,14 @@ Font License, free for commercial use).
 | Steel OS Portal | The `steel-os-portal` icon from `portal/`, on its launcher, taskbar pin and window |
 | Start button | The Steel OS icon, set by a Plasma layout script (`steel-os-panel.js`) |
 | About this System | `/etc/xdg/kcm-about-distrorc`, `/usr/lib/os-release` and the `steel-os` icon in the hicolor theme |
-| Installer | `installer/system_files/overrides/usr/share/cockpit/branding/fedora/` (logo and colours) |
+| Installer | `installer/system_files/overrides/usr/share/cockpit/branding/fedora/` (logo and colors) |
 
 ## Wallpapers
 
 Steel OS ships two wallpapers, both 3840x2160.
 
 - **Default:** `wallpaper/steel-os-wallpaper-waves-3840x2160.png`. Dark navy
-  with blue and orange light waves, the hex mark and `STEEL OS_` centred. Used
+  with blue and orange light waves, the hex mark and `STEEL OS_` centered. Used
   on the desktop, the lock screen and the login screen.
 - **Alternative:** `wallpaper/steel-os-wallpaper-room-3840x2160.png`. An
   isometric gaming room: someone on the couch with a controller, a space game
